@@ -1,0 +1,266 @@
+const DATA=window.OVERLOAD_DATA;
+const items=DATA.items, ORDER=DATA.order;
+const $=s=>document.querySelector(s);
+const YEAR={'관악구':2012,'강남구':2014,'서대문구':2014,'금천구':2015,'광진구':2016,'동대문구':2017,'동작구':2020,'강동구':2023,'노원구':2024};
+const LIME=[195,209,50], MID=[140,111,59], PLUM=[86,14,69];
+items.forEach(o=>{o.e=[o.w[0]+o.t[0],o.w[1]+o.t[1]];});
+const MAX={s:0,e:0};
+items.forEach(o=>{for(const k of ['s','e'])MAX[k]=Math.max(MAX[k],o[k][0],o[k][1])});
+const tot=o=>[o.s[0]+o.w[0]+o.t[0], o.s[1]+o.w[1]+o.t[1]];
+const rate=(b,a)=>b===0?(a===0?0:Infinity):(a-b)/b;
+const per=o=>[o.st[0]?tot(o)[0]/o.st[0]:0, o.st[1]?tot(o)[1]/o.st[1]:0];
+
+const FILTERS=[
+ {id:'total',pal:'duo',name:'전체 광고물',q:'전체 광고물, 얼마나 늘었나?',desc:'개선 전 대비 증감률 %',what:'<b>전체 광고물</b> 증감률',unitTx:'개선 전 → 현재, %',L:'<b>많이 줄어든</b>',R:'<b>많이 늘어난</b>',v:o=>rate(...tot(o)),fmt:o=>fmtRate(...tot(o))},
+ {id:'per',name:'가게당 광고물',q:'가게당 광고물, 몇 개?',desc:'현재 가게 하나당 개수',what:'<b>가게당 광고물</b> 개수',unitTx:'현재, 가게 1곳당',L:'<b>적게 단</b>',R:'<b>많이 단</b>',unit:true,v:o=>per(o)[1],fmt:o=>per(o)[1].toFixed(1)+'개'},
+ {id:'s',pal:'mag',name:'간판',q:'간판, 얼마나 늘었나?',desc:'개선 전 대비 증감률 %',what:'<b>간판</b> 증감률',unitTx:'개선 전 → 현재, %',L:'<b>많이 줄어든</b>',R:'<b>많이 늘어난</b>',v:o=>rate(...o.s),fmt:o=>fmtRate(...o.s)},
+ {id:'e',pal:'grn',name:'기타 광고물',q:'기타 광고물, 얼마나 늘었나?',desc:'개선 전 대비 증감률 %',what:'<b>기타 광고물</b> 증감률',unitTx:'창문이용·입간판·배너·현수막 · 개선 전 → 현재, %',L:'<b>많이 줄어든</b>',R:'<b>많이 늘어난</b>',v:o=>rate(...o.e),fmt:o=>fmtRate(...o.e)},
+];
+function fmtRate(b,a){ if(b===0) return a===0?'0%':'-'; const r=Math.round((a-b)/b*100); return (r>0?'+':r<0?'−':'')+Math.abs(r)+'%'; }
+const BA=(b,a)=>`<span class="pre">${b}</span><span class="ar">→</span><span class="now">${a}</span>`; // 개선 전(작게·흐리게) → 현재(진하게)
+function fmtDelta(b,a){const d=a-b; return (d>0?'+':d<0?'−':'±')+Math.abs(d);}
+const mix=(p,q,t)=>p.map((v,i)=>Math.round(v+(q[i]-v)*t));
+const PAL={
+ mag:{s:[[52,10,42],[124,30,100],[226,122,198]],dk:'#2a0821',lt:'#f5cfe9'},
+ grn:{s:[[42,46,14],[110,120,30],[214,226,74]],dk:'#23260a',lt:'#eef3b4'},
+ duo:{s:[[86,14,69],[140,111,59],[195,209,50]],dk:'#560E45',lt:'#C3D132'},
+ gray:{s:[[26,25,26],[64,63,64],[168,167,168]],dk:'#141414',lt:'#d6d6d6'}};
+let pal=PAL.gray;
+const grad=t=>t<.5?mix(pal.s[0],pal.s[1],t*2):mix(pal.s[1],pal.s[2],(t-.5)*2);
+const lum=c=>(.2126*c[0]+.7152*c[1]+.0722*c[2])/255;
+
+/* build axis labels */
+$('#cols').innerHTML=Array.from({length:10},(_,i)=>`<div>B${String(i+1).padStart(2,'0')}</div>`).join('');
+$('#rows').innerHTML=ORDER.map(d=>`<div data-d="${d}">${d}</div>`).join('');
+
+/* cells */
+const grid=$('#grid');
+items.forEach((o,i)=>{
+  const btn=document.createElement('button');
+  btn.className='cell in'; btn.style.setProperty('--ad',(Math.floor(i/10)*40+(i%10)*25)+'ms');
+  btn.setAttribute('aria-label',`${o.d} ${o.b} ${o.name}`);
+  const e=o.ev, sc=Math.min(60/e.w,50/e.h), W=e.w*sc, H=e.h*sc;
+  btn.innerHTML=`<svg width="${W.toFixed(1)}" height="${H.toFixed(1)}" viewBox="0 0 ${e.w} ${e.h}" fill="none" stroke="currentColor" stroke-width="0.5">${e.g}</svg><span class="rk"></span>`;
+  btn.addEventListener('click',ev=>{ev.stopPropagation(); select(i,true);});
+  btn.addEventListener('animationend',()=>btn.classList.remove('in'),{once:true});
+  btn.addEventListener('mouseenter',()=>showTip(i,btn));
+  btn.addEventListener('mouseleave',hideTip);
+  btn.addEventListener('focus',()=>showTip(i,btn));
+  btn.addEventListener('blur',hideTip);
+  o.el=btn; grid.appendChild(btn);
+});
+
+/* filter menu */
+const DEF=FILTERS.find(f=>f.id==='per');
+let cur=DEF;
+const optHTML=i=>{const f=FILTERS[i]; return `<button class="opt" role="menuitemradio" aria-checked="false" data-i="${i}"><span class="box"><i></i></span><span class="tx"><b>${f.q}</b><i>${f.desc}</i></span></button>`;};
+$('#menu').innerHTML=['per','total','s','e'].map(id=>optHTML(FILTERS.findIndex(f=>f.id===id))).join('')+
+ `<hr><button class="reset" id="reset"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M3.5 9a5.5 5.5 0 1 0 1.7-4"/><path d="M3.5 2.5v3h3"/></svg>초기화</button>`;
+const filterEl=$('#filter');
+$('#filterBtn').addEventListener('click',e=>{e.stopPropagation(); const o=filterEl.classList.toggle('open'); $('#filterBtn').setAttribute('aria-expanded',o);});
+document.querySelectorAll('.opt').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation(); applyFilter(FILTERS[+b.dataset.i]); filterEl.classList.remove('open'); $('#filterBtn').setAttribute('aria-expanded',false);}));
+$('#reset').addEventListener('click',e=>{e.stopPropagation(); applyFilter(null); filterEl.classList.remove('open');});
+
+let seqReady=false; // 첫 로딩은 기존 등장 애니메이션, 이후 필터를 바꿀 때마다 순위 순서로 페이드인
+function applyFilter(f){
+  cur=f; $('#panel').dataset.f=f?f.id:'all';
+  if(seqReady) sweep();   // 보는 기준을 바꿀 때도 건물을 고를 때처럼 개선 전/현재 사진이 한 번 쓸고 지나감
+
+  document.querySelectorAll('.opt').forEach(b=>b.setAttribute('aria-checked',!!f&&FILTERS[+b.dataset.i]===f));
+  $('#filterLab').textContent=f?f.name:'선택 안 함';
+  const leg=$('#legend');
+  if(!f){
+    items.forEach(o=>{o.el.style.removeProperty('--c');o.el.style.removeProperty('--k');o.el.style.setProperty('--dl','0ms');o.rank=null;});
+    grid.classList.remove('ranked'); leg.classList.add('off'); if(focusOn) setFocus(true); renderTop5();
+    $('#legL').innerHTML='<span class="wt">보는 기준을 고르면 순위대로 색이 바뀌어요</span>'; $('#legR').innerHTML='';
+    return;
+  }
+  leg.classList.remove('off'); leg.dataset.f=f.id;
+  pal=PAL[f.pal||'gray'];
+  // 범례 머리: 지금 색이 무엇을 뜻하는지 크게
+  $('#legL').innerHTML=`<span class="rkx">1위가 가장 ${f.R.replace(/<\/?b>/g,'')} 건물</span>`;
+  $('#legR').innerHTML=`<span class="nine">색 10단계 · 한 칸 = 건물 9동</span>`;
+  let L=f.L.replace(/<\/?b>/g,''), R=f.R.replace(/<\/?b>/g,'');
+  if(f.unit){const vs=items.map(f.v); L+=` ${Math.min(...vs).toFixed(1)}개`; R+=` ${Math.max(...vs).toFixed(1)}개`;}
+  leg.dataset.l=L; leg.dataset.r=R;
+  // rank (ties share average rank) → evenly spread colour
+  const idx=items.map((o,i)=>[f.v(o),i]).sort((a,b)=>a[0]-b[0]);
+  const n=idx.length; let k=0;
+  while(k<n){ let j=k; while(j+1<n && idx[j+1][0]===idx[k][0]) j++;
+    const t=((k+j)/2)/(n-1);
+    for(let m=k;m<=j;m++){ const o=items[idx[m][1]]; o.tt=t; }
+    k=j+1; }
+  // 순위 1–90: 많이 늘어난(가게당은 많이 단) 건물이 1위 — TOP 5와 같은 기준
+  rankOrder(f).forEach((i,m)=>{items[i].rank=m+1; items[i].seq=m;});
+  // 색: 1–90위를 9개씩 10단계로 묶음 (1–9위 = 1단계, 가장 밝음)
+  //  · 전체 광고물·가게당 광고물: 그라데이션 10색
+  //  · 간판(자홍)·기타 광고물(그린): 기본색 하나 + 투명도 10단계 — 줄어들수록 투명 → 어둡게
+  const STEPS=stepColors(f);
+  items.forEach(o=>{
+    const k=Math.min(9,Math.floor((o.rank-1)/9)), sc=STEPS[k];   // k: 0(1–9위) … 9(82–90위)
+    o.step=k+1;
+    o.el.style.setProperty('--dl',(o.seq*16)+'ms'); // 1→90위 순서로 딴·딴·딴
+    o.el.style.setProperty('--c',sc.c);
+    o.el.style.setProperty('--k',sc.k);
+    o.el.querySelector('.rk').textContent=o.rank;
+  });
+  leg.querySelector('.bar').style.background='none';
+  let sn=leg.querySelector('.sn'); if(!sn){sn=document.createElement('div');sn.className='sn';leg.appendChild(sn);}
+  sn.innerHTML=`<span>${leg.dataset.l} · 82–90위</span><span>1–9위 · ${leg.dataset.r}</span>`;
+  leg.querySelector('.bar').innerHTML=STEPS.slice().reverse().map((s,i)=>`<i style="background:${s.c}" title="${10-i}단계 · ${(9-i)*9+1}–${(10-i)*9}위"></i>`).join('');
+  grid.classList.add('ranked');
+  if(seqReady&&window.SND&&SND.light){ const t=[]; items.forEach(o=>{const k=o.step-1; t[k]=Math.min(t[k]??1e9,o.seq*16);}); SND.light(t.filter(v=>v<1e9)); }   // 칸 색이 단계별로 켜질 때 소리
+  if(seqReady){ if(focusOn) setFocus(false); // 필터를 바꾸면 건물 선택(어둠 처리)을 풀고 1→90위 등장을 보여줌
+    items.forEach(o=>{o.el.classList.remove('in','seq'); void o.el.offsetWidth; o.el.classList.add('seq');}); }
+  else if(focusOn) setFocus(true);
+  seqReady=true;
+  renderTop5();
+}
+
+/* 10단계 색 */
+const BASE={s:[226,122,198], e:[195,209,50]};   // 간판 자홍 · 기타 광고물 그린(라임)
+function stepColors(f){
+  return Array.from({length:10},(_,k)=>{
+    if(BASE[f.id]){ const a=1-k*.095, c=BASE[f.id];   // 1단계 불투명 → 10단계 거의 투명
+      const mixd=c.map(v=>Math.round(16+(v-16)*a));   // 배경(#101010) 위에서 보이는 실제 색 — 글자색 판단용
+      return {c:`rgba(${c},${a.toFixed(3)})`, k:lum(mixd)>.42?pal.dk:pal.lt}; }
+    const c=grad(1-k/9); return {c:`rgb(${c})`, k:lum(c)>.42?pal.dk:pal.lt};
+  });
+}
+
+/* TOP 5 — 필터별 순위 (드롭다운: 접으면 TOP1만, 펼치면 TOP1–5) */
+const T5={
+ per:{t:'가게당 광고물이 많은 TOP 5',sort:(a,b)=>per(b)[1]-per(a)[1]},
+ total:{t:'전체 광고물이 많이 늘어난 TOP 5',k:o=>tot(o)},
+ s:{t:'간판이 많이 늘어난 TOP 5',k:o=>o.s},
+ e:{t:'기타 광고물이 많이 늘어난 TOP 5',k:o=>o.e}};
+let t5Open=false;
+function rankOrder(f){const d=T5[f.id];
+  const cmp=d.sort||((a,b)=>{const [ab,aa]=d.k(a),[bb,ba]=d.k(b),ra=rate(ab,aa),rb=rate(bb,ba);
+    const x=(isFinite(rb)?rb:-9)-(isFinite(ra)?ra:-9); return x||((ba-bb)-(aa-ab)); }); // 증가율 높은 순, 같으면 더 많이 늘어난 개수 순 (개선 전 0개는 비율 계산 불가라 뒤로)
+  return items.map((o,i)=>i).sort((a,b)=>cmp(items[a],items[b]));}
+const top5List=f=>rankOrder(f).slice(0,5);
+function renderTop5(){
+  const box=$('#top5');
+  if(!cur){box.classList.add('off');return;} box.classList.remove('off');
+  $('#t5T').innerHTML=`<b>TOP 5</b> ${T5[cur.id].t.replace(' TOP 5','')}`;
+  $('#t5List').innerHTML=top5List(cur).map((i,r)=>{const o=items[i],e=o.ev,sc=Math.min(54/e.w,46/e.h);
+    return `<button class="t5" data-i="${i}" style="--c:${o.el.style.getPropertyValue('--c')||'#333'};--k:${o.el.style.getPropertyValue('--k')||'#fff'}">
+      <span class="blk"><span class="ev"><svg width="${(e.w*sc).toFixed(1)}" height="${(e.h*sc).toFixed(1)}" viewBox="0 0 ${e.w} ${e.h}" fill="none" stroke="currentColor" stroke-width="0.5">${e.g}</svg></span>
+      <span class="tx"><b>TOP${r+1}</b><span>${o.b}<em>${o.name}</em></span></span><span class="v">${cur.fmt(o)}</span></span>
+      <span class="ph" style="background-image:url('${o.pa}')"></span></button>`;}).join('');
+  $('#t5List').querySelectorAll('.t5').forEach((b,r)=>b.addEventListener('click',e=>{e.stopPropagation(); select(+b.dataset.i,true);}));
+}
+function setT5(v){t5Open=v; $('#top5').classList.toggle('open',v); $('#t5Hd').setAttribute('aria-expanded',v);}
+$('#t5Hd').addEventListener('click',e=>{e.stopPropagation(); setT5(!t5Open);});
+
+/* tooltip */
+const tip=$('#tip');
+function showTip(i,el){
+  const o=items[i]; const f=cur||FILTERS[0];
+  tip.innerHTML=`<b>${o.d} ${o.b}</b> · ${o.name} <span>· ${f.name} ${f.fmt(o)}${cur&&o.rank?` · ${o.rank}/90`:''}</span>`;
+  const r=el.getBoundingClientRect(), a=$('#art').getBoundingClientRect(), s=a.width/1920;
+  tip.style.left=((r.left-a.left)/s)+'px'; tip.style.top=((r.top-a.top)/s-46)+'px';
+  tip.classList.add('on');
+}
+function hideTip(){tip.classList.remove('on');}
+
+/* selection */
+let sel=-1, focusOn=false;
+function select(i,fromClick){
+  if(fromClick && focusOn && sel===i){ setFocus(false); return; }
+  sel=i; items.forEach((o,k)=>o.el.classList.toggle('sel',k===i));
+  if(fromClick) setFocus(true);
+  document.querySelectorAll('#rows div').forEach(r=>{r.classList.toggle('on',focusOn&&r.dataset.d===items[i].d); r.classList.toggle('dim',focusOn&&r.dataset.d!==items[i].d);});
+  render(items[i]); if(fromClick) touched=true; post();
+}
+/* 보기 전환 연결 — 상위 페이지와 현재 선택 건물을 주고받음 */
+let touched=false;
+function post(){ if(!items[sel]) return; try{ if(parent!==window) parent.postMessage({ov:'state',view:'map',d:items[sel].d,b:items[sel].b,focus:focusOn,user:touched},'*'); }catch(e){} }
+/* 거리로 보기 → 한눈에 비교: 선택을 풀고 '가게당 광고물' 기준으로 90칸이 1위부터 다시 켜짐 */
+addEventListener('message',e=>{ const m=e.data; if(!m||m.ov!=='replay') return;
+  setFocus(false); items.forEach(o=>o.el.classList.remove('in','seq')); grid.style.visibility='hidden';
+  setTimeout(()=>{ grid.style.visibility=''; applyFilter(DEF); },220); });
+addEventListener('message',e=>{ const m=e.data; if(!m||m.ov!=='apply') return;
+  const i=items.findIndex(o=>o.d===m.d&&o.b===(m.b||'B01')); if(i<0) return;
+  touched=true; select(i,false); setFocus(!!(m.b&&m.focus));
+  if(!m.b){ const r=[...document.querySelectorAll('#rows div')].find(x=>x.dataset.d===m.d); if(r){r.classList.remove('flash'); void r.offsetWidth; r.classList.add('flash');} }
+  else items[i].el.focus({preventScroll:true});
+});
+function setFocus(v){focusOn=v; if(v) touched=true; setTimeout(post); grid.classList.toggle('focus',v); if(sel>=0){const c=items[sel].el.style.getPropertyValue('--c'); $('#art').style.setProperty('--sel', c?`color-mix(in srgb, ${c} 70%, #fff)`:'var(--ink)');}
+  document.querySelectorAll('#rows div').forEach(r=>{r.classList.toggle('on',v&&r.dataset.d===items[sel].d); r.classList.toggle('dim',v&&r.dataset.d!==items[sel].d);});}
+$('#art').addEventListener('click',e=>{ if(!e.target.closest('.panel,.filter,.top5')){ setFocus(false);} if(!e.target.closest('.filter')) filterEl.classList.remove('open'); if(!e.target.closest('.top5')) setT5(false); });
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){setFocus(false);filterEl.classList.remove('open');}
+  if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key) && document.activeElement?.classList.contains('cell')){
+    e.preventDefault(); let r=Math.floor(sel/10), c=sel%10;
+    if(e.key==='ArrowLeft')c=(c+9)%10; if(e.key==='ArrowRight')c=(c+1)%10; if(e.key==='ArrowUp')r=(r+8)%9; if(e.key==='ArrowDown')r=(r+1)%9;
+    const ni=r*10+c; items[ni].el.focus(); select(ni,false); if(!focusOn) setFocus(true); else setFocus(true);
+  }
+});
+
+/* photo compare */
+const photo=$('#photo'); let P=50;
+function setP(v,anim){P=Math.max(0,Math.min(100,v)); photo.style.setProperty('--p',P+'%'); photo.setAttribute('aria-valuenow',Math.round(P));
+  $('#pct').textContent=`${Math.round(P)} : ${100-Math.round(P)}`;
+  photo.querySelector('.tag.l').style.opacity=P<8?0:1; photo.querySelector('.tag.r').style.opacity=P>92?0:1;}
+photo.addEventListener('wheel',e=>{e.preventDefault(); setP(P-(e.deltaY||e.deltaX)*0.12);},{passive:false});
+let drag=false;
+const posP=e=>{const r=photo.getBoundingClientRect(); setP((e.clientX-r.left)/r.width*100);};
+photo.addEventListener('pointerdown',e=>{drag=true;photo.setPointerCapture(e.pointerId);posP(e);});
+photo.addEventListener('pointermove',e=>{if(drag)posP(e);});
+photo.addEventListener('pointerup',()=>drag=false);
+photo.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'){setP(P-5);e.preventDefault();} if(e.key==='ArrowRight'){setP(P+5);e.preventDefault();}});
+function sweep(){ const t0=performance.now(); const from=0, to=50;   // 왼쪽 끝 → 가운데로 이동
+  const step=t=>{const k=Math.min(1,(t-t0)/700), e=1-Math.pow(1-k,3); setP(from+(to-from)*e); if(k<1)requestAnimationFrame(step);};
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) setP(50); else requestAnimationFrame(step); }
+
+/* 전체 광고물 점 그래프 — 광고물 1개 = 점 1개 (해바라기 배열: 안쪽부터 입간판·배너·현수막 → 간판 → 창문이용) */
+function dots(o){
+  const R=54, r=2.1, c=4.75, GA=Math.PI*(3-Math.sqrt(5));   // 90동 모두 같은 간격 → 점 무리 크기로 바로 비교 (최대 116개도 들어감)
+  const one=(k,lab)=>{const cats=[['t',o.t[k]],['s',o.s[k]],['w',o.w[k]]]; let i=0, html='';
+    for(const [cl,n] of cats) for(let m=0;m<n;m++,i++){const rr=c*Math.sqrt(i+.5), th=i*GA;
+      html+=`<circle class="${cl}" cx="${(R+rr*Math.cos(th)).toFixed(1)}" cy="${(R+rr*Math.sin(th)).toFixed(1)}" r="${r}" style="--i:${i}"/>`;}
+    return `<figure><svg width="${R*2}" height="${R*2}" viewBox="0 0 ${R*2} ${R*2}">${html}</svg><figcaption>${lab} <b>${i}</b></figcaption></figure>`;};
+  return `<div class="pair">${one(0,'BEFORE')}${one(1,'NOW')}</div>`;
+}
+
+/* panel render */
+let openE=false;
+{ const pn=$('#panel'); pn.insertBefore($('#who'),$('#photo')); }   // 거리로 보기처럼 건물 코드를 사진 위로
+function render(o){
+  $('#imgB').src=o.pb; $('#imgA').src=o.pa;
+  $('#imgB').alt=`${o.name} 개선 전 로드뷰`; $('#imgA').alt=`${o.name} 현재 로드뷰`;
+  $('#lo').hidden=!o.lo;
+  sweep();
+  const [tb,ta]=tot(o), [pb,pa]=per(o);
+  const cls=ta>tb?'up':ta<tb?'down':'flat';
+  $('#who').innerHTML=`<div class="fade"><h2>${o.d} ${o.b}<span class="nm">${o.name}</span></h2></div>`;
+  $('#sum').innerHTML=`<div class="fade sec-big"><div class="k">전체 광고물 (개선 전 → 현재)</div><div class="row"><span class="rate">${fmtRate(tb,ta)}</span><span class="cnt">${BA(tb,ta)}<small>개</small></span></div></div>
+    <div class="r fade sec-rate"><div class="k">전체 광고물 증감</div><div class="badge ${cls}">${fmtRate(tb,ta)}</div><div class="d">${fmtDelta(tb,ta)}개 (${BA(tb,ta)})</div><div class="lg"><span class="s">간판</span><span class="w">창문이용</span><span class="t">입간판·배너·현수막</span></div></div>
+    <div class="sec-dots">${dots(o)}</div>`;
+  $('#stats').innerHTML=`<div><span class="k">식별 업소</span><b>${BA(o.st[0],o.st[1])}</b></div><div><span class="k">업소당 광고물</span><b>${BA(pb.toFixed(1),pa.toFixed(1))}</b></div><div><span class="k">층당 광고물 (현재)</span><b>${(ta/o.fl).toFixed(1)}</b></div>`;
+  const track=(b,a,M)=>{const lo=Math.min(a,b)/M*100, hi=Math.max(a,b)/M*100;
+    return `<div class="track"><div class="seg" style="left:${lo}%;width:${Math.max(hi-lo,0)}%"></div><div class="dot b" style="left:${b/M*100}%"></div><div class="dot a" style="left:${a/M*100}%"></div></div>`;};
+  const val=(b,a)=>`<span class="val">${BA(b,a)}<b>${fmtRate(b,a)}</b></span>`;
+  const sub=(label,k)=>{const [b,a]=o[k]; return `<div class="sub-row"><div class="top"><span class="name">${label}</span><b class="pc">${fmtRate(b,a)}</b></div><div class="ba">${BA(b,a)}</div>${track(b,a,MAX.e)}</div>`;};
+  $('#bars').innerHTML=`<div class="hd"><span>유형별 광고물</span><span>○ 개선 전 ● 현재</span></div>`+
+    `<div class="bar-row r-sign"><div class="top"><span class="name">간판</span>${val(...o.s)}</div>${track(...o.s,MAX.s)}</div>`+
+    `<div class="bar-row r-win grp${openE?' open':''}"><div class="top"><button class="name tg" id="tgE" aria-expanded="${openE}" aria-controls="subE">기타 광고물<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3.5 5.5L7 9l3.5-3.5"/></svg></button>${val(...o.e)}</div>${track(...o.e,MAX.e)}
+     <div class="fold" id="subE"><div class="wrap"><div class="subs">${sub('창문이용 광고물','w')}${sub('입간판 배너 현수막','t')}</div></div></div></div>`;
+  $('#tgE').addEventListener('click',e=>{e.stopPropagation(); openE=!openE; $('#bars .grp').classList.toggle('open',openE); e.currentTarget.setAttribute('aria-expanded',openE);});
+  $('#notes').innerHTML='막대 길이는 90동 중 유형별 최댓값 기준 · 세부 항목은 기타 광고물과 같은 축'+(o.notes.length?` · <em>${o.notes.join(' / ')}</em>`:'');
+}
+
+/* scale artboard */
+function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080); $('#art').style.transform=`translate(-50%,-50%) scale(${s})`;}
+addEventListener('resize',fit); fit();
+
+applyFilter(DEF);
+select(0,false);
+
+/* TOP 5 는 화면 맨 아래에 고정하지 않고, 위 내용 바로 아래(간격 28px)에 붙임 — 화면을 넘치면 아래쪽에 맞춤 */
+(()=>{const pn=$('#panel'), t5=$('#top5'); if(!pn||!t5) return;
+  const place=()=>{ t5.style.top='792px'; t5.style.bottom='auto'; };   // 보는 기준과 상관없이 같은 자리
+  try{ new ResizeObserver(place).observe(pn); new ResizeObserver(place).observe(t5); }catch(e){}
+  addEventListener('load',place); setTimeout(place,300);})();

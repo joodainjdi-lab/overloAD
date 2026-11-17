@@ -1,0 +1,22 @@
+@font-face{font-family:"Pretendard";src:url("../fonts/PretendardVariable.ttf") format("truetype");font-weight:100 900;font-display:block}
+:root{--bg:#101010;--ink:#FAFAFA;--ink-3:#6c686b;--line-2:#3a3739;--ease:cubic-bezier(.2,.8,.2,1);color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--bg);overflow:hidden;font-family:"Pretendard",-apple-system,"Apple SD Gothic Neo",sans-serif;letter-spacing:-0.003em}
+iframe{position:fixed;inset:0;width:100%;height:100%;border:0;background:var(--bg);transition:opacity .45s var(--ease)}
+iframe.off{opacity:0;pointer-events:none}
+#ui{position:fixed;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center center;transform:translate(-50%,-50%);pointer-events:none;z-index:5}
+.views{position:absolute;right:130px;top:77px;height:52px;width:292px;border:1px solid var(--line-2);border-radius:8px;background:var(--bg);display:flex;align-items:center;padding:5px;pointer-events:auto}
+.views .opts{position:relative;display:flex;flex:1;height:40px;background:#000;border-radius:5px;padding:3px}
+.views .pill{position:absolute;top:3px;bottom:3px;left:3px;width:calc(50% - 3px);border-radius:3px;background:var(--line-2);transition:transform .35s var(--ease)}
+.views[data-v="map"] .pill{transform:translateX(100%)}
+.views button{position:relative;flex:1;font:inherit;font-size:16px;letter-spacing:inherit;background:none;border:0;padding:0;cursor:pointer;color:var(--ink-3);transition:color .2s}
+.views button[aria-pressed="true"]{color:var(--ink)}
+.views button:focus-visible{outline:1px solid #C3D132;outline-offset:2px;border-radius:3px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* 이전으로 (100년 역사 마무리 화면으로) — 제목 왼쪽의 < */
+.back{position:absolute;left:60px;top:77px;width:24px;height:52px;display:flex;align-items:center;justify-content:flex-start;color:#4a4a4a;pointer-events:auto;transition:color .25s,transform .25s}
+.back:hover{color:#C3D132;transform:translateX(-3px)}
+.back:focus-visible{outline:1px solid #C3D132;outline-offset:2px;border-radius:4px}
+
+/* 소리 버튼: '거리로 보기·한눈에 비교' 전환 버튼 왼쪽 */

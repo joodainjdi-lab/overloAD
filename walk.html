@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>overload 거리 걷기</title>
+<link rel="stylesheet" href="css/walk.css">
+</head>
+<body>
+<div id="stage"><div id="art">
+  <div class="head"><div class="t">간판개선사업 9구역 90동</div></div>
+  <div class="seg2">
+    <div class="sw nudge" id="sw" data-ph="before" role="group" aria-label="개선 전·현재 시점"><span class="knob"></span><button data-ph="before" aria-pressed="true">개선 전</button><button data-ph="after" aria-pressed="false">현재</button></div>
+    <span class="tip" id="swTip">눌러서 현재 거리로 <kbd>Space</kbd></span></div>
+
+  <div class="sh">
+    <div class="who"><h1 id="guN"></h1><span class="meta" id="guM"></span></div>
+  </div>
+  <div class="tl"><p class="insight" id="guI"></p><button class="more" id="more" aria-expanded="false" aria-controls="guS">구역 평균 자세히<svg width="12" height="12" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3.5 5.5L7 9l3.5-3.5"/></svg></button></div>
+  <div class="sum" id="guS"></div>
+  <div class="read" id="read"></div>
+
+  <div class="adlg" aria-hidden="true"><span><i class="s"></i>간판</span><span><i class="w"></i>창문이용 광고물</span><span><i class="t"></i>입간판·배너·현수막</span></div>
+  <div class="walk before" id="walk"></div>
+
+  <div class="route" id="route" tabindex="0" aria-label="구역 이동 (마우스를 올리면 펼쳐짐)">
+    <div class="rt-hd"><span class="rt-k">구역 이동</span><span class="rt-now" id="rtNow"></span><span class="rt-tip">지도 · 사업 연표</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3.5 8.5L7 5l3.5 3.5"/></svg></div>
+    <div class="rt-body">
+    <div class="map" id="map" title="구역을 눌러 이동"><canvas id="mapC" width="352" height="268" aria-label="서울 25개 자치구 중 조사한 9개 구역"></canvas></div>
+    <div class="steps" id="steps">
+      <button class="nav p" id="prv" aria-label="이전 거리"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 3L5 8l5 5"/></svg></button>
+      <button class="nav n" id="nxt" aria-label="다음 거리"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3l5 5-5 5"/></svg></button>
+      <div class="rail"></div><div class="prog" id="prog"></div>
+    </div>
+    </div>
+  </div>
+
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <button class="x" id="close" aria-label="닫기" title="닫기 (Esc)"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3l8 8M11 3l-8 8"/></svg></button>
+    <div class="dh">
+      <div class="pn"><button id="bPrv" aria-label="이전 건물"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 3L5 8l5 5"/></svg></button><span id="bIdx"></span><button id="bNxt" aria-label="다음 건물"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 3l5 5-5 5"/></svg></button></div>
+    </div>
+    <div class="panel">
+      <div class="photo" id="photo" style="--p:50%" role="slider" aria-label="개선 전·현재 비교" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0">
+        <div class="frame"><img class="after" id="imgA" alt=""><img class="before" id="imgB" alt=""></div>
+        <div class="tag l"><b>BEFORE</b></div><div class="tag r"><b>NOW</b></div>
+        <div class="knob"></div>
+      </div>
+      <div class="hint"><span>사진 위 스크롤·드래그로 개선 전 ↔ 현재</span><span class="pct" id="pct">50 : 50</span></div>
+      <div class="pw" id="pw"></div>
+      <div class="psum" id="psum"></div>
+      <div class="stats" id="stats"></div>
+      <div class="bars" id="bars"></div>
+      <div class="notes" id="notes"></div>
+    </div>
+  </aside>
+</div></div>
+<script src="js/data.js"></script>
+<script src="js/walk.js"></script>
+<script src="js/sound.js"></script>
+</body>
+</html>

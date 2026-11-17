@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="500 172 1452 280" role="img" aria-label="overloAD">
+  <g fill="none" stroke="#F5F5F5" stroke-width="26" stroke-linejoin="round">
+    <rect x="523" y="273" width="148" height="126" rx="32"/>
+    <path d="M1031 398H925a33 33 0 0 1-33-33v-60a33 33 0 0 1 33-33h73a32 32 0 0 1 32 32v32H892"/>
+    <path d="M1076 409V300a27 27 0 0 1 27-27h60v31" stroke-linejoin="miter"/>
+    <path d="M1208 214V409"/>
+    <rect x="1258" y="273" width="149" height="126" rx="32"/>
+  </g>
+  <polygon fill="#F5F5F5" points="703,264 730,264 782,368 834,264 861,264 789,411 775,411"/>
+  <g fill="#C3D132">
+    <polygon points="1546,201 1563,201 1666,428 1633,428 1554.5,255 1476,428 1443,428"/>
+    <rect x="1440" y="435" width="226" height="8"/>
+  </g>
+  <g fill="none" stroke="#C3D132" transform="translate(7 0)">
+    <rect x="1683" y="185" width="248" height="254" stroke-width="8"/>
+    <path d="M1716 212H1790C1858 212 1897 256 1897 311C1897 366 1858 409 1790 409H1716Z" stroke-width="30" stroke-linejoin="miter"/>
+  </g>
+</svg>
