@@ -139,6 +139,13 @@ function dwLen(){return histSeen?0:DW}
 function totalU(){return N-1+dwLen()*dwellStops().length}
 function u2p(u){const d=dwLen();let c=0;for(const p of dwellStops()){if(u<p+c)return u-c;if(u<p+c+d)return p;c+=d}return u-c}
 function p2u(pos){const d=dwLen();let c=0;for(const p of dwellStops()){if(p<pos-1e-6)c+=d;else break}return pos+c}
+// 빠르게 넘겨도 멈추게: 구간을 통째로 건너뛰면 구간 가운데로 한 번 되돌리고, 잠깐(0.4초) 스크롤 입력을 받지 않아 관성을 끊음
+let dwLock=0,dwIn=-1e9;
+const dwInput=()=>{dwIn=performance.now()};
+addEventListener("wheel",e=>{if(e.ctrlKey)return;dwInput();if(performance.now()<dwLock)e.preventDefault()},{passive:false});
+addEventListener("touchmove",e=>{dwInput();if(performance.now()<dwLock&&e.cancelable)e.preventDefault()},{passive:false});
+addEventListener("keydown",e=>{if(["ArrowDown","ArrowUp","PageDown","PageUp","Space"].includes(e.code)){dwInput();if(performance.now()<dwLock)e.preventDefault()}});
+function dwSpans(){const d=dwLen();let c=0;return dwellStops().map(p=>{const a=p+c;c+=d;return [a,a+d,p]})}
 function inDwell(u){const d=dwLen();if(!d)return -1;let c=0;for(const p of dwellStops()){if(u>=p+c&&u<p+c+d)return p;c+=d}return -1}
 const CFG={
   dir:-1,          // 원 회전 방향: -1 = 왼쪽 아래 → 오른쪽 위로 흐름, 1 = 반대
@@ -403,7 +410,15 @@ function frame(){
   const sc=$("#scene"),top=sc.offsetTop;
   const u=(scrollY-top-LEAD)/(CFG.step*K),pos=clamp(u2p(u),0,N-1);
   // 머무는 구간에 들어서는 순간 '드르륵… 탁' (한 번 끝까지 본 뒤엔 구간이 없어짐)
-  const dw=inDwell(u);if(dw!==frame.dw){if(dw>=0&&!document.body.classList.contains("intro-on")){window.__latchT=performance.now();window.SND&&SND.latch&&SND.latch()}frame.dw=dw}
+  const now=performance.now(),user=now-dwIn<350&&!document.body.classList.contains("intro-on");
+  if(user&&!histSeen&&frame.lu!==undefined&&dwLen()){
+    const lu=frame.lu,skip=dwSpans().find(([a,b])=>u>lu?(lu<a&&u>=b):(lu>=b&&u<a));
+    if(skip){const mid=(skip[0]+skip[1])/2;frame.lu=mid;frame.span=skip;dwLock=now+400;scrollTo({top:top+LEAD+mid*CFG.step*K,behavior:"instant"});req();return}   // 건너뛴 구간으로 되돌림
+  }
+  // 멈춘 0.4초 동안 남은 관성이 구간 밖으로 밀어내면 구간 안으로 다시 붙잡음
+  if(now<dwLock&&frame.span){const [a,b]=frame.span;if(u<a||u>=b){const t=u<a?a+.05:b-.05;frame.lu=t;scrollTo({top:top+LEAD+t*CFG.step*K,behavior:"instant"});req();return}}
+  frame.lu=u;
+  const dw=inDwell(u);if(dw!==frame.dw){if(dw>=0&&user){dwLock=Math.max(dwLock,now+400);frame.span=dwSpans().find(x=>x[2]===dw);window.__latchT=now;window.SND&&SND.latch&&SND.latch()}frame.dw=dw}
   if(!histSeen&&u2p(u)>=N-1-1e-3&&u<totalU()+3){const extra=dwLen()*dwellStops().length*CFG.step*K;histSeen=true;try{sessionStorage.setItem("ow-hist-seen","1")}catch(_){}
     const y=scrollY;layout();scrollTo({top:Math.max(0,y-extra),behavior:"instant"})}
   const i0=Math.round(pos),s0=sAt(pos);
