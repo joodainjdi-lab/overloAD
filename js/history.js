@@ -301,7 +301,7 @@ const scrubTr=scrub.querySelector(".tr");
 const scrubFill=scrub.querySelector(".fill"),scrubMarks=[...scrub.querySelectorAll(".mk")];
 scrub.addEventListener("click",e=>{const b=e.target.closest(".mk");if(b)goPos(RULES[+b.dataset.j].p)});
 let ruleFired=-1;
-const LAWP=LAW.map(r=>yearPos(r[0]));
+const LAWP=LAW.map(r=>Math.round(yearPos(r[0])));   // 법·제도 선은 그 해에 가장 가까운 간판이 정확히 가운데 줄에 올 때 펼쳐짐 (브레이크도 그 자리에서 정지)
 const yearAt=pos=>{const i=Math.floor(pos),a=PHOTOS[i].year,b=PHOTOS[Math.min(i+1,N-1)].year;return a+(b-a)*(pos-i)};
 // 아래 미니 연표: 1870–2030 가로축, 위 = 표현(자홍 눈금), 아래 = 법·제도(라임 눈금), 지금 위치 표시
 const TL0=1870,TL1=2030,tx_=y=>((y-TL0)/(TL1-TL0)*100).toFixed(2)+"%";
