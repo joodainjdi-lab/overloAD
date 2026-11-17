@@ -133,7 +133,9 @@ let LEAD=0; // 역사 시작 제목이 걷히는 스크롤 구간
    → 브라우저 스크롤과 싸우지 않아 부드럽고, 간판이 가운데 줄에 딱 멈춘 듯 보임.
    한 번 끝까지 보면(이 탭에서) 구간을 없애 다시 볼 땐 걸리지 않음. */
 const DW=1.5;   // 한 지점에서 머무는 길이(사진 1.5칸만큼 스크롤)
-let histSeen=false;try{histSeen=sessionStorage.getItem("ow-hist-seen")==="1"}catch(_){}
+let histSeen=false;
+try{ if(document.body.classList.contains("start-on")) sessionStorage.removeItem("ow-hist-seen");   // 시작 화면부터 새로 보면 다시 걸림
+     else histSeen=sessionStorage.getItem("ow-hist-seen")==="1"; }catch(_){}                    // 조사 페이지에서 돌아올 때만 '이미 봄' 유지
 function dwellStops(){if(!dwellStops.c)dwellStops.c=[...new Set(LAW.map(r=>Math.round(yearPos(r[0]))))].filter(p=>p>0&&p<N-1).sort((a,b)=>a-b);return dwellStops.c}
 function dwLen(){return histSeen?0:DW}
 function totalU(){return N-1+dwLen()*dwellStops().length}
