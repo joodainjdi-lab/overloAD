@@ -511,7 +511,7 @@ function frame(){
     if(lbOpen||document.body.classList.contains("intro-on")||now-lastIn>400){lastY=y;return}   // 사용자 입력이 아닐 때는 그냥 지나감
     const st=stops();
     const hit=y>lastY?st.find(s=>s>lastY&&s<=y&&s!==released):y<lastY?[...st].reverse().find(s=>s<lastY&&s>=y&&s!==released):undefined;
-    if(hit!==undefined){pin=hit;pinT=now;scrollTo(0,hit)}
+    if(hit!==undefined){pin=hit;pinT=now;scrollTo(0,hit);window.SND&&SND.latch&&SND.latch()}   // 걸릴 때 '철컥'
     lastY=scrollY;
   },{passive:true});
   requestAnimationFrame(tick);

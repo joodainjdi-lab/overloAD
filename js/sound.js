@@ -83,7 +83,7 @@ window.SND=(()=>{
       up(d)});
     if(btn)btn.addEventListener("click",e=>{e.stopPropagation();on=!on;paint();up("snd:toggle")});
     if(isPage){up("snd:hello");const t=()=>up("snd:title:"+document.title);t();addEventListener("load",t)}
-    return {setEra(){},speed(){},tick(){fx("tick")},rule(){fx("rule")},tap(){fx("tap")},hover(){fx("hover")},place(i){fx("place:"+(i|0))},spin(v){fx("spin:"+(+v).toFixed(2))},light(ms){fx("light:"+JSON.stringify(ms||[]))},
+    return {setEra(){},speed(){},tick(){fx("tick")},rule(){fx("rule")},tap(){fx("tap")},hover(){fx("hover")},place(i){fx("place:"+(i|0))},latch(){fx("latch")},spin(v){fx("spin:"+(+v).toFixed(2))},light(ms){fx("light:"+JSON.stringify(ms||[]))},
       go(url){location.href=url},get on(){return on}};
   }
   let ctx=null,master,fxBus,bgBus,bgPad,bgEcho,started=false,chordT=0,ci=0;
@@ -134,6 +134,16 @@ window.SND=(()=>{
       nz(t+.001,{type:"bandpass",f:2300+Math.random()*200,q:8,dur:.022,g:.32*k});}
   }
   // '탁' — 인트로에서 사진이 한 장씩 붙을 때: 짧고 마른 소리 (장마다 높이가 살짝 다름)
+  // 스크롤이 지점에 걸릴 때 '철컥' — 짧은 금속성 걸쇠 소리 + 낮은 '툭'
+  function latch(){
+    if(!ready())return;const t=ctx.currentTime+.002;
+    nz(t,{type:"bandpass",f:3800,q:3,dur:.012,g:.5*TAP});              // 걸쇠가 닿는 '철'
+    nz(t+.028,{type:"bandpass",f:1500,q:4,dur:.03,g:.42*TAP});          // 맞물리는 '컥'
+    const o=ctx.createOscillator(),e=ctx.createGain();o.type="sine";
+    o.frequency.setValueAtTime(150,t+.026);o.frequency.exponentialRampToValueAtTime(70,t+.12);
+    e.gain.setValueAtTime(0,t+.026);e.gain.linearRampToValueAtTime(.55*TAP,t+.032);e.gain.exponentialRampToValueAtTime(.0008,t+.14);
+    o.connect(e).connect(fxBus);o.start(t+.026);o.stop(t+.16);           // 묵직한 '툭'
+  }
   function place(i=0){
     if(!ready())return;const t=ctx.currentTime+.002,v=.9+((i*37)%7)/35;
     nz(t,{type:"bandpass",f:4600*v,q:2.2,dur:.009,g:.42*TAP});          // 모서리가 닿는 '틱'
@@ -225,7 +235,7 @@ window.SND=(()=>{
   }
   btn.addEventListener("click",e=>{e.stopPropagation();toggle()});
 
-  fx=k=>{if(k.startsWith("place:")){place(+k.slice(6));return}if(k.startsWith("spin:")){spin(+k.slice(5));return}if(k.startsWith("light:")){try{light(JSON.parse(k.slice(6)))}catch(_){}}else if(k==="tap")tap();else if(k==="hover")ding();else if(k==="tick")swish(.7);else if(k==="rule")swish(1.3)};
+  fx=k=>{if(k==="latch"){latch();return}if(k.startsWith("place:")){place(+k.slice(6));return}if(k.startsWith("spin:")){spin(+k.slice(5));return}if(k.startsWith("light:")){try{light(JSON.parse(k.slice(6)))}catch(_){}}else if(k==="tap")tap();else if(k==="hover")ding();else if(k==="tick")swish(.7);else if(k==="rule")swish(1.3)};
   // 안쪽 화면에서 온 소리·요청
   let frame=null;
   const tell=()=>{if(frame)try{frame.contentWindow.postMessage("snd:state:"+(on?"on":"off"),"*")}catch(_){}};
@@ -267,6 +277,6 @@ iframe[name="${SHELL}"].on{opacity:1}`;document.head.appendChild(st);
     setEra(){},speed(){},
     tick(){swish(.7)},     // 사진이 넘어갈 때
     rule(){swish(1.3)},    // 법·사업이 나타날 때 (조금 더 크게)
-    tap,hover:ding,light,spin,place,go,toggle,get on(){return on}
+    tap,hover:ding,light,spin,place,latch,go,toggle,get on(){return on}
   };
 })();
