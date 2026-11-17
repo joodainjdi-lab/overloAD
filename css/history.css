@@ -381,3 +381,8 @@ body.intro-on{overflow:hidden}
 /* 사진 아래 한 줄 메모(예: 영어 간판 증가, 2007 강남구 개선사업 시작) */
 #cap .nt{display:none;margin-top:calc(6px*var(--k));font-size:calc(14px*var(--k));font-weight:500;color:var(--lime);line-height:1.5;word-break:keep-all}
 #cap.has-nt .nt{display:block}
+/* 스냅: 사진마다 멈출 자리, 법·제도 선 자리는 빠르게 넘겨도 반드시 멈춤 */
+html.snap-on{scroll-snap-type:y mandatory}
+.snapPt{position:absolute;left:0;width:1px;height:1px;pointer-events:none;scroll-snap-align:start}
+.snapPt.stop{scroll-snap-stop:always}
+html.snap-on #purpose{scroll-snap-align:start}

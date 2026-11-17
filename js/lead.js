@@ -21,12 +21,13 @@ function nudge(){
   showHint();
   if(scrollY>8||matchMedia("(prefers-reduced-motion: reduce)").matches)return;
   if(++nudgeN<3)setTimeout(()=>{if(scrollY<8)nudge()},6500);   // 계속 멈춰 있으면 6.5초마다 한 번 더 (최대 3번)
-  let stop=false;const cancel=()=>{stop=true};
+  const R=document.documentElement;R.classList.add("nosnap");R.classList.remove("snap-on");   // 힌트 동안엔 스냅 끔
+  let stop=false;const cancel=()=>{stop=true;R.classList.remove("nosnap")};
   ["wheel","touchstart","keydown","mousedown"].forEach(t=>addEventListener(t,cancel,{once:true,passive:true}));
   const D=110,T1=520,HOLD=160,T2=640,t0=performance.now();
   const eo=x=>1-Math.pow(1-x,3),eio=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
   const step=now=>{if(stop)return;const t=now-t0;let y;
-    if(t<T1)y=D*eo(t/T1);else if(t<T1+HOLD)y=D;else if(t<T1+HOLD+T2)y=D*(1-eio((t-T1-HOLD)/T2));else{scrollTo(0,0);return}
+    if(t<T1)y=D*eo(t/T1);else if(t<T1+HOLD)y=D;else if(t<T1+HOLD+T2)y=D*(1-eio((t-T1-HOLD)/T2));else{scrollTo(0,0);R.classList.remove("nosnap");return}
     scrollTo(0,y);requestAnimationFrame(step)};
   requestAnimationFrame(step);
 }

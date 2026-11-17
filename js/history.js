@@ -132,10 +132,71 @@ let LEAD=0; // 역사 시작 제목이 걷히는 스크롤 구간
    스크롤을 붙잡지 않고, 법·제도 선이 펼쳐지는 간판 자리마다 '스크롤해도 화면이 그대로인 구간'을 넣음.
    → 브라우저 스크롤과 싸우지 않아 부드럽고, 간판이 가운데 줄에 딱 멈춘 듯 보임.
    한 번 끝까지 보면(이 탭에서) 구간을 없애 다시 볼 땐 걸리지 않음. */
-const DW=1.5;   // 한 지점에서 머무는 길이(사진 1.5칸만큼 스크롤)
+const DW=0;   // (머무는 구간 방식은 끔 — 아래 '스냅' 방식으로 멈춤)
 let histSeen=false;
 try{ if(document.body.classList.contains("start-on")) sessionStorage.removeItem("ow-hist-seen");   // 시작 화면부터 새로 보면 다시 걸림
      else histSeen=sessionStorage.getItem("ow-hist-seen")==="1"; }catch(_){}                    // 조사 페이지에서 돌아올 때만 '이미 봄' 유지
+/* ════════════ 스냅 — 브라우저 기본 기능으로 '딱' 멈춤 ════════════
+   사진마다 멈출 자리(스냅 지점)를 두고, 법·제도 선이 있는 자리는 'scroll-snap-stop: always' →
+   빠르게 넘겨도 선 자리는 반드시 한 번 멈춘 뒤, 다시 스크롤하면 넘어감. 스크롤을 코드로 붙잡지 않아 매끄러움.
+   간판 역사 구간 안에서만 켜지고, 한 번 끝까지 보면(이 방문 동안) 꺼짐. */
+let snapEls=[];
+function placeSnaps(){
+  const sc=$("#scene");if(!snapEls.length){for(let i=0;i<N;i++){const e=document.createElement("i");e.className="snapPt";e.setAttribute("aria-hidden","true");sc.appendChild(e);snapEls.push(e)}}
+  const law=new Set(dwellStops());
+  snapEls.forEach((e,i)=>{e.style.top=(LEAD+p2u(i)*CFG.step*K)+"px";e.classList.toggle("stop",law.has(i))});
+}
+function snapRange(){const sc=$("#scene"),t=sc.offsetTop+LEAD;return [t-2,t+p2u(N-1)*CFG.step*K+2]}
+function snapUpdate(){
+  const [a,b]=snapRange(),y=scrollY;
+  const on=!histSeen&&!lbOpen&&y>=a&&y<=b&&!document.body.classList.contains("intro-on")&&!document.documentElement.classList.contains("nosnap");
+  document.documentElement.classList.remove("snap-on");   // (스냅 방식은 끔 — 아래 직접 스크롤 방식 사용)
+}
+addEventListener("scroll",snapUpdate,{passive:true});
+// 선 자리에 멈춰 섰을 때 '드르륵… 탁'
+let snapLast=-1,snapT=0;
+function snapSettled(){
+  if(histSeen||!document.documentElement.classList.contains("snap-on"))return;
+  const sc=$("#scene"),u=(scrollY-sc.offsetTop-LEAD)/(CFG.step*K),i=Math.round(u);
+  if(Math.abs(u-i)<.02&&dwellStops().includes(i)&&i!==snapLast){snapLast=i;window.__latchT=performance.now();window.SND&&SND.latch&&SND.latch()}
+  if(!dwellStops().includes(i))snapLast=-1;
+}
+/* ════════════ 간판 역사 전용 부드러운 스크롤 ════════════
+   간판 역사 구간에서는 휠·트랙패드 입력을 받아 직접 부드럽게 움직임(브라우저와 싸우지 않음).
+   · 법·제도 선 자리에 오면 그 자리에 '딱' 멈추고 0.5초 동안 머무름 → 그 뒤 다시 굴리면 넘어감
+   · 빠르게 휙 넘겨도 선 자리를 건너뛰지 않음
+   · 구간 맨 위/아래를 넘어가면 원래 브라우저 스크롤로 자연스럽게 이어짐
+   · 한 번 끝까지 보면(이 방문 동안) 멈추지 않고 그냥 부드럽게만 흐름 */
+(()=>{
+  const HOLD=500,EASE=.16;
+  let cur=null,target=0,raf=0,holdUntil=0,ours=false,heldAt=null;
+  const range=()=>{const t=$("#scene").offsetTop+LEAD;return [t,t+p2u(N-1)*CFG.step*K]};
+  const stopsY=()=>{const t=$("#scene").offsetTop+LEAD;return dwellStops().map(i=>Math.round(t+p2u(i)*CFG.step*K))};
+  function loop(){
+    raf=0;const d=target-cur;
+    cur=Math.abs(d)<.5?target:cur+d*EASE;
+    ours=true;scrollTo({top:cur,behavior:"instant"});
+    if(heldAt!==null&&Math.abs(cur-heldAt)<1&&!loop.rang){loop.rang=1;holdUntil=performance.now()+HOLD;window.__latchT=performance.now();window.SND&&SND.latch&&SND.latch()}   // 선에 닿는 순간 '드르륵… 탁'
+    if(cur!==target)raf=requestAnimationFrame(loop);
+  }
+  addEventListener("scroll",()=>{if(ours){ours=false;return}if(!raf){cur=target=scrollY}},{passive:true});   // 스크롤바·키보드로 움직이면 따라감
+  addEventListener("wheel",e=>{
+    if(e.ctrlKey||lbOpen||document.body.classList.contains("intro-on")||document.body.classList.contains("start-on"))return;
+    const [a,b]=range(),dy=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?innerHeight:1);
+    if(cur===null||!raf)cur=target=scrollY;
+    if(!dy)return;
+    if((dy>0&&target>=b-.5)||(dy<0&&target<=a+.5)||target<a-1||target>b+1){return}   // 구간 밖은 브라우저에 맡김
+    e.preventDefault();
+    const now=performance.now();
+    if(now<holdUntil)return;                                    // 선에 멈춰 있는 동안은 입력 무시
+    let next=Math.min(b,Math.max(a,target+dy));
+    if(!histSeen){
+      const st=stopsY(),hit=dy>0?st.find(s=>s>target+.5&&s<=next):[...st].reverse().find(s=>s<target-.5&&s>=next);
+      if(hit!==undefined){next=hit;holdUntil=Infinity;heldAt=hit;loop.rang=0}   // 닿은 순간부터 0.5초 머무름
+    }
+    target=next;if(!raf)raf=requestAnimationFrame(loop);
+  },{passive:false});
+})();
 function dwellStops(){if(!dwellStops.c)dwellStops.c=[...new Set(LAW.map(r=>Math.round(yearPos(r[0]))))].filter(p=>p>0&&p<N-1).sort((a,b)=>a-b);return dwellStops.c}
 function dwLen(){return histSeen?0:DW}
 function totalU(){return N-1+dwLen()*dwellStops().length}
@@ -228,7 +289,7 @@ function layout(){
   const a2=Math.atan2(P2[1]-c.y,P2[0]-c.x), a3=Math.atan2(P3[1]-c.y,P3[0]-c.x);
   let d=a3-a2;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;
   ARC={cx:c.x,cy:c.y,r:c.r,a0:a2,dir:Math.sign(d)};
-  LEAD=0;$("#scene").style.height=(totalU()*CFG.step*K+H+LEAD)+"px";
+  LEAD=0;$("#scene").style.height=(totalU()*CFG.step*K+H+LEAD)+"px";placeSnaps();
   Object.assign($("#cap").style,{left:"0px",top:"0px"});
   buildDecs();
 }
@@ -421,7 +482,7 @@ function frame(){
   if(now<dwLock&&frame.span){const [a,b]=frame.span;if(u<a||u>=b){const t=u<a?a+.05:b-.05;frame.lu=t;scrollTo({top:top+LEAD+t*CFG.step*K,behavior:"instant"});req();return}}
   frame.lu=u;
   const dw=inDwell(u);if(dw!==frame.dw){if(dw>=0&&user){dwLock=Math.max(dwLock,now+400);frame.span=dwSpans().find(x=>x[2]===dw);window.__latchT=now;window.SND&&SND.latch&&SND.latch()}frame.dw=dw}
-  if(!histSeen&&u2p(u)>=N-1-1e-3&&u<totalU()+3){const extra=dwLen()*dwellStops().length*CFG.step*K;histSeen=true;try{sessionStorage.setItem("ow-hist-seen","1")}catch(_){}
+  if(!histSeen&&u2p(u)>=N-1-1e-3&&u<totalU()+3){document.documentElement.classList.remove("snap-on");const extra=dwLen()*dwellStops().length*CFG.step*K;histSeen=true;try{sessionStorage.setItem("ow-hist-seen","1")}catch(_){}
     const y=scrollY;layout();scrollTo({top:Math.max(0,y-extra),behavior:"instant"})}
   const i0=Math.round(pos),s0=sAt(pos);
   let moving=false;
