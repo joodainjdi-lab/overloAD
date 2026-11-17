@@ -134,15 +134,12 @@ window.SND=(()=>{
       nz(t+.001,{type:"bandpass",f:2300+Math.random()*200,q:8,dur:.022,g:.32*k});}
   }
   // '탁' — 인트로에서 사진이 한 장씩 붙을 때: 짧고 마른 소리 (장마다 높이가 살짝 다름)
-  // 스크롤이 지점에 걸릴 때 '철컥' — 짧은 금속성 걸쇠 소리 + 낮은 '툭'
+  // 스크롤이 법·제도 선에 걸릴 때 — 사진 넘길 때의 '딸깍'과 같은 다이얼 소리로 '드르륵… 탁'
+  //  (점점 느려지는 딸깍 네 번 + 마지막에 단단히 걸리는 한 번)
   function latch(){
-    if(!ready())return;const t=ctx.currentTime+.002;
-    nz(t,{type:"bandpass",f:3800,q:3,dur:.012,g:.5*TAP});              // 걸쇠가 닿는 '철'
-    nz(t+.028,{type:"bandpass",f:1500,q:4,dur:.03,g:.42*TAP});          // 맞물리는 '컥'
-    const o=ctx.createOscillator(),e=ctx.createGain();o.type="sine";
-    o.frequency.setValueAtTime(150,t+.026);o.frequency.exponentialRampToValueAtTime(70,t+.12);
-    e.gain.setValueAtTime(0,t+.026);e.gain.linearRampToValueAtTime(.55*TAP,t+.032);e.gain.exponentialRampToValueAtTime(.0008,t+.14);
-    o.connect(e).connect(fxBus);o.start(t+.026);o.stop(t+.16);           // 묵직한 '툭'
+    if(!ready())return;const t=ctx.currentTime+.004;
+    [0,.045,.1,.17].forEach((d,k)=>detent(t+d,.55+k*.08));
+    detent(t+.26,1.25);nz(t+.26,{type:"lowpass",f:180,dur:.06,g:.35*SWISH});
   }
   function place(i=0){
     if(!ready())return;const t=ctx.currentTime+.002,v=.9+((i*37)%7)/35;

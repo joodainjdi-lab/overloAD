@@ -317,7 +317,7 @@ function drawRule(pos,s0){
   const v=best<WIN?smooth(WIN,WIN*.35,best):0;
   playEl.style.transform=`scaleX(${v.toFixed(3)})`;playEl.style.opacity=Math.min(1,v*1.4).toFixed(3);playEl.className="";
   // 법·제도가 바뀌는 해: 가운데 선이 다 펼쳐지는 순간 소리 + 메인 간판 깜빡
-  if(v>.85&&ruleFired!==cur){ruleFired=cur;window.SND&&SND.rule("up",LAW[cur][0]);
+  if(v>.85&&ruleFired!==cur){ruleFired=cur;if(!(performance.now()-(window.__latchT||0)<600))window.SND&&SND.rule("up",LAW[cur][0]);
     const m=curI>=0&&PHOTOS[curI].el;if(m){m.classList.remove("flick","flickw");void m.offsetWidth;m.classList.add("flick")}}
   if(v<.2&&ruleFired===cur)ruleFired=-1;
   const yr=yearAt(pos);markLists(yr);
@@ -488,9 +488,10 @@ function frame(){
    · 휠·트랙패드·키보드·터치로 그 지점을 지나가려 하면 그 자리에 고정
    · 0.45초 동안만 붙잡고, 그 뒤엔 계속 굴리면 자연스럽게 넘어감
    · 버튼·연표 클릭 같은 자동 이동은 멈추지 않음 */
-(()=>{const STOPP=[...new Set([...LAWP,...DECADES.map(d=>PHOTOS.findIndex(p=>p.d===d)).filter(i=>i>0)].filter(p=>p>0&&p<N-1).map(p=>+p.toFixed(3)))].sort((a,b)=>a-b).filter((p,i,arr)=>i===0||p-arr[i-1]>.6);   // 너무 가까운 두 지점은 하나로
+(()=>{const STOPP=[...new Set([...LAWP].filter(p=>p>0&&p<N-1).map(p=>+p.toFixed(3)))].sort((a,b)=>a-b).filter((p,i,arr)=>i===0||p-arr[i-1]>.6);   // 너무 가까운 두 지점은 하나로
   const HOLD=450;   // 멈춰 있는 시간 — 이 시간이 지나면 계속 굴리고 있어도 다음으로 넘어감
   let lastY=scrollY,lastIn=-1e9,pin=null,pinT=0,released=null;
+  let seen=false;try{seen=sessionStorage.getItem("ow-hist-seen")==="1"}catch(_){}   // 한 번 끝까지 본 뒤로는 걸리지 않음
   const stops=()=>{const base=$("#scene").offsetTop+LEAD;return STOPP.map(p=>Math.round(base+p*CFG.step*K))};
   const input=()=>{lastIn=performance.now()};
   addEventListener("wheel",e=>{if(e.ctrlKey)return;input();if(pin!==null)e.preventDefault()},{passive:false});
@@ -499,19 +500,22 @@ function frame(){
   function tick(){
     const now=performance.now();
     if(pin!==null){
-      if(Math.abs(scrollY-pin)>1)scrollTo(0,pin);
+      if(Math.abs(scrollY-pin)>1)scrollTo({top:pin,behavior:"instant"});
       if(now-pinT>HOLD){released=pin;pin=null}
     }
     lastY=scrollY;requestAnimationFrame(tick);
   }
   addEventListener("scroll",()=>{
     const y=scrollY,now=performance.now();
-    if(pin!==null){if(Math.abs(y-pin)>1)scrollTo(0,pin);lastY=pin;return}
+    if(pin!==null){if(Math.abs(y-pin)>1)scrollTo({top:pin,behavior:"instant"});lastY=pin;return}
+    if(!seen){const end=$("#scene").offsetTop+LEAD+(N-1)*CFG.step*K;if(y>=end-4){seen=true;try{sessionStorage.setItem("ow-hist-seen","1")}catch(_){}}}
+    if(seen){lastY=y;return}
     if(released!==null&&Math.abs(y-released)>40)released=null;
     if(lbOpen||document.body.classList.contains("intro-on")||now-lastIn>400){lastY=y;return}   // 사용자 입력이 아닐 때는 그냥 지나감
+    if(Math.abs(y-lastY)>CFG.step*K*3){lastY=y;return}   // 한 번에 크게 건너뛴 이동(복귀·버튼)은 무시
     const st=stops();
     const hit=y>lastY?st.find(s=>s>lastY&&s<=y&&s!==released):y<lastY?[...st].reverse().find(s=>s<lastY&&s>=y&&s!==released):undefined;
-    if(hit!==undefined){pin=hit;pinT=now;scrollTo(0,hit);window.SND&&SND.latch&&SND.latch()}   // 걸릴 때 '철컥'
+    if(hit!==undefined){pin=hit;pinT=now;scrollTo({top:hit,behavior:"instant"});window.__latchT=performance.now();window.SND&&SND.latch&&SND.latch()}   // 걸릴 때 '철컥'
     lastY=scrollY;
   },{passive:true});
   requestAnimationFrame(tick);
