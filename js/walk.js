@@ -320,7 +320,7 @@ function render(o){
   const sub=(label,k)=>{const [b,a]=o[k]; return `<div class="sub-row"><div class="top"><span class="name">${label}</span><b class="pc">${fmtRate(b,a)}</b></div><div class="ba">${BA(b,a)}</div>${track(b,a,MAX.e)}</div>`;};
   $('#bars').innerHTML=`<div class="hd"><span>유형별 광고물</span><span>○ 개선 전 ● 현재</span></div>`+
     `<div class="bar-row r-sign"><div class="top"><span class="name">간판</span>${val(...o.s)}</div>${track(...o.s,MAX.s)}</div>`+
-    `<div class="bar-row r-win grp${openE?' open':''}"><div class="top"><button class="name tg" id="tgE" aria-expanded="${openE}">기타 광고물<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3.5 5.5L7 9l3.5-3.5"/></svg></button>${val(...o.e)}</div>${track(...o.e,MAX.e)}
+    `<div class="bar-row r-win grp${openE?' open':''}"><div class="top"><button class="name tg" id="tgE" aria-expanded="${openE}">기타 광고물<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3.5 6l4.5 4.5L12.5 6"/></svg></button>${val(...o.e)}</div>${track(...o.e,MAX.e)}
      <div class="fold"><div class="wrap"><div class="subs">${sub('창문이용 광고물','w')}${sub('입간판 배너 현수막','t')}</div></div></div></div>`;
   $('#tgE').addEventListener('click',e=>{openE=!openE; $('#bars .grp').classList.toggle('open',openE); e.currentTarget.setAttribute('aria-expanded',openE); if(openE) setD(false);});
   $('#psum .st').innerHTML=$('#stats').innerHTML;   // 세부 숫자는 접힌 영역 안으로

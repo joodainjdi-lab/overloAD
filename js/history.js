@@ -70,9 +70,9 @@ const PHOTOS = [
  [83,1400,1049,"2010s","‘Cyber Cafe’ 네온"],
  [84,1167,1400,"2020s","정비된 건물 간판"],
  [85,1400,1328,"2020s","정비된 유리 파사드"],
- [88,1400,505,"2020s","채널 간판","","채널 간판부터 브랜드 파사드까지, 영어 간판이 늘어났어요"],
- [89,1088,852,"2020s","팝업스토어 간판","","채널 간판부터 브랜드 파사드까지, 영어 간판이 늘어났어요"],
- [90,1400,980,"2020s","브랜드 파사드","","채널 간판부터 브랜드 파사드까지, 영어 간판이 늘어났어요"],
+ [88,1400,505,"2020s","채널 간판"],
+ [89,1088,852,"2020s","팝업스토어 간판"],
+ [90,1400,980,"2020s","브랜드 파사드"],
  [91,1400,721,"2020s","밤의 LED 간판"],
  [93,1400,1051,"2020s","다층 상가 판류형 간판"],
  [94,1400,622,"2020s","대형 3D 전광판"],
@@ -113,7 +113,7 @@ const EVENTS = [   // 근거를 확인한 항목만 (출처는 README 참고)
 const EXP=[[1876,"개항"],[1908,"상표법·상호 독점권"],[1910,"네온사인 공개(파리)"],[1910,"대형 과시 간판"],[1928,"경성에 네온 등장"],
  [1938,"형광등 상용 판매(GE)"],[1953,"함석판 간판 확산"],[1962,"T/C천·입체문자"],[1973,"네온 전면 금지"],[1982,"네온 재등장·통금 해제"],
  [1987,"유연성 원단·버스광고"],[1991,"플렉스 도입(걸프전)"],[1994,"빌딩 전광판"],[1995,"풀컬러 LED 전광판"],[1998,"폴리카보네이트"],
- [2002,"조명동 LED 소자"],[2004,"LED 상용화"],[2006,"채널·사진 간판"],[2016,"디지털 광고물"],[2019,"을지로체 복고 서체"]];
+ [2002,"조명동 LED 소자"],[2004,"LED 상용화"],[2006,"채널·사진 간판"],[2016,"디지털 광고물"],[2019,"을지로체 복고 서체"],[2020,"영어 간판 증가","2020s"]];
 const LAW=[[1913,"도로취체규정"],[1938,"도로취체규정 전부개정"],[1962,"광고물등단속법 제정","광고물의 표시 장소를 막고, 형상·면적·색채를 제한할 수 있게 돼요."],
  [1963,"전단 규제 추가","전단도 광고물에 포함돼요."],[1973,"간판 한글 포함 시행규칙","시행규칙으로 간판 문자에 한글을 반드시 넣게 해요."],
  [1980,"광고물등관리법 개칭","법 이름이 ‘단속’에서 ‘관리’로 바뀌어요."],[1990,"옥외광고물등관리법 전부 개정","광고물을 달려면 허가를 받거나 신고해야 해요(1991년 시행)."],
@@ -243,7 +243,7 @@ function setActive(p){
 }
 // 그 연대의 표현(왼쪽)·법·제도(오른쪽) 목록 — 지나온 해는 밝게, 가장 최근 항목은 가장 또렷하게
 const inDec=(d,y)=>{const [a,b]=RANGE[d];return y>=a&&y<=b};
-const li=(r,law)=>`<li data-y="${r[0]}"><b>${r[0]}</b><span>${r[1]}</span>${law&&r[2]?`<em class="ds">${r[2]}</em>`:""}</li>`;
+const li=(r,law)=>`<li data-y="${r[0]}"><b>${!law&&r[2]?r[2]:r[0]}</b><span>${r[1]}</span>${law&&r[2]?`<em class="ds">${r[2]}</em>`:""}</li>`;
 let listYr=null;
 function renderLists(d){
   const ex=EXP.filter(r=>inDec(d,r[0])),lw=LAW.filter(r=>inDec(d,r[0]));
@@ -307,7 +307,7 @@ const yearAt=pos=>{const i=Math.floor(pos),a=PHOTOS[i].year,b=PHOTOS[Math.min(i+
 const TL0=1870,TL1=2030,tx_=y=>((y-TL0)/(TL1-TL0)*100).toFixed(2)+"%";
 const tlEl=document.createElement("nav");tlEl.id="tl";tlEl.setAttribute("aria-label","연표 — 누르면 그 해로");
 tlEl.innerHTML=`<div class="ax"></div>`+[1900,1910,1920,1930,1940,1950,1960,1970,1980,1990,2000,2010,2020].map(y=>`<span class="yl" style="left:${tx_(y)}">${y}</span>`).join("")+
-  EXP.map(r=>`<button class="tk up" style="left:${tx_(r[0])}" data-y="${r[0]}" aria-label="${r[0]} ${r[1]}"><span>${r[0]} ${r[1]}</span></button>`).join("")+
+  EXP.map(r=>`<button class="tk up" style="left:${tx_(r[0])}" data-y="${r[0]}" aria-label="${r[2]||r[0]} ${r[1]}"><span>${r[2]||r[0]} ${r[1]}</span></button>`).join("")+
   LAW.map(r=>`<button class="tk dn" style="left:${tx_(r[0])}" data-y="${r[0]}" aria-label="${r[0]} ${r[1]}"><span>${r[0]} ${r[1]}</span></button>`).join("")+`<i class="me"></i>`;
 document.body.appendChild(tlEl);
 const tlMe=tlEl.querySelector(".me"),tlTk=[...tlEl.querySelectorAll(".tk")];
@@ -484,22 +484,41 @@ function frame(){
   view.style.cursor=over?"grab":(hovI>=0?"pointer":"");
   if(moving)req();
 }
-/* 스크롤 브레이크 — 법·제도 선이 펼쳐지는 해, 연대가 바뀌는 곳에서 잠깐 멈춤 (휠·트랙패드) */
-(()=>{const STOPP=[...new Set([...LAWP,...DECADES.map(d=>PHOTOS.findIndex(p=>p.d===d)).filter(i=>i>0)].filter(p=>p>0&&p<N-1).map(p=>+p.toFixed(3)))].sort((a,b)=>a-b);
-  let lockUntil=0;
-  addEventListener("wheel",e=>{
-    if(lbOpen||e.ctrlKey||document.body.classList.contains("intro-on"))return;
-    const now=performance.now();if(now<lockUntil){e.preventDefault();return}
-    const dy=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?innerHeight:1);if(Math.abs(dy)<1)return;
-    const base=$("#scene").offsetTop+LEAD,st=STOPP.map(p=>base+p*CFG.step*K),y=scrollY,t=y+dy;
-    const hit=dy>0?st.find(s=>s>y+3&&s<=t+1):[...st].reverse().find(s=>s<y-3&&s>=t-1);
-    if(hit===undefined)return;
-    e.preventDefault();scrollTo({top:Math.round(hit),behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
-    lockUntil=now+700;   // 0.7초 동안 멈춰 선과 연표 변화를 보여줌
-  },{passive:false});
+/* 스크롤 브레이크 — 법·제도 선이 펼쳐지는 해, 연대가 바뀌는 곳에서 확실히 멈춤
+   · 휠·트랙패드·키보드·터치로 그 지점을 지나가려 하면 그 자리에 고정
+   · 최소 0.8초 + 손을 뗄 때까지(입력이 0.25초 멈출 때까지) 붙잡아 관성으로 미끄러지지 않게
+   · 버튼·연표 클릭 같은 자동 이동은 멈추지 않음 */
+(()=>{const STOPP=[...new Set([...LAWP,...DECADES.map(d=>PHOTOS.findIndex(p=>p.d===d)).filter(i=>i>0)].filter(p=>p>0&&p<N-1).map(p=>+p.toFixed(3)))].sort((a,b)=>a-b).filter((p,i,arr)=>i===0||p-arr[i-1]>.6);   // 너무 가까운 두 지점은 하나로
+  const HOLD=800,IDLE=250;
+  let lastY=scrollY,lastIn=-1e9,pin=null,pinT=0,released=null;
+  const stops=()=>{const base=$("#scene").offsetTop+LEAD;return STOPP.map(p=>Math.round(base+p*CFG.step*K))};
+  const input=()=>{lastIn=performance.now()};
+  addEventListener("wheel",e=>{if(e.ctrlKey)return;input();if(pin!==null)e.preventDefault()},{passive:false});
+  addEventListener("touchmove",e=>{input();if(pin!==null&&e.cancelable)e.preventDefault()},{passive:false});
+  addEventListener("keydown",e=>{if(/^(ArrowDown|ArrowUp|PageDown|PageUp|Space| )$/.test(e.code)||e.key===" "){input();if(pin!==null)e.preventDefault()}});
+  function tick(){
+    const now=performance.now();
+    if(pin!==null){
+      if(Math.abs(scrollY-pin)>1)scrollTo(0,pin);
+      if(now-pinT>HOLD&&now-lastIn>IDLE){released=pin;pin=null}
+    }
+    lastY=scrollY;requestAnimationFrame(tick);
+  }
+  addEventListener("scroll",()=>{
+    const y=scrollY,now=performance.now();
+    if(pin!==null){if(Math.abs(y-pin)>1)scrollTo(0,pin);lastY=pin;return}
+    if(released!==null&&Math.abs(y-released)>40)released=null;
+    if(lbOpen||document.body.classList.contains("intro-on")||now-lastIn>400){lastY=y;return}   // 사용자 입력이 아닐 때는 그냥 지나감
+    const st=stops();
+    const hit=y>lastY?st.find(s=>s>lastY&&s<=y&&s!==released):y<lastY?[...st].reverse().find(s=>s<lastY&&s>=y&&s!==released):undefined;
+    if(hit!==undefined){pin=hit;pinT=now;scrollTo(0,hit)}
+    lastY=scrollY;
+  },{passive:true});
+  requestAnimationFrame(tick);
+  window.__brakeOff=()=>{pin=null;lastIn=-1e9};   // 연표·버튼으로 이동할 때는 붙잡지 않음
 })();
-function goPos(p){scrollTo({top:$("#scene").offsetTop+LEAD+p*CFG.step*K,behavior:"smooth"})}
-function goTo(i){scrollTo({top:$("#scene").offsetTop+LEAD+i*CFG.step*K,behavior:"smooth"})}
+function goPos(p){window.__brakeOff&&__brakeOff();scrollTo({top:$("#scene").offsetTop+LEAD+p*CFG.step*K,behavior:"smooth"})}
+function goTo(i){window.__brakeOff&&__brakeOff();scrollTo({top:$("#scene").offsetTop+LEAD+i*CFG.step*K,behavior:"smooth"})}
 function req(){if(!ticking){ticking=true;requestAnimationFrame(frame)}}
 addEventListener("scroll",req,{passive:true});
 addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY;req()},{passive:true});

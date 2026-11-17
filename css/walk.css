@@ -436,3 +436,8 @@ body:has(.drawer.open) .read{opacity:0;pointer-events:none}
 #drawer .psum .rate{font-size:44px}
 #drawer .psum .cnt{font-size:22px}
 #drawer .photo{height:380px}
+/* 기타 광고물 ⌄ — 위 세부 정보 ⌄와 같은 세로줄(오른쪽 끝)에, 같은 모양으로 */
+#drawer .grp .top{position:relative;padding-right:40px}
+#drawer .grp .tg{position:static}
+#drawer .grp .tg svg{position:absolute;right:7px;top:50%;margin-top:-8px;color:var(--ink-3);transition:transform .3s var(--ease),color .2s}
+#drawer .grp .tg:hover svg{color:var(--ink)}
