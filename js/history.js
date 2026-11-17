@@ -486,10 +486,10 @@ function frame(){
 }
 /* 스크롤 브레이크 — 법·제도 선이 펼쳐지는 해, 연대가 바뀌는 곳에서 확실히 멈춤
    · 휠·트랙패드·키보드·터치로 그 지점을 지나가려 하면 그 자리에 고정
-   · 최소 0.8초 + 손을 뗄 때까지(입력이 0.25초 멈출 때까지) 붙잡아 관성으로 미끄러지지 않게
+   · 0.45초 동안만 붙잡고, 그 뒤엔 계속 굴리면 자연스럽게 넘어감
    · 버튼·연표 클릭 같은 자동 이동은 멈추지 않음 */
 (()=>{const STOPP=[...new Set([...LAWP,...DECADES.map(d=>PHOTOS.findIndex(p=>p.d===d)).filter(i=>i>0)].filter(p=>p>0&&p<N-1).map(p=>+p.toFixed(3)))].sort((a,b)=>a-b).filter((p,i,arr)=>i===0||p-arr[i-1]>.6);   // 너무 가까운 두 지점은 하나로
-  const HOLD=800,IDLE=250;
+  const HOLD=450;   // 멈춰 있는 시간 — 이 시간이 지나면 계속 굴리고 있어도 다음으로 넘어감
   let lastY=scrollY,lastIn=-1e9,pin=null,pinT=0,released=null;
   const stops=()=>{const base=$("#scene").offsetTop+LEAD;return STOPP.map(p=>Math.round(base+p*CFG.step*K))};
   const input=()=>{lastIn=performance.now()};
@@ -500,7 +500,7 @@ function frame(){
     const now=performance.now();
     if(pin!==null){
       if(Math.abs(scrollY-pin)>1)scrollTo(0,pin);
-      if(now-pinT>HOLD&&now-lastIn>IDLE){released=pin;pin=null}
+      if(now-pinT>HOLD){released=pin;pin=null}
     }
     lastY=scrollY;requestAnimationFrame(tick);
   }
