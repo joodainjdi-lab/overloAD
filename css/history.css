@@ -378,3 +378,6 @@ body.intro-on{overflow:hidden}
 /* 연표 색 맞춤: 표현(왼쪽) 연도 = 자주, 법·제도(오른쪽) 연도 = 그린 — 아래 미니 연표 점 색과 같게 */
 #keyTxt li b{color:#C25AA6}
 #rule li b{color:var(--lime)}
+/* 사진 아래 한 줄 메모(예: 영어 간판 증가, 2007 강남구 개선사업 시작) */
+#cap .nt{display:none;margin-top:calc(6px*var(--k));font-size:calc(14px*var(--k));font-weight:500;color:var(--lime);line-height:1.5;word-break:keep-all}
+#cap.has-nt .nt{display:block}

@@ -52,32 +52,32 @@ const PHOTOS = [
  [65,354,1400,"1990s","나무 세로 간판"],
  [66,1400,936,"1990s","‘근대화 연쇄점’"],
  [67,1072,716,"1990s","‘동서가구’ 상점"],
- [68,1093,1400,"2000s","옥상 시계·광고탑"],
- [69,1035,1400,"2000s","밤의 세로 네온"],
- [70,1400,980,"2000s","빌딩 저층 간판"],
- [71,1400,928,"2000s","영화·노래방 간판"],
- [72,973,1400,"2010s","겹겹이 매달린 돌출 간판"],
- [73,1400,742,"2010s","메뉴 간판"],
- [74,1400,786,"2010s","횟집 돌출 간판 거리"],
- [75,1400,754,"2020s","한옥 카페의 절제된 간판"],
- [76,788,1400,"2020s","‘노래방’ 일러스트 간판"],
- [77,1400,928,"2020s","벽면을 채운 상가 간판"],
- [78,1400,1050,"2020s","한옥 아래 원색 간판"],
- [79,1400,1050,"2020s","도로변 빌딩 간판"],
- [80,1256,1400,"2020s","빼곡한 빌딩 파사드"],
- [81,660,1400,"2020s","밤의 대형 입체 간판"],
- [82,1400,931,"2020s","저층 상가 간판"],
- [83,1400,1049,"2020s","‘Cyber Cafe’ 네온"],
+ [68,1093,1400,"1990s","옥상 시계·광고탑"],
+ [69,1035,1400,"1990s","밤의 세로 네온"],
+ [70,1400,980,"1990s","빌딩 저층 간판"],
+ [71,1400,928,"1990s","영화·노래방 간판"],
+ [72,973,1400,"2000s","겹겹이 매달린 돌출 간판"],
+ [73,1400,742,"2000s","메뉴 간판"],
+ [74,1400,786,"2000s","횟집 돌출 간판 거리","","2007 강남구 간판개선사업 시작 사례",2007],
+ [75,1400,754,"2000s","한옥 카페의 절제된 간판"],
+ [76,788,1400,"2000s","‘노래방’ 일러스트 간판"],
+ [77,1400,928,"2000s","벽면을 채운 상가 간판"],
+ [78,1400,1050,"2000s","한옥 아래 원색 간판"],
+ [79,1400,1050,"2000s","도로변 빌딩 간판"],
+ [80,1256,1400,"2000s","빼곡한 빌딩 파사드"],
+ [81,660,1400,"2010s","밤의 대형 입체 간판"],
+ [82,1400,931,"2010s","저층 상가 간판"],
+ [83,1400,1049,"2010s","‘Cyber Cafe’ 네온"],
  [84,1167,1400,"2020s","정비된 건물 간판"],
  [85,1400,1328,"2020s","정비된 유리 파사드"],
- [88,1400,505,"2020s","채널 간판"],
- [89,1088,852,"2020s","팝업스토어 간판"],
- [90,1400,980,"2020s","브랜드 파사드"],
+ [88,1400,505,"2020s","채널 간판","","채널 간판부터 브랜드 파사드까지, 영어 간판이 늘어났어요"],
+ [89,1088,852,"2020s","팝업스토어 간판","","채널 간판부터 브랜드 파사드까지, 영어 간판이 늘어났어요"],
+ [90,1400,980,"2020s","브랜드 파사드","","채널 간판부터 브랜드 파사드까지, 영어 간판이 늘어났어요"],
  [91,1400,721,"2020s","밤의 LED 간판"],
  [93,1400,1051,"2020s","다층 상가 판류형 간판"],
  [94,1400,622,"2020s","대형 3D 전광판"],
  [95,1400,1050,"2020s","정비된 오피스·상가"],
-].map(([n,w,h,d,t,c])=>({n,w,h,ar:w/h,d,t,c:c||""}));
+].map(([n,w,h,d,t,c,nt,y])=>({n,w,h,ar:w/h,d,t,c:c||"",nt:nt||"",y0:y}));   // nt: 사진 아래 한 줄 메모, y: 이 사진의 연도(있으면 그 해에 맞춰 배치)
 
 
 const EVENTS = [   // 근거를 확인한 항목만 (출처는 README 참고)
@@ -161,7 +161,10 @@ const rnd=i=>{const x=Math.sin(i*127.1+311.7)*43758.5453;return x-Math.floor(x)}
 const N=PHOTOS.length;
 const pad=n=>String(n).padStart(2,"0");
 (()=>{const g={};PHOTOS.forEach(p=>(g[p.d]=g[p.d]||[]).push(p));
-  for(const d in g){const [a,b]=RANGE[d];g[d].forEach((p,k,arr)=>p.year=a+(k+.5)/arr.length*(b-a+1))}})();
+  for(const d in g){const [a,b]=RANGE[d],arr=g[d],L=arr.length;
+    // 연도가 정해진 사진(y)은 그 해에, 나머지는 그 사이에 고르게
+    const anc=[[-.5,a],...arr.map((p,k)=>p.y0?[k,p.y0]:null).filter(Boolean),[L-.5,b+1]];
+    arr.forEach((p,k)=>{if(p.y0){p.year=p.y0;return}let m=0;while(anc[m+1][0]<k)m++;const[k0,y0]=anc[m],[k1,y1]=anc[m+1];p.year=y0+(k-k0)/(k1-k0)*(y1-y0)});}})();
 
 /* ════════════ 카드 ════════════ */
 const view=$("#view");
@@ -376,7 +379,7 @@ let capI=-1;
 function setCap(i){
   if(i===capI)return;capI=i;const p=PHOTOS[i],c=$("#cap");setEra(DEC_ERA[p.d]);
   c.classList.add("swap");
-  setTimeout(()=>{c.querySelector(".t1").textContent=`${p.t}`;
+  setTimeout(()=>{c.querySelector(".t1").textContent=`${p.t}`;c.querySelector(".nt").textContent=p.nt;c.classList.toggle("has-nt",!!p.nt);
     c.classList.remove("swap")},180);
 }
 
@@ -481,6 +484,20 @@ function frame(){
   view.style.cursor=over?"grab":(hovI>=0?"pointer":"");
   if(moving)req();
 }
+/* 스크롤 브레이크 — 법·제도 선이 펼쳐지는 해, 연대가 바뀌는 곳에서 잠깐 멈춤 (휠·트랙패드) */
+(()=>{const STOPP=[...new Set([...LAWP,...DECADES.map(d=>PHOTOS.findIndex(p=>p.d===d)).filter(i=>i>0)].filter(p=>p>0&&p<N-1).map(p=>+p.toFixed(3)))].sort((a,b)=>a-b);
+  let lockUntil=0;
+  addEventListener("wheel",e=>{
+    if(lbOpen||e.ctrlKey||document.body.classList.contains("intro-on"))return;
+    const now=performance.now();if(now<lockUntil){e.preventDefault();return}
+    const dy=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?innerHeight:1);if(Math.abs(dy)<1)return;
+    const base=$("#scene").offsetTop+LEAD,st=STOPP.map(p=>base+p*CFG.step*K),y=scrollY,t=y+dy;
+    const hit=dy>0?st.find(s=>s>y+3&&s<=t+1):[...st].reverse().find(s=>s<y-3&&s>=t-1);
+    if(hit===undefined)return;
+    e.preventDefault();scrollTo({top:Math.round(hit),behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+    lockUntil=now+700;   // 0.7초 동안 멈춰 선과 연표 변화를 보여줌
+  },{passive:false});
+})();
 function goPos(p){scrollTo({top:$("#scene").offsetTop+LEAD+p*CFG.step*K,behavior:"smooth"})}
 function goTo(i){scrollTo({top:$("#scene").offsetTop+LEAD+i*CFG.step*K,behavior:"smooth"})}
 function req(){if(!ticking){ticking=true;requestAnimationFrame(frame)}}
