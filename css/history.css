@@ -410,3 +410,7 @@ html.snap-on #purpose{scroll-snap-align:start}
 #keyTxt.idle .lh::before,#rule.idle .lh::before{opacity:.35}
 #keyTxt li.now span,#rule li.now span{color:#fff;font-weight:600}
 #rule li .ds{color:#bdbdbd}
+/* v102: 지금 항목이 아닌 변화는 더 흐리게 */
+#keyTxt li,#rule li{opacity:.2}
+#keyTxt li.past,#rule li.past{opacity:.35}
+#keyTxt li.now,#rule li.now{opacity:1}
