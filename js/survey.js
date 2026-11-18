@@ -60,18 +60,19 @@ addEventListener('resize',fit); fit(); draw();
   const seen=new Set();   // 이 페이지를 열 때마다 처음부터 — 4장을 다 봐야 다음 버튼이 나타남
   let cur=0, first=true;
   function render(){
-    cards.forEach((c,i)=>{ let d=(i-cur+N)%N; if(d===N-1) d=-1;            // -1 왼쪽, 0 가운데, 1 오른쪽, 2 뒤(숨김)
-      c.dataset.pos=d===0?'c':d===1?'r':d===-1?'l':'b';
+    cards.forEach((c,i)=>{ const d=i-cur;            // 1 ↔ 2 ↔ 3 ↔ 4 — 처음과 끝이 있음 (돌아가지 않음)
+      c.dataset.pos=d===0?'c':d===1?'r':d===-1?'l':d<0?'bl':'br';
       c.setAttribute('aria-hidden',d===0?'false':'true'); });
     seen.add(cur);
     dots.forEach((d,i)=>{ d.classList.toggle('on',i===cur); d.classList.toggle('seen',seen.has(i)); if(i===cur) d.setAttribute('aria-current','step'); else d.removeAttribute('aria-current'); });
     if(!first) live.textContent=`${cur+1} / ${N} — ${title(cards[cur])}`;   // 화면 읽기: 넘길 때 제목 읽어 줌
     first=false;
+    [['#pcPrev',cur===0],['#pcNext',cur===N-1]].forEach(([q,end])=>{const b=$(q);b.classList.toggle('end',end);b.setAttribute('aria-disabled',end);});
     const done=seen.size===N;
     go.classList.toggle('show',done); btn.tabIndex=done?0:-1; btn.setAttribute('aria-hidden',!done);
   }
-  const move=n=>{   // 마지막 카드에서 → 이면 첫 카드로 (다음 단계는 아래 '조사 결과 보기' 버튼으로만)
-    cur=(cur+n+N)%N; render(); };
+  const move=n=>{   // 첫 카드에서 ←, 마지막 카드에서 → 는 멈춤 (다음 단계는 아래 '조사 결과 보기' 버튼으로만)
+    const t=Math.max(0,Math.min(N-1,cur+n)); if(t===cur) return; cur=t; render(); };
   const goTo=i=>{ cur=i; render(); };
   const hit=b=>{b.classList.add('hit');clearTimeout(b._h);b._h=setTimeout(()=>b.classList.remove('hit'),220);};   // 누른 순간만 라임
   $('#pcPrev').addEventListener('click',e=>{hit(e.currentTarget);move(-1);});
