@@ -342,7 +342,8 @@ function markLists(yr){
   const Y=Math.floor(yr);if(Y===listYr)return;listYr=Y;
   ["#keyTxt","#rule"].forEach(sel=>{const L=[...document.querySelectorAll(sel+" li[data-y]")];let last=-1;
     L.forEach((e,k)=>{const on=+e.dataset.y<=Y;e.classList.toggle("past",on);if(on)last=k});
-    L.forEach((e,k)=>e.classList.toggle("now",k===last));});
+    L.forEach((e,k)=>e.classList.toggle("now",k===last));
+    $(sel).classList.toggle("idle",last<0);});   // 지금 보이는 변화가 없으면 제목도 흐리게
 }
 
 /* ════════════ 간판개선사업·법(오른쪽) + 화면을 가로지르는 변화선 ════════════

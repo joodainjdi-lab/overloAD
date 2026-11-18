@@ -404,3 +404,9 @@ html.snap-on #purpose{scroll-snap-align:start}
 #keyTxt li.now,#rule li.now{font-size:calc(23px*var(--k))}
 #keyTxt li.now b,#rule li.now b{font-size:calc(38px*var(--k))}
 #keyTxt .lh,#rule .lh{font-size:calc(19px*var(--k))}
+/* v100: 변화가 없을 때 제목 흐리게 + 지금 항목(흰색)과 부가 설명(어둡게) 대비 */
+#keyTxt .lh,#rule .lh{transition:color .4s,opacity .4s}
+#keyTxt.idle .lh,#rule.idle .lh{color:#5a5a5a}
+#keyTxt.idle .lh::before,#rule.idle .lh::before{opacity:.35}
+#keyTxt li.now span,#rule li.now span{color:#fff;font-weight:600}
+#rule li .ds{color:#626262}
