@@ -442,3 +442,9 @@ body:has(.drawer.open) .read{opacity:0;pointer-events:none}
 #drawer .grp .tg svg{position:absolute;right:7px;top:50%;margin-top:-8px;color:var(--ink-3);transition:transform .3s var(--ease),color .2s}
 #drawer .grp .tg:hover svg{color:var(--ink)}
 #drawer .pw h2{font-weight:500}
+/* v106: 맨 위 줄(뒤로·제목·보기 전환)은 비워 두고, 팝업과 닫기(X)는 그 아래에서 */
+.drawer{top:150px;height:930px;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin}
+.dh{top:16px}
+.drawer>.x{top:28px;right:63px}
+.drawer .panel{top:100px;padding-bottom:40px}
+.drawer{box-shadow:-40px 40px 60px -20px rgba(0,0,0,.5)}

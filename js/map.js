@@ -180,14 +180,23 @@ function post(){ if(!items[sel]) return; try{ if(parent!==window) parent.postMes
 /* 거리로 보기 → 한눈에 비교: 선택을 풀고 '가게당 광고물' 기준으로 90칸이 1위부터 다시 켜짐 */
 addEventListener('message',e=>{ const m=e.data; if(!m||m.ov!=='replay') return;
   setFocus(false); items.forEach(o=>o.el.classList.remove('in','seq')); grid.style.visibility='hidden';
-  setTimeout(()=>{ grid.style.visibility=''; applyFilter(DEF); },220); });
+  clearTimeout(window.__selT);
+  setTimeout(()=>{ grid.style.visibility=''; applyFilter(DEF);
+    const w=m.sel; if(!w||!w.d) return;   // 거리로 보기에서 고른 건물: 90칸이 다 켜진 뒤 강조
+    window.__selT=setTimeout(()=>{ const i=items.findIndex(o=>o.d===w.d&&o.b===(w.b||'B01')); if(i<0) return;
+      touched=true; select(i,false);
+      if(w.b&&w.focus){ setFocus(true); items[i].el.focus({preventScroll:true}); hideTip(); }
+      else { const r=[...document.querySelectorAll('#rows div')].find(x=>x.dataset.d===w.d); if(r){r.classList.remove('flash'); void r.offsetWidth; r.classList.add('flash');} }
+    },items.length*16+650);
+  },220); });
 addEventListener('message',e=>{ const m=e.data; if(!m||m.ov!=='apply') return;
   const i=items.findIndex(o=>o.d===m.d&&o.b===(m.b||'B01')); if(i<0) return;
   touched=true; select(i,false); setFocus(!!(m.b&&m.focus));
   if(!m.b){ const r=[...document.querySelectorAll('#rows div')].find(x=>x.dataset.d===m.d); if(r){r.classList.remove('flash'); void r.offsetWidth; r.classList.add('flash');} }
   else items[i].el.focus({preventScroll:true});
 });
-function setFocus(v){focusOn=v; if(v) touched=true; setTimeout(post); grid.classList.toggle('focus',v); if(sel>=0){const c=items[sel].el.style.getPropertyValue('--c'); $('#art').style.setProperty('--sel', c?`color-mix(in srgb, ${c} 70%, #fff)`:'var(--ink)');}
+function setFocus(v){focusOn=v; if(v) touched=true; setTimeout(post); grid.classList.toggle('focus',v);
+  $('#panel').classList.toggle('open',v); $('#panel').setAttribute('aria-hidden',!v); $('#art').classList.toggle('pop',v);   // 건물을 고르면 오른쪽 팝업이 열리고 비트맵은 왼쪽으로 비켜 줌 if(sel>=0){const c=items[sel].el.style.getPropertyValue('--c'); $('#art').style.setProperty('--sel', c?`color-mix(in srgb, ${c} 70%, #fff)`:'var(--ink)');}
   document.querySelectorAll('#rows div').forEach(r=>{r.classList.toggle('on',v&&r.dataset.d===items[sel].d); r.classList.toggle('dim',v&&r.dataset.d!==items[sel].d);});}
 $('#art').addEventListener('click',e=>{ if(!e.target.closest('.panel,.filter,.top5')){ setFocus(false);} if(!e.target.closest('.filter')) filterEl.classList.remove('open'); if(!e.target.closest('.top5')) setT5(false); });
 document.addEventListener('keydown',e=>{
@@ -227,7 +236,10 @@ function dots(o){
 
 /* panel render */
 let openE=false;
-{ const pn=$('#panel'); pn.insertBefore($('#who'),$('#photo')); }   // 거리로 보기처럼 건물 코드를 사진 위로
+{ const pn=$('#panel'); pn.insertBefore($('#who'),$('#photo')); }
+{ const pn=$('#panel'), x=document.createElement('button'); x.className='x'; x.setAttribute('aria-label','닫기'); x.title='닫기 (Esc)';
+  x.innerHTML='<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3l8 8M11 3l-8 8"/></svg>';
+  x.addEventListener('click',e=>{e.stopPropagation(); setFocus(false);}); pn.prepend(x); pn.setAttribute('aria-hidden','true'); }   // 거리로 보기처럼 건물 코드를 사진 위로
 function render(o){
   $('#imgB').src=o.pb; $('#imgA').src=o.pa;
   $('#imgB').alt=`${o.name} 개선 전 로드뷰`; $('#imgA').alt=`${o.name} 현재 로드뷰`;

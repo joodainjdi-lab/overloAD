@@ -343,3 +343,17 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 .panel .sum{border-bottom:0;padding-bottom:0}
 .panel .stats{padding-top:14px;border-top:1px solid var(--line-2)}
 .panel .who h2,.who h2{font-weight:500}
+/* v106: 오른쪽 정보 → 거리로 보기와 같은 팝업, 비트맵은 가운데로, 보는 기준·TOP 5는 오른쪽 아래로 */
+.divider{display:none}
+.axb,.cols,.rows,.vline,.grid,.legend{transform:translateX(var(--gx,330px));transition:transform .55s cubic-bezier(.2,.8,.2,1)}
+#art.pop{--gx:150px}
+.filter{left:auto;right:130px;top:160px}
+.top5{left:auto!important;right:130px;top:240px!important;bottom:auto!important;width:400px}
+.t5-list{max-height:600px;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin}
+#panel{left:1225px;top:150px;width:695px;height:930px;box-sizing:border-box;padding:100px 118px 40px 63px;background:var(--bg);border-left:1px solid var(--line-2);
+  box-shadow:-40px 40px 60px -20px rgba(0,0,0,.5);z-index:40;overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;
+  transform:translateX(100%);visibility:hidden;transition:transform .5s cubic-bezier(.2,.8,.2,1),visibility 0s linear .5s}
+#panel.open{transform:none;visibility:visible;transition:transform .5s cubic-bezier(.2,.8,.2,1),visibility 0s}
+#panel>.x{position:absolute;top:28px;right:63px;z-index:2;width:28px;height:28px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;color:var(--ink-2);background:none;cursor:pointer;transition:border-color .2s,color .2s}
+#panel>.x:hover{border-color:var(--ink-3);color:var(--ink)}
+@media (prefers-reduced-motion:reduce){.axb,.cols,.rows,.vline,.grid,.legend,#panel{transition:none}}

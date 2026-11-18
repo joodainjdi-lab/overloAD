@@ -14,7 +14,7 @@ let curV='walk';
 function link(to){ const from=to==='walk'?'map':'walk', m=ST[from]; if(!m||!m.user) return;
   try{ V[to].contentWindow.postMessage({ov:'apply',d:m.d,b:m.b,focus:m.focus},'*'); }catch(e){} }
 box.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ if(b.dataset.v===curV) return;
-  if(b.dataset.v==='map'){ try{ V.map.contentWindow.postMessage({ov:'replay'},'*'); }catch(e){} }   // 한눈에 비교: 90칸이 1위부터 다시 켜짐
+  if(b.dataset.v==='map'){ const w=ST.walk; try{ V.map.contentWindow.postMessage({ov:'replay',sel:w&&w.user?{d:w.d,b:w.b,focus:w.focus}:null},'*'); }catch(e){} }   // 90칸이 1위부터 다시 켜진 뒤, 거리로 보기에서 고른 건물을 강조   // 한눈에 비교: 90칸이 1위부터 다시 켜짐
   else link(b.dataset.v);
   show(b.dataset.v,true); }));
 addEventListener('hashchange',()=>show(location.hash.slice(1)));
