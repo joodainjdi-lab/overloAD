@@ -409,4 +409,4 @@ html.snap-on #purpose{scroll-snap-align:start}
 #keyTxt.idle .lh,#rule.idle .lh{color:#5a5a5a}
 #keyTxt.idle .lh::before,#rule.idle .lh::before{opacity:.35}
 #keyTxt li.now span,#rule li.now span{color:#fff;font-weight:600}
-#rule li .ds{color:#626262}
+#rule li .ds{color:#bdbdbd}
