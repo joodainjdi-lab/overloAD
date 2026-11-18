@@ -110,8 +110,9 @@ function applyFilter(f){
   leg.querySelector('.bar').innerHTML=STEPS.slice().reverse().map((s,i)=>`<i style="background:${s.c}" title="${10-i}단계 · ${(9-i)*9+1}–${(10-i)*9}위"></i>`).join('');
   grid.classList.add('ranked');
   if(seqReady&&window.SND&&SND.light){ const t=[]; items.forEach(o=>{const k=o.step-1; t[k]=Math.min(t[k]??1e9,o.seq*16);}); SND.light(t.filter(v=>v<1e9)); }   // 칸 색이 단계별로 켜질 때 소리
-  if(seqReady){ if(focusOn) setFocus(false); // 필터를 바꾸면 건물 선택(어둠 처리)을 풀고 1→90위 등장을 보여줌
-    items.forEach(o=>{o.el.classList.remove('in','seq'); void o.el.offsetWidth; o.el.classList.add('seq');}); }
+  if(seqReady){ // 보는 기준을 바꿔도 고른 건물·팝업은 그대로 — 색만 1→90위 순서로 다시 켜짐
+    items.forEach(o=>{o.el.classList.remove('in','seq'); void o.el.offsetWidth; o.el.classList.add('seq');});
+    if(focusOn) setFocus(true); }
   else if(focusOn) setFocus(true);
   seqReady=true;
   renderTop5();
