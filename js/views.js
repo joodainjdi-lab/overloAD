@@ -28,3 +28,11 @@ addEventListener('resize',fit); fit(); show(location.hash.slice(1)||'walk');
     const over=r.right>innerWidth-ZONE&&r.top<ZONE;
     if(over)v.style.marginRight=((r.right-(innerWidth-ZONE))/s)+'px';}
   addEventListener('resize',fit);fit();setTimeout(fit,300);})();
+
+/* < 이전으로: 한눈에 비교에서는 거리로 보기로, 거리로 보기에서는 구역 선택 지도로 */
+(()=>{const bk=document.querySelector('#ui .back');if(!bk)return;
+  const sync=()=>{const m=curV==='map';bk.setAttribute('aria-label',m?'이전으로 (거리로 보기)':'이전으로 (서울 9개 구역 지도)');};
+  bk.addEventListener('click',e=>{if(curV!=='map')return;e.preventDefault();e.stopPropagation();
+    link('walk');show('walk',true);sync();},true);
+  box.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>setTimeout(sync,0)));
+  addEventListener('hashchange',sync);sync();})();
