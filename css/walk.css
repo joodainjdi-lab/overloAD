@@ -441,3 +441,4 @@ body:has(.drawer.open) .read{opacity:0;pointer-events:none}
 #drawer .grp .tg{position:static}
 #drawer .grp .tg svg{position:absolute;right:7px;top:50%;margin-top:-8px;color:var(--ink-3);transition:transform .3s var(--ease),color .2s}
 #drawer .grp .tg:hover svg{color:var(--ink)}
+#drawer .pw h2{font-weight:500}

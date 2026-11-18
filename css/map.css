@@ -342,3 +342,4 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 .panel .photo{height:380px}
 .panel .sum{border-bottom:0;padding-bottom:0}
 .panel .stats{padding-top:14px;border-top:1px solid var(--line-2)}
+.panel .who h2,.who h2{font-weight:500}
