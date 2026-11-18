@@ -364,3 +364,4 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 #panel{padding:0;overflow:hidden}
 #panel>.pin{position:absolute;left:63px;right:118px;top:100px;bottom:0;overflow-y:auto;overflow-x:hidden;padding:0 0 40px;scrollbar-width:none}
 #panel>.pin::-webkit-scrollbar{display:none}
+.cell:focus-visible{outline:none}.cell:focus-visible:not(.sel){box-shadow:0 0 0 1px #fafafa}

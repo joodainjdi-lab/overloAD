@@ -186,7 +186,7 @@ addEventListener('message',e=>{ const m=e.data; if(!m||m.ov!=='replay') return;
     const w=m.sel; if(!w||!w.d) return;   // 거리로 보기에서 고른 건물: 90칸이 다 켜진 뒤 강조
     window.__selT=setTimeout(()=>{ const i=items.findIndex(o=>o.d===w.d&&o.b===(w.b||'B01')); if(i<0) return;
       touched=true; select(i,false);
-      if(w.b&&w.focus){ setFocus(true); items[i].el.focus({preventScroll:true}); hideTip(); }
+      if(w.b&&w.focus){ setFocus(true); }
       else { const r=[...document.querySelectorAll('#rows div')].find(x=>x.dataset.d===w.d); if(r){r.classList.remove('flash'); void r.offsetWidth; r.classList.add('flash');} }
     },items.length*16+650);
   },220); });
@@ -194,7 +194,7 @@ addEventListener('message',e=>{ const m=e.data; if(!m||m.ov!=='apply') return;
   const i=items.findIndex(o=>o.d===m.d&&o.b===(m.b||'B01')); if(i<0) return;
   touched=true; select(i,false); setFocus(!!(m.b&&m.focus));
   if(!m.b){ const r=[...document.querySelectorAll('#rows div')].find(x=>x.dataset.d===m.d); if(r){r.classList.remove('flash'); void r.offsetWidth; r.classList.add('flash');} }
-  else items[i].el.focus({preventScroll:true});
+
 });
 function setFocus(v){focusOn=v; if(v) touched=true; setTimeout(post); grid.classList.toggle('focus',v);
   $('#panel').classList.toggle('open',v); $('#panel').setAttribute('aria-hidden',!v); $('#art').classList.toggle('pop',v);   // 건물을 고르면 오른쪽 팝업이 열리고 비트맵은 왼쪽으로 비켜 줌 if(sel>=0){const c=items[sel].el.style.getPropertyValue('--c'); $('#art').style.setProperty('--sel', c?`color-mix(in srgb, ${c} 70%, #fff)`:'var(--ink)');}
