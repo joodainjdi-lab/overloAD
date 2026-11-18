@@ -524,3 +524,5 @@ a{color:inherit;text-decoration:none}
 .pcd .pno b{font-size:52px;font-weight:700;color:var(--lime);letter-spacing:-.02em}
 .pcd .pno span{font-size:18px;font-weight:500;color:var(--ink-3)}
 @media (prefers-reduced-motion:reduce){.pcd[data-pos="bl"],.pcd[data-pos="br"]{transform:none;opacity:0;pointer-events:none}}
+.pcd .pno b{font-size:34px;color:var(--ink)}
+.pcd .pno span{font-size:16px}

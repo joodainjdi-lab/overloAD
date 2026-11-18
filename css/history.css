@@ -398,3 +398,9 @@ html.snap-on #purpose{scroll-snap-align:start}
 #keyTxt li.none,#rule li.none{font-size:calc(17px*var(--k))}
 #key{width:calc(430px*var(--k))}
 #rule{width:calc(440px*var(--k))}
+/* v98: 지금 변화(.now)만 크게, 나머지는 작게 — 위계 */
+#keyTxt li,#rule li{font-size:calc(17px*var(--k));transition:opacity .45s,color .45s,font-size .35s}
+#keyTxt li b,#rule li b{font-size:calc(26px*var(--k));transition:font-size .35s}
+#keyTxt li.now,#rule li.now{font-size:calc(23px*var(--k))}
+#keyTxt li.now b,#rule li.now b{font-size:calc(38px*var(--k))}
+#keyTxt .lh,#rule .lh{font-size:calc(19px*var(--k))}
