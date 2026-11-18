@@ -386,3 +386,15 @@ html.snap-on{scroll-snap-type:y mandatory}
 .snapPt{position:absolute;left:0;width:1px;height:1px;pointer-events:none;scroll-snap-align:start}
 .snapPt.stop{scroll-snap-stop:always}
 html.snap-on #purpose{scroll-snap-align:start}
+/* v96: 아래 미니 연표 제거, 양쪽 목록을 더 크게·또렷하게, 가운데 선은 항상 보이게 */
+#tl{display:none!important}
+#keyTxt .lh,#rule .lh{display:flex;align-items:center;gap:calc(10px*var(--k));font-size:calc(21px*var(--k));font-weight:700;color:#fafafa;letter-spacing:0;margin-bottom:calc(20px*var(--k))}
+#keyTxt .lh::before,#rule .lh::before{content:"";flex:none;width:calc(10px*var(--k));height:calc(10px*var(--k));border-radius:50%}
+#keyTxt .lh::before{background:#C25AA6}
+#rule .lh::before{background:var(--lime)}
+#keyTxt li,#rule li{font-size:calc(22px*var(--k));grid-template-columns:calc(88px*var(--k)) 1fr}
+#keyTxt li b,#rule li b{font-size:calc(36px*var(--k))}
+#rule li .ds{font-size:calc(17px*var(--k))}
+#keyTxt li.none,#rule li.none{font-size:calc(17px*var(--k))}
+#key{width:calc(430px*var(--k))}
+#rule{width:calc(440px*var(--k))}

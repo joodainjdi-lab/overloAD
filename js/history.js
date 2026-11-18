@@ -397,7 +397,8 @@ tlEl.addEventListener("click",e=>{const b=e.target.closest(".tk");if(b)goPos(yea
 function drawRule(pos,s0){
   let cur=-1,best=1e9;LAWP.forEach((p,j)=>{const d=Math.abs(p-pos);if(d<best){best=d;cur=j}});
   const v=best<WIN?smooth(WIN,WIN*.35,best):0;
-  playEl.style.transform=`scaleX(${v.toFixed(3)})`;playEl.style.opacity=Math.min(1,v*1.4).toFixed(3);playEl.className="";
+  playEl.style.transform="none";playEl.style.opacity=(.4+.6*Math.min(1,v*1.4)).toFixed(3);playEl.className="";   // 선은 항상 보이고, 법·제도 해에 가까울수록 밝아짐
+  {const h=document.querySelector("#keyTxt .lh");if(h){const t=h.getBoundingClientRect().top;if(t>0)ruleEl.style.top=t+"px"}}   // 오른쪽 목록 제목을 왼쪽 제목과 같은 높이에
   // 법·제도가 바뀌는 해: 가운데 선이 다 펼쳐지는 순간 소리 + 메인 간판 깜빡
   if(v>.85&&ruleFired!==cur){ruleFired=cur;if(!(performance.now()-(window.__latchT||0)<600))window.SND&&SND.rule("up",LAW[cur][0]);
     const m=curI>=0&&PHOTOS[curI].el;if(m){m.classList.remove("flick","flickw");void m.offsetWidth;m.classList.add("flick")}}
