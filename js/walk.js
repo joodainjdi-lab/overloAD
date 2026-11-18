@@ -154,7 +154,7 @@ function buildStreet(S){
 function paintHover(){
   const a=hov>=0?hov:sel, w=$('#walk'), sl=w.querySelector('.slide:not(.gone)');
   w.classList.toggle('hov',a>=0);
-  if(sl) sl.querySelectorAll('[data-j]').forEach(n=>n.classList.toggle('on',+n.dataset.j===a));
+  if(sl) sl.querySelectorAll('[data-j]').forEach(n=>n.classList.toggle('on',+n.dataset.j===a||+n.dataset.j===sel));   // 고른 건물은 팝업이 열려 있는 동안 계속 강조
   const S=STREETS[cur], r=$('#read');
   if(a<0){ r.classList.add('idle'); r.innerHTML='<div class="rh">건물 데이터</div><div class="rv">입면도나 사진에 마우스를 올리면 이 자리에 나와요 · 누르면 개선 전·현재 비교</div>'; return; }
   r.classList.remove('idle'); const o=S.bl[a];
@@ -278,8 +278,12 @@ addEventListener('keydown',e=>{
 /* ── drawer ── */
 function open(j){ if(j<0||j>9) return; sel=j; setTimeout(post); const o=STREETS[cur].bl[j]; render(o);
   $('#bIdx').textContent=`${o.b} / 10`; $('#bPrv').disabled=j===0; $('#bNxt').disabled=j===9;
-  const d=$('#drawer'); d.classList.add('open'); d.setAttribute('aria-hidden','false'); paintHover(); }
-function closeDrawer(silent){ const d=$('#drawer'); d.classList.remove('open'); d.setAttribute('aria-hidden','true'); sel=-1; if(!silent){ paintHover(); post(); } }
+  const d=$('#drawer'); d.classList.add('open'); d.setAttribute('aria-hidden','false'); paintHover(); reveal(j); }
+/* 고른 건물이 팝업에 가리지 않게 거리를 옮김 (팝업 왼쪽 1225px 안에 보이도록) */
+function reveal(j){ const sl=$('#walk .slide:not(.gone)'); if(!sl||!sl.px) return; const x=sl.px(j);
+  if(x-panT>80&&x-panT<1145) return;
+  panT=Math.max(0,Math.min(Math.max(panMax,sl.LW-1225),x-612)); tick(); }
+function closeDrawer(silent){ const d=$('#drawer'); d.classList.remove('open'); d.setAttribute('aria-hidden','true'); sel=-1; if(panT>panMax){ panT=panMax; tick(); } if(!silent){ paintHover(); post(); } }
 /* 보기 전환 연결 — 상위 페이지와 현재 거리·건물을 주고받음 */
 function post(){ const S=STREETS[cur]; try{ if(parent!==window) parent.postMessage({ov:'state',view:'walk',d:S.g,b:sel>=0?S.bl[sel].b:null,focus:sel>=0,user:true},'*'); }catch(e){} }
 function pulse(j){ hov=j; paintHover(); setTimeout(()=>{ if(hov===j){ hov=-1; paintHover(); } },1800); }
