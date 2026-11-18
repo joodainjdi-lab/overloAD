@@ -111,8 +111,9 @@ function applyFilter(f){
   grid.classList.add('ranked');
   if(seqReady&&window.SND&&SND.light){ const t=[]; items.forEach(o=>{const k=o.step-1; t[k]=Math.min(t[k]??1e9,o.seq*16);}); SND.light(t.filter(v=>v<1e9)); }   // 칸 색이 단계별로 켜질 때 소리
   if(seqReady){ // 보는 기준을 바꿔도 고른 건물·팝업은 그대로 — 색만 1→90위 순서로 다시 켜짐
-    items.forEach(o=>{o.el.classList.remove('in','seq'); void o.el.offsetWidth; o.el.classList.add('seq');});
-    if(focusOn) setFocus(true); }
+    items.forEach(o=>o.el.classList.remove('in','seq'));
+    if(focusOn) setFocus(true);   // 건물을 고른 상태면 칸 크기 애니메이션 없이 색만 순서대로 바뀜 (겹쳐서 버벅이지 않게)
+    else { void grid.offsetWidth; items.forEach(o=>o.el.classList.add('seq')); } }
   else if(focusOn) setFocus(true);
   seqReady=true;
   renderTop5();
