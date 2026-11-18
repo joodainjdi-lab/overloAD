@@ -414,3 +414,9 @@ html.snap-on #purpose{scroll-snap-align:start}
 #keyTxt li,#rule li{opacity:.2}
 #keyTxt li.past,#rule li.past{opacity:.35}
 #keyTxt li.now,#rule li.now{opacity:1}
+/* v103: 제목 앞 점 제거, 제목은 포인트 컬러 (변화 없을 땐 흐리게) */
+#keyTxt .lh::before,#rule .lh::before{content:none}
+#keyTxt .lh{color:#C25AA6}
+#rule .lh{color:var(--lime)}
+#keyTxt.idle .lh{color:rgba(194,90,166,.35)}
+#rule.idle .lh{color:rgba(195,209,50,.35)}
