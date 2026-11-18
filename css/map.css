@@ -357,3 +357,10 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 #panel>.x{position:absolute;top:28px;right:63px;z-index:2;width:28px;height:28px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;color:var(--ink-2);background:none;cursor:pointer;transition:border-color .2s,color .2s}
 #panel>.x:hover{border-color:var(--ink-3);color:var(--ink)}
 @media (prefers-reduced-motion:reduce){.axb,.cols,.rows,.vline,.grid,.legend,#panel{transition:none}}
+/* v107: TOP 5는 다시 팝업 안으로, 보는 기준은 팝업 위에 떠서 팝업이 열려 있어도 바꿀 수 있게 */
+.filter{z-index:50}
+#panel .top5{position:static!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;width:auto;margin-top:26px;background:none;box-shadow:none!important}
+#panel .t5-list{max-height:none;overflow:visible}
+#panel{padding:0;overflow:hidden}
+#panel>.pin{position:absolute;left:63px;right:118px;top:100px;bottom:0;overflow-y:auto;overflow-x:hidden;padding:0 0 40px;scrollbar-width:none}
+#panel>.pin::-webkit-scrollbar{display:none}
