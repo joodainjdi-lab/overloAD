@@ -392,3 +392,5 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 .legend .bar i{transition:opacity .25s,transform .25s}
 .legend.g-any .bar i:not(.g-lab){opacity:.25}
 .legend .bar i.g-lab,.legend .bar i:hover{transform:scaleY(1.35)}
+/* v114: 묶어 보기 때, 팝업이 닫혀 있으면 이전에 고른 칸도 같이 흐리게 (다른 칸이 같이 켜지던 오류) */
+.grid.grp:not(.focus) .cell.sel:not(.g-on){opacity:.1;filter:none}
