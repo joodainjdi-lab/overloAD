@@ -448,3 +448,4 @@ body:has(.drawer.open) .read{opacity:0;pointer-events:none}
 .drawer>.x{top:28px;right:63px}
 .drawer .panel{top:100px;padding-bottom:40px}
 .drawer{box-shadow:-40px 40px 60px -20px rgba(0,0,0,.5)}
+#drawer .psum .tgD{top:56px;bottom:auto}   /* v113: 펼쳐도 화살표는 큰 숫자 줄에 고정 */
