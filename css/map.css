@@ -485,3 +485,24 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 #dist .st3 .now{color:var(--ink);font-weight:600}
 #dist .ax .zero em{position:absolute;top:24px;left:0;transform:translateX(-50%);font-style:normal;font-size:12px;color:var(--ink-3)}
 #dist .ax{height:78px}
+/* v121: 보는 기준별 구역 전체 보기 */
+#dist .hd b.c{color:var(--mc)} #dist .hd b.n{color:var(--ink-3)}
+#dist[data-f="total"] .hd b.n{color:var(--cs)}
+#dist .hero .rate small.u{font-size:24px;font-weight:400;color:var(--ink-3);margin-left:6px}
+#dist .sk .bar i.g{background:#4a4a4a}
+#dist .ty.g .n i{background:#4a4a4a} #dist .ty.k .n i{background:var(--ink-3)}
+#dist .ty b.up{color:var(--mc)} #dist .ty b.dn{color:var(--ink-2)}
+#dist[data-f="total"] .ty b.dn{color:var(--cs)}
+#dist .bd .v{color:var(--ink-2)}
+#dist .bd.pv .tr{background:none}
+#dist .bd.pv .tr i{opacity:.85}
+#dist .bd.pv .tr s{position:absolute;top:1px;bottom:1px;width:2px;margin-left:-1px;background:var(--ink-3);text-decoration:none}
+#dist .lg2{display:flex;gap:12px;font-size:13px}
+#dist .lg2 em{font-style:normal;display:flex;align-items:center;gap:6px;color:var(--ink-3)}
+#dist .lg2 .bf::before{content:"";width:2px;height:12px;background:var(--ink-3)}
+#dist .lg2 .nw::before{content:"";width:12px;height:9px;background:var(--mc)}
+#dist .dh2 p b{font-weight:500;color:var(--ink-2)}
+#dist .ax em.l{left:-6px!important;transform:none!important}
+#dist .ax .dot.me em.l{left:0!important}
+#dist .ax em.r{left:auto!important;right:-6px;transform:none!important}
+#dist .ax .dot.me em.r{right:0}

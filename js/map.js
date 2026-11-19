@@ -113,11 +113,12 @@ function applyFilter(f){
   if(seqReady&&window.SND&&SND.light){ const t=[]; items.forEach(o=>{const k=o.step-1; t[k]=Math.min(t[k]??1e9,o.seq*16);}); SND.light(t.filter(v=>v<1e9)); }   // 칸 색이 단계별로 켜질 때 소리
   if(seqReady){ // 보는 기준을 바꿔도 고른 건물·팝업은 그대로 — 색만 1→90위 순서로 다시 켜짐
     items.forEach(o=>o.el.classList.remove('in','seq'));
-    if(focusOn) setFocus(true);   // 건물을 고른 상태면 칸 크기 애니메이션 없이 색만 순서대로 바뀜 (겹쳐서 버벅이지 않게)
+    if(focusOn||distD){ if(focusOn) setFocus(true); }   // 건물·구역을 고른 상태면 칸 크기 애니메이션 없이 색만 순서대로 바뀜 (겹쳐서 버벅이지 않게)
     else { void grid.offsetWidth; items.forEach(o=>o.el.classList.add('seq')); } }
   else if(focusOn) setFocus(true);
   seqReady=true;
   renderTop5();
+  if(distD) openDist(distD);   // 구역 전체 팝업도 보는 기준에 맞춰 다시 정리
 }
 
 /* 10단계 색 */
@@ -317,40 +318,78 @@ function avgOf(list,label,sub){ const m=k=>[0,1].map(j=>r1(list.reduce((a,o)=>a+
   return {d:label,b:'',name:sub,s:m('s'),w:m('w'),t:m('t'),e:m('e'),st:m('st'),fl:r1(list.reduce((a,o)=>a+o.fl,0)/list.length),notes:[],lo:false,pb:'',pa:''}; }
 const sumOf=(L,k)=>[0,1].map(j=>L.reduce((a,o)=>a+o[k][j],0));
 const rateN=(b,a)=>b?(a-b)/b*100:0;
+/* 보는 기준별 구역 데이터 정의 */
+const sum2=(L,f)=>[0,1].map(j=>L.reduce((a,o)=>a+f(o)[j],0));
+const MET={
+  total:{name:'전체 광고물',col:'var(--cw)',neg:'var(--cs)',pair:L=>sum2(L,tot),rate:true},
+  s:{name:'간판',col:'var(--cs)',neg:'#6a6a6a',pair:L=>sum2(L,o=>o.s),rate:true},
+  e:{name:'기타 광고물',col:'var(--cw)',neg:'#6a6a6a',pair:L=>sum2(L,o=>o.e),rate:true},
+  per:{name:'가게당 광고물',col:'#e8e8e8',neg:'#6a6a6a',pair:L=>{const T=sum2(L,tot),S=sum2(L,o=>o.st);return [T[0]/S[0],T[1]/S[1]];},rate:false}
+};
+const f1=v=>(Math.round(v*10)/10).toFixed(1);
 function openDist(d){
+  const fid=cur&&MET[cur.id]?cur.id:'total', K=MET[fid];
   const L=items.filter(o=>o.d===d).sort((a,b)=>a.b<b.b?-1:1);
   distD=d; focusOn=false; grid.classList.remove('focus'); items.forEach(o=>o.el.classList.remove('sel'));
   grpLock={t:'d',v:d}; showGrp(grpLock);
   document.querySelectorAll('#rows div').forEach(r=>{r.classList.remove('on','dim'); r.classList.toggle('d-on',r.dataset.d===d);});
-  const S=sumOf(L,'s'),W=sumOf(L,'w'),T=sumOf(L,'t'),ST=sumOf(L,'st'), TB=S[0]+W[0]+T[0], TA=S[1]+W[1]+T[1];
-  const FL=L.reduce((a,o)=>a+o.fl,0);
-  // 9구역 비교
-  const DS=ORDER.map(g=>{const M=items.filter(o=>o.d===g),x=[0,1].map(j=>M.reduce((a,o)=>a+tot(o)[j],0));return {g,r:rateN(x[0],x[1])};});
-  const allB=items.reduce((a,o)=>a+tot(o)[0],0), allA=items.reduce((a,o)=>a+tot(o)[1],0), avgR=rateN(allB,allA);
-  const rk=[...DS].sort((a,b)=>b.r-a.r).findIndex(x=>x.g===d)+1;
-  const lo=Math.min(0,...DS.map(x=>x.r))-10, hi=Math.max(...DS.map(x=>x.r))+10, X=r=>((r-lo)/(hi-lo)*100).toFixed(2);
-  // 개선 전·현재 쌓은 막대
-  const M=Math.max(TB,TA), seg=(v,c,n)=>v?`<i class="${c}" style="width:${(v/M*100).toFixed(2)}%" title="${n} ${v}개"></i>`:'';
-  const stack=(lab,j,tt)=>`<div class="sk"><span class="lb">${lab}</span><div class="bar">${seg(S[j],'s','간판')}${seg(W[j],'w','창문이용 광고물')}${seg(T[j],'t','입간판·배너·현수막')}</div><b>${tt}<small>개</small></b></div>`;
-  const typ=(n,c,v)=>{const r=rateN(...v);return `<div class="ty ${c}"><span class="n"><i></i>${n}</span><span class="ba">${BA(v[0],v[1])}</span><b class="${r>0?'up':r<0?'dn':''}">${fmtRate(v[0],v[1])}</b></div>`;};
-  // 건물별 증감 (가운데 0 기준)
-  const BR=L.map(o=>{const t=tot(o);return {o,b:t[0],a:t[1],r:rateN(t[0],t[1])};}), MX=Math.max(50,...BR.map(x=>Math.abs(x.r))), up=BR.filter(x=>x.a>x.b).length, dn=BR.filter(x=>x.a<x.b).length;
-  const bld=BR.map(x=>{const w=(Math.abs(x.r)/MX*50).toFixed(2);return `<button class="bd" data-i="${items.indexOf(x.o)}" title="${x.o.d} ${x.o.b} ${x.o.name} · ${x.b}→${x.a}개"><span class="id">${x.o.b}</span><span class="tr"><i class="${x.r>=0?'p':'m'}" style="${x.r>=0?'left:50%':'right:50%'};width:${w}%"></i></span><span class="v ${x.r>0?'up':x.r<0?'dn':''}">${fmtRate(x.b,x.a)}</span></button>`;}).join('');
+  const S=sumOf(L,'s'),W=sumOf(L,'w'),T=sumOf(L,'t'),E=sumOf(L,'e'),ST=sumOf(L,'st'), TB=S[0]+W[0]+T[0], TA=S[1]+W[1]+T[1], FL=L.reduce((a,o)=>a+o.fl,0);
+  const P=K.pair(L), ALLP=K.pair(items);
+  const val=v=>K.rate?Math.round(v):f1(v);
+  // ① 큰 숫자
+  const hero=K.rate
+    ? `<div class="row"><span class="rate">${fmtRate(P[0],P[1])}</span><span class="cnt">${BA(P[0],P[1])}<small>개</small></span></div>`
+    : `<div class="row"><span class="rate">${f1(P[1])}<small class="u">개</small></span><span class="cnt">${BA(f1(P[0]),f1(P[1]))} · ${fmtRate(P[0],P[1])}</span></div>`;
+  // ② 구성 — 기준마다 다르게
+  const sk=(lab,parts,tot,max,unit)=>`<div class="sk"><span class="lb">${lab}</span><div class="bar">${parts.map(([v,c,n])=>v?`<i class="${c}" style="width:${(v/max*100).toFixed(2)}%" title="${n} ${nf(v)}${unit}"></i>`:'').join('')}</div><b>${tot}<small>${unit}</small></b></div>`;
+  const typ=(n,c,v,u)=>`<div class="ty ${c}"><span class="n"><i></i>${n}</span><span class="ba">${BA(v[0],v[1])}${u||''}</span><b class="${v[1]>v[0]?'up':v[1]<v[0]?'dn':''}">${fmtRate(v[0],v[1])}</b></div>`;
+  const pct=(a,b)=>Math.round(a/b*100)+'%';
+  let comp='';
+  if(fid==='total'){ const M=Math.max(TB,TA);
+    comp=`<div class="hd"><span>유형별 구성</span><span class="lg"><em class="s">간판</em><em class="w">창문이용</em><em class="t">입간판·배너·현수막</em></span></div>
+    ${sk('개선 전',[[S[0],'s','간판'],[W[0],'w','창문이용'],[T[0],'t','입간판·배너·현수막']],TB,M,'개')}${sk('현재',[[S[1],'s','간판'],[W[1],'w','창문이용'],[T[1],'t','입간판·배너·현수막']],TA,M,'개')}
+    <div class="tys">${typ('간판','s',S)}${typ('창문이용 광고물','w',W)}${typ('입간판·배너·현수막','t',T)}</div>`; }
+  else if(fid==='s'){ const M=Math.max(TB,TA);
+    comp=`<div class="hd"><span>전체 광고물 중 간판</span><span>간판 비중 <b>${pct(S[0],TB)} → ${pct(S[1],TA)}</b></span></div>
+    ${sk('개선 전',[[S[0],'s','간판'],[E[0],'g','기타 광고물']],TB,M,'개')}${sk('현재',[[S[1],'s','간판'],[E[1],'g','기타 광고물']],TA,M,'개')}
+    <div class="tys">${typ('간판','s',S)}${typ('기타 광고물','g',E)}</div>`; }
+  else if(fid==='e'){ const M=Math.max(E[0],E[1]);
+    comp=`<div class="hd"><span>기타 광고물 구성</span><span>전체 중 비중 <b>${pct(E[0],TB)} → ${pct(E[1],TA)}</b></span></div>
+    ${sk('개선 전',[[W[0],'w','창문이용'],[T[0],'t','입간판·배너·현수막']],E[0],M,'개')}${sk('현재',[[W[1],'w','창문이용'],[T[1],'t','입간판·배너·현수막']],E[1],M,'개')}
+    <div class="tys">${typ('창문이용 광고물','w',W)}${typ('입간판·배너·현수막','t',T)}</div>`; }
+  else { const pb=[S[0]/ST[0],W[0]/ST[0],T[0]/ST[0]], pa=[S[1]/ST[1],W[1]/ST[1],T[1]/ST[1]], M=Math.max(P[0],P[1]);
+    comp=`<div class="hd"><span>가게 한 곳에 붙은 광고물</span><span class="lg"><em class="s">간판</em><em class="w">창문이용</em><em class="t">입간판·배너·현수막</em></span></div>
+    ${sk('개선 전',[[pb[0],'s','간판'],[pb[1],'w','창문이용'],[pb[2],'t','입간판·배너·현수막']],f1(P[0]),M,'개')}${sk('현재',[[pa[0],'s','간판'],[pa[1],'w','창문이용'],[pa[2],'t','입간판·배너·현수막']],f1(P[1]),M,'개')}
+    <div class="tys">${typ('식별 업소','k',ST,'곳')}${typ('전체 광고물','k',[TB,TA],'개')}</div>`; }
+  // ③ 건물별
+  const BV=L.map(o=>{const p=K.pair([o]);return {o,b:p[0],a:p[1],r:rateN(p[0],p[1])};});
+  let bld, bhd;
+  if(K.rate){ const MX=Math.max(50,...BV.map(x=>Math.abs(x.r))), up=BV.filter(x=>x.a>x.b).length, dn=BV.filter(x=>x.a<x.b).length;
+    bhd=`<span>건물별 ${K.name} 증감</span><span>10동 중 <b class="c">${up}동 증가</b> · <b class="n">${dn}동 감소</b></span>`;
+    bld=BV.map(x=>{const w=x.b?(Math.min(Math.abs(x.r),MX)/MX*50).toFixed(2):0;return `<button class="bd" data-i="${items.indexOf(x.o)}" title="${x.o.d} ${x.o.b} ${x.o.name} · ${K.name} ${x.b}→${x.a}개"><span class="id">${x.o.b}</span><span class="tr"><i style="${x.r>=0?'left:50%':'right:50%'};width:${w}%;background:${x.r>=0?K.col:K.neg}"></i></span><span class="v">${x.b?fmtRate(x.b,x.a):(x.a?'새로 '+x.a+'개':'0')}</span></button>`;}).join(''); }
+  else { const MX=Math.max(...BV.map(x=>Math.max(x.a,x.b||0)),1);
+    bhd=`<span>건물별 가게당 광고물</span><span class="lg2"><em class="bf">개선 전</em><em class="nw">현재</em></span>`;
+    bld=BV.map(x=>`<button class="bd pv" data-i="${items.indexOf(x.o)}" title="${x.o.d} ${x.o.b} ${x.o.name} · 가게당 ${f1(x.b)}→${f1(x.a)}개"><span class="id">${x.o.b}</span><span class="tr"><i style="left:0;width:${(x.a/MX*100).toFixed(2)}%;background:${K.col}"></i><s style="left:${(x.b/MX*100).toFixed(2)}%"></s></span><span class="v">${f1(x.a)}개</span></button>`).join(''); }
+  // ④ 9구역 비교
+  const DS=ORDER.map(g=>{const p=K.pair(items.filter(o=>o.d===g));return {g,v:K.rate?rateN(p[0],p[1]):p[1]};});
+  const ref=K.rate?rateN(ALLP[0],ALLP[1]):ALLP[1];
+  const rk=[...DS].sort((a,b)=>b.v-a.v).findIndex(x=>x.g===d)+1;
+  const lo=K.rate?Math.min(0,...DS.map(x=>x.v))-10:0, hi=Math.max(...DS.map(x=>x.v))*(K.rate?1:1.08)+(K.rate?10:0), X=v=>((v-lo)/(hi-lo)*100).toFixed(2);
+  const lab=v=>K.rate?`${v>0?'+':v<0?'−':''}${Math.abs(Math.round(v))}%`:`${f1(v)}개`;
+  const me=DS.find(x=>x.g===d);
+  const cmp=`<div class="hd"><span>9구역 비교 · ${K.name}${K.rate?' 증감률':' (현재)'}</span><span>${K.rate?'증가율':'많은 순'} <b>${rk}위</b> / 9</span></div>
+    <div class="ax">${K.rate?`<span class="zero" style="left:${X(0)}%"><em>0%</em></span>`:''}<span class="avg" style="left:${X(ref)}%"><em class="${+X(ref)<18?'l':+X(ref)>82?'r':''}">9구역 전체 ${lab(ref)}</em></span>
+      ${DS.map(x=>`<button class="dot${x.g===d?' me':''}" data-g="${x.g}" style="left:${X(x.v)}%;${x.g===d?`background:${K.col}`:''}" title="${x.g} ${lab(x.v)}">${x.g===d?`<em class="${+X(x.v)<18?'l':+X(x.v)>82?'r':''}" style="color:${K.col}">${d} ${lab(x.v)}</em>`:''}</button>`).join('')}</div>
+    <p class="ft">점 = 구역별 ${K.name}${K.rate?' 증감률':' (현재)'} · 누르면 그 구역으로</p>`;
   const dist=document.getElementById('dist')||(()=>{const e=document.createElement('div');e.id='dist';$('#panel .pin').prepend(e);return e;})();
+  dist.dataset.f=fid; dist.style.setProperty('--mc',K.col);
   dist.innerHTML=`
-  <header class="dh2"><h2>${d}</h2><p>${YEAR[d]}년 간판개선사업 · 조사 건물 ${L.length}동 합계</p></header>
-  <section class="hero"><div class="k">전체 광고물 (개선 전 → 현재)</div>
-    <div class="row"><span class="rate">${fmtRate(TB,TA)}</span><span class="cnt">${BA(TB,TA)}<small>개</small></span></div></section>
-  <section class="stk"><div class="hd"><span>유형별 구성</span><span class="lg"><em class="s">간판</em><em class="w">창문이용</em><em class="t">입간판·배너·현수막</em></span></div>
-    ${stack('개선 전',0,TB)}${stack('현재',1,TA)}
-    <div class="tys">${typ('간판','s',S)}${typ('창문이용 광고물','w',W)}${typ('입간판·배너·현수막','t',T)}</div></section>
-  <section class="bld"><div class="hd"><span>건물별 증감</span><span>10동 중 <b class="up">${up}동 증가</b> · <b class="dn">${dn}동 감소</b></span></div>
-    <div class="bds">${bld}</div><p class="ft">막대 = 전체 광고물 증감률 · 누르면 그 건물 자세히</p></section>
-  <section class="cmp"><div class="hd"><span>9구역 비교</span><span>증가율 <b>${rk}위</b> / 9</span></div>
-    <div class="ax"><span class="zero" style="left:${X(0)}%"><em>0%</em></span><span class="avg" style="left:${X(avgR)}%"><em>9구역 전체 ${fmtRate(allB,allA)}</em></span>
-      ${DS.map(x=>`<button class="dot${x.g===d?' me':''}" data-g="${x.g}" style="left:${X(x.r)}%" title="${x.g} ${x.r>0?'+':''}${Math.round(x.r)}%">${x.g===d?`<em>${d} ${x.r>0?'+':x.r<0?'−':''}${Math.abs(Math.round(x.r))}%</em>`:''}</button>`).join('')}</div>
-    <p class="ft">점 = 구역별 전체 광고물 증감률 · 누르면 그 구역으로</p></section>
-  <section class="st3"><div><span class="k">식별 업소</span><b>${BA(ST[0],ST[1])}</b></div><div><span class="k">업소당 광고물</span><b>${BA((TB/ST[0]).toFixed(1),(TA/ST[1]).toFixed(1))}</b></div><div><span class="k">층당 광고물 (현재)</span><b>${(TA/FL).toFixed(1)}</b></div></section>`;
+  <header class="dh2"><h2>${d}</h2><p>${YEAR[d]}년 간판개선사업 · 조사 건물 ${L.length}동 합계 · <b>${K.name}</b> 기준</p></header>
+  <section class="hero"><div class="k">${K.name} (개선 전 → 현재)${K.rate?'':' · 가게 1곳당'}</div>${hero}</section>
+  <section class="stk">${comp}</section>
+  <section class="bld"><div class="hd">${bhd}</div><div class="bds">${bld}</div><p class="ft">${K.rate?'막대 = 증감률 (가운데 0)':'막대 = 현재 · 세로 선 = 개선 전'} · 누르면 그 건물 자세히</p></section>
+  <section class="cmp">${cmp}</section>
+  <section class="st3"><div><span class="k">식별 업소</span><b>${BA(ST[0],ST[1])}</b></div><div><span class="k">업소당 광고물</span><b>${BA(f1(TB/ST[0]),f1(TA/ST[1]))}</b></div><div><span class="k">층당 광고물 (현재)</span><b>${f1(TA/FL)}</b></div></section>`;
   dist.querySelectorAll('.bd').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation(); const i=+b.dataset.i; setFocus(false); select(i,true);}));
   dist.querySelectorAll('.dot').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation(); if(b.dataset.g!==d){ openDist(b.dataset.g); if(window.SND&&SND.tap) SND.tap(); }}));
   $('#panel .pin').scrollTop=0;
