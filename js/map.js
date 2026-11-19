@@ -315,15 +315,48 @@ var distD=null;
 const r1=v=>Math.round(v*10)/10;
 function avgOf(list,label,sub){ const m=k=>[0,1].map(j=>r1(list.reduce((a,o)=>a+o[k][j],0)/list.length));
   return {d:label,b:'',name:sub,s:m('s'),w:m('w'),t:m('t'),e:m('e'),st:m('st'),fl:r1(list.reduce((a,o)=>a+o.fl,0)/list.length),notes:[],lo:false,pb:'',pa:''}; }
+const sumOf=(L,k)=>[0,1].map(j=>L.reduce((a,o)=>a+o[k][j],0));
+const rateN=(b,a)=>b?(a-b)/b*100:0;
 function openDist(d){
-  const list=items.filter(o=>o.d===d), A=avgOf(list,d+' 평균','건물 '+list.length+'동 평균'), ALL=avgOf(items,'9구역','');
+  const L=items.filter(o=>o.d===d).sort((a,b)=>a.b<b.b?-1:1);
   distD=d; focusOn=false; grid.classList.remove('focus'); items.forEach(o=>o.el.classList.remove('sel'));
   grpLock={t:'d',v:d}; showGrp(grpLock);
   document.querySelectorAll('#rows div').forEach(r=>{r.classList.remove('on','dim'); r.classList.toggle('d-on',r.dataset.d===d);});
-  render(A); $('#who h2').innerHTML=`${d}<span class="nm">평균 · 건물 ${list.length}동</span>`;
-  const [tb,ta]=tot(A),[ab,aa]=tot(ALL), rk=ORDER.map(g=>{const L=items.filter(o=>o.d===g),T=L.reduce((x,o)=>[x[0]+tot(o)[0],x[1]+tot(o)[1]],[0,0]);return {g,r:(T[1]-T[0])/T[0]};}).sort((a,b)=>a.r-b.r);
-  const n=rk.findIndex(x=>x.g===d)+1;
-  $('#sum').insertAdjacentHTML('beforeend',`<div class="dcmp"><span>9구역 평균</span><b>${fmtRate(ab,aa)}</b><span class="ba">${BA(ab,aa)}개</span><span class="rk">9구역 중 ${n===1?'가장 많이 줄었어요':n===9?'가장 많이 늘었어요':`줄어든 순 ${n}번째`}</span></div>`);
+  const S=sumOf(L,'s'),W=sumOf(L,'w'),T=sumOf(L,'t'),ST=sumOf(L,'st'), TB=S[0]+W[0]+T[0], TA=S[1]+W[1]+T[1];
+  const FL=L.reduce((a,o)=>a+o.fl,0);
+  // 9구역 비교
+  const DS=ORDER.map(g=>{const M=items.filter(o=>o.d===g),x=[0,1].map(j=>M.reduce((a,o)=>a+tot(o)[j],0));return {g,r:rateN(x[0],x[1])};});
+  const allB=items.reduce((a,o)=>a+tot(o)[0],0), allA=items.reduce((a,o)=>a+tot(o)[1],0), avgR=rateN(allB,allA);
+  const rk=[...DS].sort((a,b)=>b.r-a.r).findIndex(x=>x.g===d)+1;
+  const lo=Math.min(0,...DS.map(x=>x.r))-10, hi=Math.max(...DS.map(x=>x.r))+10, X=r=>((r-lo)/(hi-lo)*100).toFixed(2);
+  // 개선 전·현재 쌓은 막대
+  const M=Math.max(TB,TA), seg=(v,c,n)=>v?`<i class="${c}" style="width:${(v/M*100).toFixed(2)}%" title="${n} ${v}개"></i>`:'';
+  const stack=(lab,j,tt)=>`<div class="sk"><span class="lb">${lab}</span><div class="bar">${seg(S[j],'s','간판')}${seg(W[j],'w','창문이용 광고물')}${seg(T[j],'t','입간판·배너·현수막')}</div><b>${tt}<small>개</small></b></div>`;
+  const typ=(n,c,v)=>{const r=rateN(...v);return `<div class="ty ${c}"><span class="n"><i></i>${n}</span><span class="ba">${BA(v[0],v[1])}</span><b class="${r>0?'up':r<0?'dn':''}">${fmtRate(v[0],v[1])}</b></div>`;};
+  // 건물별 증감 (가운데 0 기준)
+  const BR=L.map(o=>{const t=tot(o);return {o,b:t[0],a:t[1],r:rateN(t[0],t[1])};}), MX=Math.max(50,...BR.map(x=>Math.abs(x.r))), up=BR.filter(x=>x.a>x.b).length, dn=BR.filter(x=>x.a<x.b).length;
+  const bld=BR.map(x=>{const w=(Math.abs(x.r)/MX*50).toFixed(2);return `<button class="bd" data-i="${items.indexOf(x.o)}" title="${x.o.d} ${x.o.b} ${x.o.name} · ${x.b}→${x.a}개"><span class="id">${x.o.b}</span><span class="tr"><i class="${x.r>=0?'p':'m'}" style="${x.r>=0?'left:50%':'right:50%'};width:${w}%"></i></span><span class="v ${x.r>0?'up':x.r<0?'dn':''}">${fmtRate(x.b,x.a)}</span></button>`;}).join('');
+  const dist=document.getElementById('dist')||(()=>{const e=document.createElement('div');e.id='dist';$('#panel .pin').prepend(e);return e;})();
+  dist.innerHTML=`
+  <header class="dh2"><h2>${d}</h2><p>${YEAR[d]}년 간판개선사업 · 조사 건물 ${L.length}동 합계</p></header>
+  <section class="hero"><div class="k">전체 광고물 (개선 전 → 현재)</div>
+    <div class="row"><span class="rate">${fmtRate(TB,TA)}</span><span class="cnt">${BA(TB,TA)}<small>개</small></span></div></section>
+  <section class="stk"><div class="hd"><span>유형별 구성</span><span class="lg"><em class="s">간판</em><em class="w">창문이용</em><em class="t">입간판·배너·현수막</em></span></div>
+    ${stack('개선 전',0,TB)}${stack('현재',1,TA)}
+    <div class="tys">${typ('간판','s',S)}${typ('창문이용 광고물','w',W)}${typ('입간판·배너·현수막','t',T)}</div></section>
+  <section class="bld"><div class="hd"><span>건물별 증감</span><span>10동 중 <b class="up">${up}동 증가</b> · <b class="dn">${dn}동 감소</b></span></div>
+    <div class="bds">${bld}</div><p class="ft">막대 = 전체 광고물 증감률 · 누르면 그 건물 자세히</p></section>
+  <section class="cmp"><div class="hd"><span>9구역 비교</span><span>증가율 <b>${rk}위</b> / 9</span></div>
+    <div class="ax"><span class="zero" style="left:${X(0)}%"><em>0%</em></span><span class="avg" style="left:${X(avgR)}%"><em>9구역 전체 ${fmtRate(allB,allA)}</em></span>
+      ${DS.map(x=>`<button class="dot${x.g===d?' me':''}" data-g="${x.g}" style="left:${X(x.r)}%" title="${x.g} ${x.r>0?'+':''}${Math.round(x.r)}%">${x.g===d?`<em>${d} ${x.r>0?'+':x.r<0?'−':''}${Math.abs(Math.round(x.r))}%</em>`:''}</button>`).join('')}</div>
+    <p class="ft">점 = 구역별 전체 광고물 증감률 · 누르면 그 구역으로</p></section>
+  <section class="st3"><div><span class="k">식별 업소</span><b>${BA(ST[0],ST[1])}</b></div><div><span class="k">업소당 광고물</span><b>${BA((TB/ST[0]).toFixed(1),(TA/ST[1]).toFixed(1))}</b></div><div><span class="k">층당 광고물 (현재)</span><b>${(TA/FL).toFixed(1)}</b></div></section>`;
+  dist.querySelectorAll('.bd').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation(); const i=+b.dataset.i; setFocus(false); select(i,true);}));
+  dist.querySelectorAll('.dot').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation(); if(b.dataset.g!==d){ openDist(b.dataset.g); if(window.SND&&SND.tap) SND.tap(); }}));
+  $('#panel .pin').scrollTop=0;
   const pn=$('#panel'); pn.classList.add('open','dmode'); pn.setAttribute('aria-hidden','false'); $('#art').classList.add('pop');
   touched=true; try{ if(parent!==window) parent.postMessage({ov:'state',view:'map',d,b:null,focus:false,user:true},'*'); }catch(e){}
 }
+
+/* 등장 애니메이션이 끝나면 표시 클래스를 떼어 둠 — 팝업을 닫을 때 90칸이 다시 켜지는 것 방지 */
+grid.addEventListener('animationend',e=>{ const c=e.target; if(c.classList&&c.classList.contains('cell')) c.classList.remove('seq','in'); });
