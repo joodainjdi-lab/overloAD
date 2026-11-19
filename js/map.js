@@ -347,8 +347,9 @@ function openDist(d){
   const PW=514, GAP=12, PX=v=>16+X(v)/100*(PW-32), lanes=[], pos=[...DS].sort((a,b)=>a.v-b.v).map(x=>{const px=PX(x.v);
     for(const ln of [0,-1,1,-2,2,-3,3]){ if(!lanes.some(q=>q.ln===ln&&Math.abs(q.px-px)<GAP)){ lanes.push({ln,px}); return {...x,px,ln}; } } return {...x,px,ln:0}; });
   const maxL=Math.max(1,...pos.map(p=>Math.abs(p.ln))), CY=46+maxL*12, H=CY+maxL*12+44;
-  const gcol=p=>fid==='total'?`color-mix(in srgb,#C3D132 ${Math.round(X(p.v))}%,#A36693)`:'';   // 전체 광고물: 자주(많이 줄어듦) → 그린(많이 늘어남)
-  const dots=pos.map(p=>`<button class="bdot${p.g===d?' me':''}${fid==='total'?' gr':''}" data-g="${p.g}" style="left:${p.px.toFixed(1)}px;top:${CY+p.ln*12}px;${gcol(p)?`--dc:${gcol(p)}`:''}" aria-label="${p.g} ${lab(p.v)}"><em>${p.g} ${lab(p.v)}</em></button>`).join('');
+  const GR=t=>`color-mix(in oklab,#C3D132 ${Math.round(Math.max(0,Math.min(100,t)))}%,#C25AA6)`;   // 원색 자주(줄어듦) → 그린(늘어남)
+  const gcol=p=>K.rate?GR(X(p.v)):'';
+  const dots=pos.map(p=>`<button class="bdot${p.g===d?' me':''}${K.rate?' gr':''}" data-g="${p.g}" style="left:${p.px.toFixed(1)}px;top:${CY+p.ln*12}px;${gcol(p)?`--dc:${gcol(p)}`:''}" aria-label="${p.g} ${lab(p.v)}"><em>${p.g} ${lab(p.v)}</em></button>`).join('');
   const meP=pos.find(p=>p.g===d), meX=Math.min(Math.max(meP.px,60),PW-60);
   const rankBox=`<div class="rkhd"><b>9구역 중 ${rk}위</b><span>${K.name} ${K.rate?'증감률':'(현재)'} · ${K.rate?'많이 늘어난':'많은'} 순</span></div>
     <div class="bee" style="height:${H}px;--cy:${CY}px">
@@ -368,9 +369,9 @@ function openDist(d){
   const BV=L.map(o=>{const p=K.pair([o]);return {o,b:p[0],a:p[1]};}), BM=Math.max(...BV.map(x=>Math.max(x.a,x.b)),1);
   const nUp=BV.filter(x=>x.a>x.b).length, nDn=BV.filter(x=>x.a<x.b).length;
   const bld=BV.map(x=>{const xb=(x.b/BM*100).toFixed(2), xa=(x.a/BM*100).toFixed(2), l=Math.min(+xb,+xa), w=Math.abs(xa-xb);
-    return `<button class="db" data-i="${items.indexOf(x.o)}" title="${x.o.d} ${x.o.b} ${x.o.name} · ${num(x.b)} → ${num(x.a)}${u}"><span class="id">${x.o.b}</span><span class="tr"><i class="ln ${x.a>=x.b?'up':'dn'}" style="left:${l}%;width:${w}%"></i><i class="ob" style="left:${xb}%"></i><i class="oa" style="left:${xa}%"></i></span><span class="v ${x.a>x.b?'up':x.a<x.b?'dn':''}">${x.b?fmtRate(x.b,x.a):(x.a?'새로':'0')}</span></button>`;}).join('');
+    return `<button class="db" data-i="${items.indexOf(x.o)}" title="${x.o.d} ${x.o.b} ${x.o.name} · ${num(x.b)} → ${num(x.a)}${u}"><span class="id">${x.o.b}</span><span class="tr"><i class="ln ${x.a>=x.b?'up':'dn'}" style="left:${l}%;width:${w}%;${K.rate?`background:${GR((Math.max(-100,Math.min(100,rateN(x.b,x.a)))+100)/2)}`:''}"></i><i class="ob" style="left:${xb}%"></i><i class="oa" style="left:${xa}%;${K.rate?`background:${GR((Math.max(-100,Math.min(100,rateN(x.b,x.a)))+100)/2)}`:''}"></i></span><span class="v ${x.a>x.b?'up':x.a<x.b?'dn':''}">${x.b?fmtRate(x.b,x.a):(x.a?'새로':'0')}</span></button>`;}).join('');
   const dist=document.getElementById('dist')||(()=>{const e=document.createElement('div');e.id='dist';$('#panel .pin').prepend(e);return e;})();
-  dist.dataset.f=fid; dist.style.setProperty('--mc',fid==='total'?gcol(meP):K.col);   // 전체 광고물은 이 구역 위치의 그라데이션 색
+  dist.dataset.f=fid; dist.style.setProperty('--mc',K.rate?gcol(meP):K.col);   // 전체 광고물은 이 구역 위치의 그라데이션 색
   dist.innerHTML=`
   <header class="dh2"><h2>${d}</h2><p>${YEAR[d]}년 간판개선사업 · 건물 ${L.length}동 · <b>${K.name}</b> 기준</p></header>
   <section class="s1">${rankBox}</section>

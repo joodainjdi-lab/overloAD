@@ -598,3 +598,8 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 #dist .bee .bdot.gr.me{background:var(--dc);opacity:1;box-shadow:0 0 0 4px color-mix(in srgb,var(--dc) 25%,transparent)}
 #dist[data-f="total"] .bee::before{content:"";position:absolute;left:16px;right:16px;top:calc(var(--cy) - 1px);height:2px;background:linear-gradient(90deg,#A36693,#C3D132);opacity:.35}
 #dist .bee .melab{font-size:14px}
+/* v125: 증감률 기준(전체·간판·기타)은 원색 자주→그린 그라데이션, 투명도 없음 */
+#dist .bee .bdot.gr{opacity:1}
+#dist[data-f="total"] .bee::before,#dist[data-f="s"] .bee::before,#dist[data-f="e"] .bee::before{content:"";position:absolute;left:16px;right:16px;top:calc(var(--cy) - 1px);height:2px;background:linear-gradient(90deg,#C25AA6,#C3D132);opacity:.5}
+#dist .db .tr .ln{opacity:.6}
+#dist[data-f="total"] .bee::before,#dist[data-f="s"] .bee::before,#dist[data-f="e"] .bee::before{background:linear-gradient(90deg in oklab,#C25AA6,#C3D132)}
