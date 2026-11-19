@@ -554,3 +554,39 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 #dist .pb:hover .id,#dist .pb:hover .v{color:var(--ink)}
 #dist .pb:hover .tr i.a{filter:brightness(1.2)}
 #dist .hd{margin-bottom:12px}
+/* v123: 9구역 비교는 점(겹치면 위아래로 비켜 남) · 건물은 ○→● 아령 */
+#dist .bee{position:relative;margin-top:4px}
+#dist .bee .axis{position:absolute;left:0;right:0;top:var(--cy);height:1px;background:var(--line-2)}
+#dist .bee .tick{position:absolute;top:calc(var(--cy) - 10px);width:1px;height:20px;background:var(--ink-3)}
+#dist .bee .tick em,#dist .bee .refl em{position:absolute;bottom:-34px;left:0;transform:translateX(-50%);white-space:nowrap;font-style:normal;font-size:11px;color:var(--ink-3)}
+#dist .bee .refl{position:absolute;top:8px;bottom:22px;border-left:1px dashed var(--ink-3)}
+#dist .bee .refl em{bottom:-18px}
+#dist .bee .end{position:absolute;bottom:0;font-size:11px;color:#5a5a5a}
+#dist .bee .end.l{left:0} #dist .bee .end.r{right:0}
+#dist .bee .bdot{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:0;padding:0;background:#555;cursor:pointer;transition:transform .2s,background .2s;z-index:2}
+#dist .bee .bdot em{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);white-space:nowrap;font-style:normal;font-size:12px;color:var(--ink);background:#000;padding:3px 7px;border-radius:4px;opacity:0;pointer-events:none;transition:opacity .15s}
+#dist .bee .bdot:hover{background:var(--ink-2);transform:scale(1.25);z-index:4}
+#dist .bee .bdot:hover em{opacity:1}
+#dist .bee .bdot.me{width:22px;height:22px;margin:-11px 0 0 -11px;background:var(--mc);cursor:default;z-index:3;box-shadow:0 0 0 5px color-mix(in srgb,var(--mc) 22%,transparent);animation:mepop .6s cubic-bezier(.2,.8,.2,1.3) both}
+#dist .bee .bdot.me em{display:none}
+@keyframes mepop{from{transform:scale(0)}}
+#dist .bee .melab{position:absolute;transform:translate(-50%,-100%);white-space:nowrap;font-size:15px;color:var(--ink-2);pointer-events:none}
+#dist .bee .melab b{color:var(--mc);font-weight:600;margin-left:4px}
+/* 건물 아령 */
+#dist .dbs{display:flex;flex-direction:column;gap:2px}
+#dist .db{display:grid;grid-template-columns:40px 1fr 56px;gap:12px;align-items:center;height:26px;width:100%;padding:0;border:0;background:none;color:inherit;cursor:pointer;text-align:left}
+#dist .db .id{font-size:13px;color:var(--ink-3)}
+#dist .db .tr{position:relative;height:100%;background:linear-gradient(var(--line),var(--line)) 0 50%/100% 1px no-repeat}
+#dist .db .tr i{position:absolute;top:50%}
+#dist .db .tr .ln{height:3px;margin-top:-1.5px}
+#dist .db .tr .ln.up{background:color-mix(in srgb,var(--mc) 55%,transparent)}
+#dist .db .tr .ln.dn{background:#555}
+#dist .db .tr .ob{width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;border:1.5px solid #8a8a8a;background:var(--bg);box-sizing:border-box}
+#dist .db .tr .oa{width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--mc)}
+#dist .db .v{text-align:right;font-size:14px;font-variant-numeric:tabular-nums;color:var(--ink-3)}
+#dist .db .v.up{color:var(--ink)}
+#dist .db:hover .id,#dist .db:hover .v{color:var(--ink)}
+#dist .db:hover .tr .oa{transform:scale(1.25)}
+#dist .lg3 .b::before{width:9px;height:9px;border-radius:50%;border:1.5px solid #8a8a8a;background:none;box-sizing:border-box}
+#dist .lg3 .a::before{width:10px;height:10px;border-radius:50%;background:var(--mc)}
+#dist .lg3 .cnt{margin-left:6px;color:var(--ink-2)}

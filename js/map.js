@@ -342,10 +342,20 @@ function openDist(d){
   const lo=K.rate?Math.min(0,...DS.map(x=>x.v)):0, hi=Math.max(0,...DS.map(x=>x.v)), span=(hi-lo)||1, X=v=>((v-lo)/span*100);
   const lab=v=>K.rate?`${v>0?'+':v<0?'−':''}${Math.abs(Math.round(v))}%`:`${f1(v)}개`;
   const z=X(0);
-  const rank=DS.map(x=>{const a=Math.min(X(x.v),z), w=Math.abs(X(x.v)-z);
-    return `<button class="rr${x.g===d?' me':''}" data-g="${x.g}"><span class="g">${x.g}</span><span class="tr"><i style="left:${a.toFixed(2)}%;width:${Math.max(w,.6).toFixed(2)}%"></i></span><span class="v">${lab(x.v)}</span></button>`;}).join('');
-  const rankBox=`<div class="rk"><div class="rkhd"><b>9구역 중 ${rk}위</b><span>${K.name} ${K.rate?'증감률':'(현재)'} · ${K.rate?'많이 늘어난':'많은'} 순</span></div>
-    <div class="rrs" style="--z:${z.toFixed(2)}%;--ref:${X(ref).toFixed(2)}%">${rank}<span class="ref"><em>9구역 전체 ${lab(ref)}</em></span></div></div>`;
+  // 점이 겹치지 않게 위아래로 비켜 놓기 (폭 514px 기준)
+  const PW=514, GAP=17, PX=v=>16+X(v)/100*(PW-32), lanes=[], pos=[...DS].sort((a,b)=>a.v-b.v).map(x=>{const px=PX(x.v);
+    for(const ln of [0,-1,1,-2,2,-3,3]){ if(!lanes.some(q=>q.ln===ln&&Math.abs(q.px-px)<GAP)){ lanes.push({ln,px}); return {...x,px,ln}; } } return {...x,px,ln:0}; });
+  const maxL=Math.max(1,...pos.map(p=>Math.abs(p.ln))), CY=46+maxL*16, H=CY+maxL*16+44;
+  const dots=pos.map(p=>`<button class="bdot${p.g===d?' me':''}" data-g="${p.g}" style="left:${p.px.toFixed(1)}px;top:${CY+p.ln*16}px" aria-label="${p.g} ${lab(p.v)}"><em>${p.g} ${lab(p.v)}</em></button>`).join('');
+  const meP=pos.find(p=>p.g===d), meX=Math.min(Math.max(meP.px,60),PW-60);
+  const rankBox=`<div class="rkhd"><b>9구역 중 ${rk}위</b><span>${K.name} ${K.rate?'증감률':'(현재)'} · ${K.rate?'많이 늘어난':'많은'} 순</span></div>
+    <div class="bee" style="height:${H}px;--cy:${CY}px">
+      <span class="axis"></span>${K.rate?`<span class="tick" style="left:${PX(0).toFixed(1)}px"><em>0%</em></span>`:''}
+      <span class="refl" style="left:${PX(ref).toFixed(1)}px"><em>9구역 전체 ${lab(ref)}</em></span>
+      <span class="melab" style="left:${meX.toFixed(1)}px;top:${CY+meP.ln*16-30}px">${d} <b>${lab(meP.v)}</b></span>
+      ${dots}
+      <span class="end l">${K.rate?'많이 줄어듦':'적음'}</span><span class="end r">${K.rate?'많이 늘어남':'많음'}</span>
+    </div>`;
   // ② 개선 전 → 현재 (이 기준 하나만)
   const M=Math.max(P[0],P[1])||1;
   const parts=j=> fid==='total'?[[S[j],'s'],[W[j],'w'],[T[j],'t']] : fid==='e'?[[W[j],'w'],[T[j],'t']] : [[P[j],fid==='s'?'s':'k']];
@@ -355,16 +365,17 @@ function openDist(d){
   // ③ 건물 10동 — 개선 전(회색)과 현재(색) 두 줄 막대
   const BV=L.map(o=>{const p=K.pair([o]);return {o,b:p[0],a:p[1]};}), BM=Math.max(...BV.map(x=>Math.max(x.a,x.b)),1);
   const nUp=BV.filter(x=>x.a>x.b).length, nDn=BV.filter(x=>x.a<x.b).length;
-  const bld=BV.map(x=>`<button class="pb" data-i="${items.indexOf(x.o)}" title="${x.o.d} ${x.o.b} ${x.o.name} · ${num(x.b)} → ${num(x.a)}${u}"><span class="id">${x.o.b}</span><span class="tr"><i class="b" style="width:${(x.b/BM*100).toFixed(2)}%"></i><i class="a" style="width:${(x.a/BM*100).toFixed(2)}%"></i></span><span class="v ${x.a>x.b?'up':x.a<x.b?'dn':''}">${x.b?fmtRate(x.b,x.a):(x.a?'새로':'0')}</span></button>`).join('');
+  const bld=BV.map(x=>{const xb=(x.b/BM*100).toFixed(2), xa=(x.a/BM*100).toFixed(2), l=Math.min(+xb,+xa), w=Math.abs(xa-xb);
+    return `<button class="db" data-i="${items.indexOf(x.o)}" title="${x.o.d} ${x.o.b} ${x.o.name} · ${num(x.b)} → ${num(x.a)}${u}"><span class="id">${x.o.b}</span><span class="tr"><i class="ln ${x.a>=x.b?'up':'dn'}" style="left:${l}%;width:${w}%"></i><i class="ob" style="left:${xb}%"></i><i class="oa" style="left:${xa}%"></i></span><span class="v ${x.a>x.b?'up':x.a<x.b?'dn':''}">${x.b?fmtRate(x.b,x.a):(x.a?'새로':'0')}</span></button>`;}).join('');
   const dist=document.getElementById('dist')||(()=>{const e=document.createElement('div');e.id='dist';$('#panel .pin').prepend(e);return e;})();
   dist.dataset.f=fid; dist.style.setProperty('--mc',K.col);
   dist.innerHTML=`
   <header class="dh2"><h2>${d}</h2><p>${YEAR[d]}년 간판개선사업 · 건물 ${L.length}동 · <b>${K.name}</b> 기준</p></header>
   <section class="s1">${rankBox}</section>
   <section class="s2"><div class="hero2"><span class="rate ${up?'up':dn?'dn':''}">${rt}</span><span class="say">${said}</span></div>${ba('개선 전',0)}${ba('현재',1)}${legend?`<div class="lgw">${legend}</div>`:''}</section>
-  <section class="s3"><div class="hd"><span>건물 ${L.length}동</span><span class="lg3"><em class="b">개선 전</em><em class="a">현재</em> · ${nUp}동 ↑ ${nDn}동 ↓</span></div><div class="pbs">${bld}</div></section>`;
-  dist.querySelectorAll('.pb').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation(); const i=+b.dataset.i; setFocus(false); select(i,true);}));
-  dist.querySelectorAll('.rr').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation(); if(b.dataset.g!==d){ openDist(b.dataset.g); if(window.SND&&SND.tap) SND.tap(); }}));
+  <section class="s3"><div class="hd"><span>건물 ${L.length}동</span><span class="lg3"><em class="b">개선 전</em><em class="a">현재</em><span class="cnt">${nUp}동 늘고 · ${nDn}동 줄었어요</span></span></div><div class="dbs">${bld}</div></section>`;
+  dist.querySelectorAll('.db').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation(); const i=+b.dataset.i; setFocus(false); select(i,true);}));
+  dist.querySelectorAll('.bdot').forEach(b=>b.addEventListener('click',e=>{e.stopPropagation(); if(b.dataset.g!==d){ openDist(b.dataset.g); if(window.SND&&SND.tap) SND.tap(); }}));
   $('#panel .pin').scrollTop=0;
   const pn=$('#panel'); pn.classList.add('open','dmode'); pn.setAttribute('aria-hidden','false'); $('#art').classList.add('pop');
   touched=true; try{ if(parent!==window) parent.postMessage({ov:'state',view:'map',d,b:null,focus:false,user:true},'*'); }catch(e){}
