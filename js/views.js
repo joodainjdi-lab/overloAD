@@ -21,13 +21,14 @@ addEventListener('hashchange',()=>show(location.hash.slice(1)));
 function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080); document.getElementById('ui').style.transform=`translate(-50%,-50%) scale(${s})`;}
 addEventListener('resize',fit); fit(); show(location.hash.slice(1)||'walk');
 
-/* 소리 버튼(화면 오른쪽 위 모서리 고정)과 '거리로 보기·한눈에 비교' 전환 버튼이 겹치면 전환 버튼만 왼쪽으로 비켜 줌 */
-(()=>{const v=document.getElementById('views');if(!v)return;
-  const ZONE=24+40+12;   // 소리 버튼 자리(24px 띄움 + 40px 크기) + 여유 12px
-  function fit(){v.style.marginRight='';const r=v.getBoundingClientRect(),s=r.width/292||1;
-    const over=r.right>innerWidth-ZONE&&r.top<ZONE;
-    if(over)v.style.marginRight=((r.right-(innerWidth-ZONE))/s)+'px';}
-  addEventListener('resize',fit);fit();setTimeout(fit,300);})();
+/* 소리 버튼: 맨 위 한 줄(뒤로·제목 … 보는 기준·보기 전환·닫기)과 같은 높이, 오른쪽 끝에 맞춤 */
+(()=>{ function place(){ const b=document.getElementById('snd'); if(!b){ setTimeout(place,100); return; }
+    const s=Math.min(innerWidth/1920,innerHeight/1080), ox=innerWidth/2-960*s, oy=innerHeight/2-540*s, w=Math.round(Math.max(30,Math.min(40,40*s)));
+    b.style.setProperty('width',w+'px','important'); b.style.setProperty('height',w+'px','important');   // 화면이 작으면 다른 버튼처럼 같이 작아짐
+    b.style.setProperty('right','auto','important');
+    b.style.setProperty('left',(ox+1840*s-w/2)+'px','important');
+    b.style.setProperty('top',(oy+73*s-w/2)+'px','important'); }
+  addEventListener('resize',place); place(); setTimeout(place,300); })();
 
 /* < 이전으로: 한눈에 비교에서는 거리로 보기로, 거리로 보기에서는 구역 선택 지도로 */
 (()=>{const bk=document.querySelector('#ui .back');if(!bk)return;

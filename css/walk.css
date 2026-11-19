@@ -449,3 +449,10 @@ body:has(.drawer.open) .read{opacity:0;pointer-events:none}
 .drawer .panel{top:100px;padding-bottom:40px}
 .drawer{box-shadow:-40px 40px 60px -20px rgba(0,0,0,.5)}
 #drawer .psum .tgD{top:56px;bottom:auto}   /* v113: 펼쳐도 화살표는 큰 숫자 줄에 고정 */
+/* v117: 맨 위 한 줄 30px 위로 · 팝업도 그만큼 위에서 시작 */
+.head,.seg2,.keys{top:47px}
+.drawer{top:120px;height:960px}
+#art>#close{position:absolute;left:1776px;top:59px;right:auto;z-index:60;width:28px;height:28px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;color:var(--ink-2);background:none;cursor:pointer;
+  opacity:0;pointer-events:none;transition:opacity .3s,border-color .2s,color .2s}
+body:has(#drawer.open) #art>#close{opacity:1;pointer-events:auto}
+#art>#close:hover{border-color:var(--ink-3);color:var(--ink)}

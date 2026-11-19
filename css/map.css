@@ -406,3 +406,8 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 .dcmp .ba{font-variant-numeric:tabular-nums}
 .dcmp .rk{margin-left:auto;color:var(--ink-2)}
 .rows div.d-on{opacity:1;color:var(--ink);font-weight:600}
+/* v117: 맨 위 한 줄 30px 위로 (보는 기준·보기 전환·닫기·소리 버튼 한 줄) · 팝업도 위로 */
+.head,.guide{top:47px}
+.filter{left:1176px;top:47px}
+#art>.pclose{left:1776px;top:59px}
+#panel{top:120px;height:960px}

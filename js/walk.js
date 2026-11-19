@@ -358,3 +358,6 @@ addEventListener('resize',fit); fit();
    ② 아래 구역 이동 패널이 한 번 살짝 올라왔다 내려감 → 올리면 펼쳐진다는 걸 보여줌 */
 var walked=false;
 setTimeout(()=>{ const r=$('#route'); r.classList.add('peek'); setTimeout(()=>r.classList.remove('peek'),900); },3000);
+
+/* 닫기(X)는 한눈에 비교처럼 맨 위 한 줄(보기 전환 오른쪽)에 */
+$('#art').appendChild($('#close'));
