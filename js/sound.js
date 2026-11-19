@@ -26,6 +26,12 @@ window.SND=(()=>{
   const owner=window.top===window;               // 맨 바깥 페이지만 실제로 소리를 냄
   const isPage=owner||window.name===SHELL;       // 소리 버튼을 보여 주는 페이지 (walk·map 같은 안쪽 화면은 제외)
   const up=m=>{try{parent.postMessage(m,"*")}catch(_){}};
+  /* 소리 버튼 자리: 모든 페이지에서 같은 곳 — 1920×1080 화면 기준 맨 위 한 줄(뒤로·제목과 같은 높이) 오른쪽 끝, 크기도 화면 비율대로 */
+  function sizeBtn(b,w){["width","height"].forEach(p=>b.style.setProperty(p,w+"px","important"));const ic=b.querySelector("svg");if(ic){const z=Math.round(w*.42);ic.setAttribute("width",z);ic.setAttribute("height",z)}}
+  function fitBtn(){const b=document.getElementById("snd");if(!b)return;
+    if(innerWidth<=760){["left","top","right","width","height"].forEach(p=>b.style.removeProperty(p));return}
+    const s=Math.min(innerWidth/1920,innerHeight/1080),ox=innerWidth/2-960*s,oy=innerHeight/2-540*s,w=Math.round(Math.max(30,52*s));
+    b.style.setProperty("right","auto","important");b.style.setProperty("left",(ox+1834*s-w/2)+"px","important");b.style.setProperty("top",(oy+73*s-w/2)+"px","important");sizeBtn(b,w)}
   let on=true;
   try{on=localStorage.getItem("overload-sound")!=="off"}catch(_){}
 
@@ -50,6 +56,7 @@ window.SND=(()=>{
 #snd::after{display:none!important}
 #snd .w1,#snd .w2{display:none}#snd.on .w1,#snd.on .w2{display:inline}#snd.on .x{display:none}
 @media (max-width:760px){#snd{right:16px!important;top:16px!important}}`;document.head.appendChild(st);
+    fitBtn(); addEventListener("resize",fitBtn);
   }
   function paint(){if(!btn)return;btn.classList.toggle("on",on);btn.setAttribute("aria-pressed",on);btn.setAttribute("aria-label",on?"소리 끄기":"소리 켜기")}
   paint();
@@ -242,7 +249,7 @@ window.SND=(()=>{
     else if(k.startsWith("title:"))document.title=k.slice(6);
     else if(k==="wake")start();
     else if(k.startsWith("pos:")){if(!btn)return;const [x,y,w]=k.slice(4).split(",").map(Number);   // 안쪽 화면이 정한 소리 버튼 자리·크기
-      [["right","auto"],["left",(x-w/2)+"px"],["top",(y-w/2)+"px"],["width",w+"px"],["height",w+"px"]].forEach(([p,v])=>btn.style.setProperty(p,v,"important"))}
+      [["right","auto"],["left",(x-w/2)+"px"],["top",(y-w/2)+"px"]].forEach(([p,v])=>btn.style.setProperty(p,v,"important"));sizeBtn(btn,w)}
     else{if(k==="tap")start();fx(k)}});
 
   /* ───── 페이지 넘기기: 음악이 끊기지 않게 다음 페이지를 이 페이지 위에 겹쳐 엶 ───── */
@@ -255,7 +262,7 @@ iframe[name="${SHELL}"].on{opacity:1}`;document.head.appendChild(st);
   function go(url){
     if(frame){frame.src=url;return}
     frame=document.createElement("iframe");frame.name=SHELL;frame.allow="autoplay; fullscreen";frame.src=url;
-    frame.addEventListener("load",()=>{if(btn)["right","left","top","width","height"].forEach(p=>btn.style.removeProperty(p));   // 다른 화면으로 가면 소리 버튼은 원래 자리로
+    frame.addEventListener("load",()=>{fitBtn();   // 다른 화면으로 가도 소리 버튼은 같은 자리
       frame.classList.add("on");document.documentElement.classList.add("ow-shelled");try{frame.contentWindow.focus()}catch(_){};tell()});
     document.body.appendChild(frame);
     try{history.pushState({ow:1},"")}catch(_){}

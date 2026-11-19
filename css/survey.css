@@ -527,3 +527,5 @@ a{color:inherit;text-decoration:none}
 .pcd .pno b{font-size:34px;color:var(--ink)}
 .pcd .pno span{font-size:16px}
 .pcd .phd{margin-bottom:58px}
+/* v119: 맨 위 한 줄을 다른 화면과 같은 높이로 (소리 버튼과 한 줄) */
+.back,.head{top:47px}
