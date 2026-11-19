@@ -347,7 +347,8 @@ function openDist(d){
   const PW=514, GAP=12, PX=v=>16+X(v)/100*(PW-32), lanes=[], pos=[...DS].sort((a,b)=>a.v-b.v).map(x=>{const px=PX(x.v);
     for(const ln of [0,-1,1,-2,2,-3,3]){ if(!lanes.some(q=>q.ln===ln&&Math.abs(q.px-px)<GAP)){ lanes.push({ln,px}); return {...x,px,ln}; } } return {...x,px,ln:0}; });
   const maxL=Math.max(1,...pos.map(p=>Math.abs(p.ln))), CY=46+maxL*12, H=CY+maxL*12+44;
-  const GR=t=>`color-mix(in oklab,#C3D132 ${Math.round(Math.max(0,Math.min(100,t)))}%,#C25AA6)`;   // 원색 자주(줄어듦) → 그린(늘어남)
+  const GE={total:['#C25AA6','#C3D132'],s:['#7D6676','#C25AA6'],e:['#8A8C6C','#C3D132']}[fid]||['#C25AA6','#C3D132'];   // 전체: 자주→그린 · 간판: 채도 낮은 자주→자주 · 기타: 채도 낮은 그린→그린
+  const GR=t=>`color-mix(in oklab,${GE[1]} ${Math.round(Math.max(0,Math.min(100,t)))}%,${GE[0]})`;
   const gcol=p=>K.rate?GR(X(p.v)):'';
   const dots=pos.map(p=>`<button class="bdot${p.g===d?' me':''}${K.rate?' gr':''}" data-g="${p.g}" style="left:${p.px.toFixed(1)}px;top:${CY+p.ln*12}px;${gcol(p)?`--dc:${gcol(p)}`:''}" aria-label="${p.g} ${lab(p.v)}"><em>${p.g} ${lab(p.v)}</em></button>`).join('');
   const meP=pos.find(p=>p.g===d), meX=Math.min(Math.max(meP.px,60),PW-60);

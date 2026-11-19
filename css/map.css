@@ -603,3 +603,5 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 #dist[data-f="total"] .bee::before,#dist[data-f="s"] .bee::before,#dist[data-f="e"] .bee::before{content:"";position:absolute;left:16px;right:16px;top:calc(var(--cy) - 1px);height:2px;background:linear-gradient(90deg,#C25AA6,#C3D132);opacity:.5}
 #dist .db .tr .ln{opacity:.6}
 #dist[data-f="total"] .bee::before,#dist[data-f="s"] .bee::before,#dist[data-f="e"] .bee::before{background:linear-gradient(90deg in oklab,#C25AA6,#C3D132)}
+#dist[data-f="s"] .bee::before{background:linear-gradient(90deg in oklab,#7D6676,#C25AA6)}
+#dist[data-f="e"] .bee::before{background:linear-gradient(90deg in oklab,#8A8C6C,#C3D132)}
