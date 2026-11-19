@@ -394,3 +394,7 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 .legend .bar i.g-lab,.legend .bar i:hover{transform:scaleY(1.35)}
 /* v114: 묶어 보기 때, 팝업이 닫혀 있으면 이전에 고른 칸도 같이 흐리게 (다른 칸이 같이 켜지던 오류) */
 .grid.grp:not(.focus) .cell.sel:not(.g-on){opacity:.1;filter:none}
+/* v115: TOP 5 사진이 사파리에서 안 보이던 문제 — 배경 이미지·혼합 모드 대신 <img> + 흑백 필터 + 색 막 */
+.t5 .ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;filter:grayscale(1) contrast(1.05)}
+.t5 .ph::before{mix-blend-mode:normal;opacity:.32;z-index:1}
+.t5 .ph::after{z-index:2}

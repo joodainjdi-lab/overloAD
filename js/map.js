@@ -150,7 +150,7 @@ function renderTop5(){
     return `<button class="t5" data-i="${i}" style="--c:${o.el.style.getPropertyValue('--c')||'#333'};--k:${o.el.style.getPropertyValue('--k')||'#fff'}">
       <span class="blk"><span class="ev"><svg width="${(e.w*sc).toFixed(1)}" height="${(e.h*sc).toFixed(1)}" viewBox="0 0 ${e.w} ${e.h}" fill="none" stroke="currentColor" stroke-width="0.5">${e.g}</svg></span>
       <span class="tx"><b>TOP${r+1}</b><span>${o.b}<em>${o.name}</em></span></span><span class="v">${cur.fmt(o)}</span></span>
-      <span class="ph" style="background-image:url('${o.pa}')"></span></button>`;}).join('');
+      <span class="ph"><img src="${o.pa}" alt="" decoding="async"></span></button>`;}).join('');
   $('#t5List').querySelectorAll('.t5').forEach((b,r)=>b.addEventListener('click',e=>{e.stopPropagation(); select(+b.dataset.i,true);}));
 }
 function setT5(){}   // TOP 5는 접지 않고 늘 다 펼쳐 둠 — 팝업을 스크롤해서 봄
