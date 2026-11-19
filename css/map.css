@@ -506,3 +506,51 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 #dist .ax .dot.me em.l{left:0!important}
 #dist .ax em.r{left:auto!important;right:-6px;transform:none!important}
 #dist .ax .dot.me em.r{right:0}
+/* v122: 구역 전체 보기 단순화 — ① 9구역 중 위치 ② 개선 전→현재 ③ 건물 10동 */
+#dist section{padding:22px 0}
+#dist .dh2{padding-bottom:16px}
+#dist .rkhd{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:14px}
+#dist .rkhd b{font-size:22px;font-weight:600;color:var(--mc)}
+#dist .rkhd span{font-size:13px;color:var(--ink-3)}
+#dist .rrs{position:relative;display:flex;flex-direction:column;gap:2px}
+#dist .rr{display:grid;grid-template-columns:72px 1fr 64px;align-items:center;gap:10px;height:24px;width:100%;padding:0;border:0;background:none;color:var(--ink-3);font-size:14px;text-align:left;cursor:pointer}
+#dist .rr .tr{position:relative;height:100%}
+#dist .rr .tr::before{content:"";position:absolute;left:var(--z);top:0;bottom:0;width:1px;background:var(--line-2)}
+#dist .rr .tr i{position:absolute;top:7px;bottom:7px;background:#3d3d3d;transition:background .2s}
+#dist .rr .v{text-align:right;font-variant-numeric:tabular-nums}
+#dist .rr:hover{color:var(--ink-2)} #dist .rr:hover .tr i{background:#5a5a5a}
+#dist .rr.me{color:var(--ink);font-weight:600;cursor:default}
+#dist .rr.me .tr i{background:var(--mc);top:5px;bottom:5px}
+#dist .rr.me .v{color:var(--mc)}
+#dist .rrs .ref{position:absolute;top:-4px;bottom:-4px;left:calc(72px + 10px + (100% - 72px - 64px - 20px) * var(--ref) / 100%);border-left:1px dashed var(--ink-3);pointer-events:none}
+#dist .rrs .ref em{position:absolute;bottom:-18px;left:0;transform:translateX(-50%);white-space:nowrap;font-style:normal;font-size:11px;color:var(--ink-3)}
+#dist .s1{padding-bottom:30px}
+#dist .hero2{display:flex;flex-direction:column;gap:6px;margin-bottom:18px}
+#dist .hero2 .rate{font-size:52px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums;color:var(--ink)}
+#dist .hero2 .say{font-size:16px;color:var(--ink-2)}
+#dist .ba2{display:grid;grid-template-columns:52px 1fr 76px;gap:12px;align-items:center;margin-top:8px}
+#dist .ba2 .lb{font-size:14px;color:var(--ink-3)}
+#dist .ba2 .bar{height:28px;display:flex;gap:2px}
+#dist .ba2 .bar i{display:block;height:100%;transform-origin:left;animation:dgrow .7s cubic-bezier(.2,.8,.2,1) both}
+#dist .ba2.bf .bar i{filter:saturate(.25) brightness(.55)}
+#dist .ba2 .bar i.s{background:var(--cs)} #dist .ba2 .bar i.w{background:var(--cw)} #dist .ba2 .bar i.t{background:var(--ct)} #dist .ba2 .bar i.k{background:#e8e8e8}
+#dist .ba2 b{text-align:right;font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+#dist .ba2.bf b{color:var(--ink-3);font-weight:400}
+#dist .ba2 b small{font-size:13px;font-weight:400;color:var(--ink-3);margin-left:2px}
+#dist .lgw{margin-top:12px;padding-left:64px}
+#dist .lg3{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-3)}
+#dist .lg3 em{font-style:normal;display:flex;align-items:center;gap:6px}
+#dist .lg3 em::before{content:"";width:12px;height:6px}
+#dist .lg3 .b::before{background:#4a4a4a} #dist .lg3 .a::before{background:var(--mc)}
+#dist .pbs{display:flex;flex-direction:column;gap:4px}
+#dist .pb{display:grid;grid-template-columns:40px 1fr 56px;gap:10px;align-items:center;height:26px;width:100%;padding:0;border:0;background:none;color:inherit;cursor:pointer;text-align:left}
+#dist .pb .id{font-size:13px;color:var(--ink-3)}
+#dist .pb .tr{display:flex;flex-direction:column;gap:2px}
+#dist .pb .tr i{display:block;height:8px;min-width:1px;transform-origin:left;animation:dgrow .6s cubic-bezier(.2,.8,.2,1) both}
+#dist .pb .tr i.b{background:#4a4a4a}
+#dist .pb .tr i.a{background:var(--mc)}
+#dist .pb .v{text-align:right;font-size:14px;font-variant-numeric:tabular-nums;color:var(--ink-3)}
+#dist .pb .v.up{color:var(--ink)} 
+#dist .pb:hover .id,#dist .pb:hover .v{color:var(--ink)}
+#dist .pb:hover .tr i.a{filter:brightness(1.2)}
+#dist .hd{margin-bottom:12px}
