@@ -590,3 +590,11 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 #dist .lg3 .b::before{width:9px;height:9px;border-radius:50%;border:1.5px solid #8a8a8a;background:none;box-sizing:border-box}
 #dist .lg3 .a::before{width:10px;height:10px;border-radius:50%;background:var(--mc)}
 #dist .lg3 .cnt{margin-left:6px;color:var(--ink-2)}
+/* v124: 9구역 점 작게·간격 정리, 전체 광고물은 자주→그린 그라데이션 */
+#dist .bee .bdot{width:10px;height:10px;margin:-5px 0 0 -5px}
+#dist .bee .bdot.me{width:16px;height:16px;margin:-8px 0 0 -8px;box-shadow:0 0 0 4px color-mix(in srgb,var(--mc) 22%,transparent)}
+#dist .bee .bdot.gr{background:var(--dc);opacity:.55}
+#dist .bee .bdot.gr:hover{background:var(--dc);opacity:1}
+#dist .bee .bdot.gr.me{background:var(--dc);opacity:1;box-shadow:0 0 0 4px color-mix(in srgb,var(--dc) 25%,transparent)}
+#dist[data-f="total"] .bee::before{content:"";position:absolute;left:16px;right:16px;top:calc(var(--cy) - 1px);height:2px;background:linear-gradient(90deg,#A36693,#C3D132);opacity:.35}
+#dist .bee .melab{font-size:14px}

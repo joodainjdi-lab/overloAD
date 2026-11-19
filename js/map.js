@@ -339,20 +339,22 @@ function openDist(d){
   // ① 9구역 중 어디? — 순위 막대 (겹치지 않음)
   const DS=ORDER.map(g=>{const p=K.pair(items.filter(o=>o.d===g));return {g,v:K.rate?rateN(p[0],p[1]):p[1]};}).sort((a,b)=>b.v-a.v);
   const ref=K.rate?rateN(ALLP[0],ALLP[1]):ALLP[1], rk=DS.findIndex(x=>x.g===d)+1;
-  const lo=K.rate?Math.min(0,...DS.map(x=>x.v)):0, hi=Math.max(0,...DS.map(x=>x.v)), span=(hi-lo)||1, X=v=>((v-lo)/span*100);
+  const vmin=Math.min(...DS.map(x=>x.v),ref), vmax=Math.max(...DS.map(x=>x.v),ref);   // 값이 있는 범위만큼 넓게 펼침 (가게당은 0부터 시작하지 않음)
+  const lo=K.rate?Math.min(0,vmin):vmin, hi=K.rate?Math.max(0,vmax):vmax, span=(hi-lo)||1, X=v=>((v-lo)/span*100);
   const lab=v=>K.rate?`${v>0?'+':v<0?'−':''}${Math.abs(Math.round(v))}%`:`${f1(v)}개`;
   const z=X(0);
   // 점이 겹치지 않게 위아래로 비켜 놓기 (폭 514px 기준)
-  const PW=514, GAP=17, PX=v=>16+X(v)/100*(PW-32), lanes=[], pos=[...DS].sort((a,b)=>a.v-b.v).map(x=>{const px=PX(x.v);
+  const PW=514, GAP=12, PX=v=>16+X(v)/100*(PW-32), lanes=[], pos=[...DS].sort((a,b)=>a.v-b.v).map(x=>{const px=PX(x.v);
     for(const ln of [0,-1,1,-2,2,-3,3]){ if(!lanes.some(q=>q.ln===ln&&Math.abs(q.px-px)<GAP)){ lanes.push({ln,px}); return {...x,px,ln}; } } return {...x,px,ln:0}; });
-  const maxL=Math.max(1,...pos.map(p=>Math.abs(p.ln))), CY=46+maxL*16, H=CY+maxL*16+44;
-  const dots=pos.map(p=>`<button class="bdot${p.g===d?' me':''}" data-g="${p.g}" style="left:${p.px.toFixed(1)}px;top:${CY+p.ln*16}px" aria-label="${p.g} ${lab(p.v)}"><em>${p.g} ${lab(p.v)}</em></button>`).join('');
+  const maxL=Math.max(1,...pos.map(p=>Math.abs(p.ln))), CY=46+maxL*12, H=CY+maxL*12+44;
+  const gcol=p=>fid==='total'?`color-mix(in srgb,#C3D132 ${Math.round(X(p.v))}%,#A36693)`:'';   // 전체 광고물: 자주(많이 줄어듦) → 그린(많이 늘어남)
+  const dots=pos.map(p=>`<button class="bdot${p.g===d?' me':''}${fid==='total'?' gr':''}" data-g="${p.g}" style="left:${p.px.toFixed(1)}px;top:${CY+p.ln*12}px;${gcol(p)?`--dc:${gcol(p)}`:''}" aria-label="${p.g} ${lab(p.v)}"><em>${p.g} ${lab(p.v)}</em></button>`).join('');
   const meP=pos.find(p=>p.g===d), meX=Math.min(Math.max(meP.px,60),PW-60);
   const rankBox=`<div class="rkhd"><b>9구역 중 ${rk}위</b><span>${K.name} ${K.rate?'증감률':'(현재)'} · ${K.rate?'많이 늘어난':'많은'} 순</span></div>
     <div class="bee" style="height:${H}px;--cy:${CY}px">
       <span class="axis"></span>${K.rate?`<span class="tick" style="left:${PX(0).toFixed(1)}px"><em>0%</em></span>`:''}
       <span class="refl" style="left:${PX(ref).toFixed(1)}px"><em>9구역 전체 ${lab(ref)}</em></span>
-      <span class="melab" style="left:${meX.toFixed(1)}px;top:${CY+meP.ln*16-30}px">${d} <b>${lab(meP.v)}</b></span>
+      <span class="melab" style="left:${meX.toFixed(1)}px;top:${CY+meP.ln*12-24}px">${d} <b style="${gcol(meP)?`color:${gcol(meP)}`:''}">${lab(meP.v)}</b></span>
       ${dots}
       <span class="end l">${K.rate?'많이 줄어듦':'적음'}</span><span class="end r">${K.rate?'많이 늘어남':'많음'}</span>
     </div>`;
@@ -368,7 +370,7 @@ function openDist(d){
   const bld=BV.map(x=>{const xb=(x.b/BM*100).toFixed(2), xa=(x.a/BM*100).toFixed(2), l=Math.min(+xb,+xa), w=Math.abs(xa-xb);
     return `<button class="db" data-i="${items.indexOf(x.o)}" title="${x.o.d} ${x.o.b} ${x.o.name} · ${num(x.b)} → ${num(x.a)}${u}"><span class="id">${x.o.b}</span><span class="tr"><i class="ln ${x.a>=x.b?'up':'dn'}" style="left:${l}%;width:${w}%"></i><i class="ob" style="left:${xb}%"></i><i class="oa" style="left:${xa}%"></i></span><span class="v ${x.a>x.b?'up':x.a<x.b?'dn':''}">${x.b?fmtRate(x.b,x.a):(x.a?'새로':'0')}</span></button>`;}).join('');
   const dist=document.getElementById('dist')||(()=>{const e=document.createElement('div');e.id='dist';$('#panel .pin').prepend(e);return e;})();
-  dist.dataset.f=fid; dist.style.setProperty('--mc',K.col);
+  dist.dataset.f=fid; dist.style.setProperty('--mc',fid==='total'?gcol(meP):K.col);   // 전체 광고물은 이 구역 위치의 그라데이션 색
   dist.innerHTML=`
   <header class="dh2"><h2>${d}</h2><p>${YEAR[d]}년 간판개선사업 · 건물 ${L.length}동 · <b>${K.name}</b> 기준</p></header>
   <section class="s1">${rankBox}</section>
