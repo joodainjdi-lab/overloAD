@@ -78,7 +78,7 @@ addEventListener('resize',fit); fit(); draw();
   $('#pcPrev').addEventListener('click',e=>{hit(e.currentTarget);move(-1);});
   $('#pcNext').addEventListener('click',e=>{hit(e.currentTarget);move(1);});
   dots.forEach((d,i)=>d.addEventListener('click',()=>goTo(i)));
-  cards.forEach((c,i)=>c.addEventListener('click',()=>{ if(pc._swiped) return; if(c.dataset.pos==='l'||c.dataset.pos==='r') goTo(i); }));
+  cards.forEach((c,i)=>c.addEventListener('click',()=>{ if(pc._swiped) return; if(c.dataset.pos==='l'||c.dataset.pos==='r'){ if(window.SND&&SND.tap) SND.tap(); goTo(i); } }));   // 옆 카드를 눌러 넘길 때도 화살표와 같은 '톡'
   pc.addEventListener('keydown',e=>{
     const k={ArrowLeft:()=>move(-1),ArrowRight:()=>move(1),Home:()=>goTo(0),End:()=>goTo(N-1)}[e.key];
     if(k){ e.preventDefault(); k(); }

@@ -17,7 +17,8 @@ const FILTERS=[
  {id:'e',pal:'grn',name:'기타 광고물',q:'기타 광고물, 얼마나 늘었나?',desc:'개선 전 대비 증감률 %',what:'<b>기타 광고물</b> 증감률',unitTx:'창문이용·입간판·배너·현수막 · 개선 전 → 현재, %',L:'<b>많이 줄어든</b>',R:'<b>많이 늘어난</b>',v:o=>rate(...o.e),fmt:o=>fmtRate(...o.e)},
 ];
 function fmtRate(b,a){ if(b===0) return a===0?'0%':'-'; const r=Math.round((a-b)/b*100); return (r>0?'+':r<0?'−':'')+Math.abs(r)+'%'; }
-const BA=(b,a)=>`<span class="pre">${b}</span><span class="ar">→</span><span class="now">${a}</span>`; // 개선 전(작게·흐리게) → 현재(진하게)
+const nf=v=>typeof v==='number'&&!Number.isInteger(v)?+v.toFixed(1):v;   // 평균값은 소수 한 자리
+const BA=(b,a)=>`<span class="pre">${nf(b)}</span><span class="ar">→</span><span class="now">${nf(a)}</span>`; // 개선 전(작게·흐리게) → 현재(진하게)
 function fmtDelta(b,a){const d=a-b; return (d>0?'+':d<0?'−':'±')+Math.abs(d);}
 const mix=(p,q,t)=>p.map((v,i)=>Math.round(v+(q[i]-v)*t));
 const PAL={
@@ -197,7 +198,8 @@ addEventListener('message',e=>{ const m=e.data; if(!m||m.ov!=='apply') return;
   if(!m.b){ const r=[...document.querySelectorAll('#rows div')].find(x=>x.dataset.d===m.d); if(r){r.classList.remove('flash'); void r.offsetWidth; r.classList.add('flash');} }
 
 });
-function setFocus(v){focusOn=v; if(v) touched=true; setTimeout(post); grid.classList.toggle('focus',v);
+function setFocus(v){ if(distD){ distD=null; $('#panel').classList.remove('dmode'); grpLock=null; showGrp(null); document.querySelectorAll('#rows div').forEach(r=>r.classList.remove('d-on')); }
+  focusOn=v; if(v) touched=true; setTimeout(post); grid.classList.toggle('focus',v);
   $('#panel').classList.toggle('open',v); $('#panel').setAttribute('aria-hidden',!v); $('#art').classList.toggle('pop',v);   // 건물을 고르면 오른쪽 팝업이 열리고 비트맵은 왼쪽으로 비켜 줌 if(sel>=0){const c=items[sel].el.style.getPropertyValue('--c'); $('#art').style.setProperty('--sel', c?`color-mix(in srgb, ${c} 70%, #fff)`:'var(--ink)');}
   document.querySelectorAll('#rows div').forEach(r=>{r.classList.toggle('on',v&&r.dataset.d===items[sel].d); r.classList.toggle('dim',v&&r.dataset.d!==items[sel].d);});}
 $('#art').addEventListener('click',e=>{ if(!e.target.closest('.panel,.filter,.top5,.rows,.cols,.legend,.pclose')){ setFocus(false);} if(!e.target.closest('.filter')) filterEl.classList.remove('open'); if(!e.target.closest('.top5')) setT5(false); });
@@ -295,13 +297,33 @@ function showGrp(g){
   document.querySelectorAll('#legend .bar i').forEach(b=>b.classList.toggle('g-lab',on&&g.t==='s'&&+b.dataset.s===g.v));
   $('#legend').classList.toggle('g-any',on&&g.t==='s');
 }
-function bindGrp(el,get){
+function bindGrp(el,get,onClick){
   el.addEventListener('mouseover',e=>{const g=get(e.target); if(g) showGrp(g);});
   el.addEventListener('mouseleave',()=>showGrp(grpLock));
   el.addEventListener('click',e=>{const g=get(e.target); if(!g) return; e.stopPropagation();
+    if(onClick){ onClick(g); if(window.SND&&SND.tap) SND.tap(); return; }
     grpLock=grpKey(grpLock)===grpKey(g)?null:g; showGrp(grpLock||g); if(window.SND&&SND.tap) SND.tap();});
 }
 document.querySelectorAll('#cols div').forEach((c,i)=>c.dataset.b='B'+String(i+1).padStart(2,'0'));
-bindGrp($('#rows'),t=>{const r=t.closest('#rows div'); return r&&{t:'d',v:r.dataset.d};});
+bindGrp($('#rows'),t=>{const r=t.closest('#rows div'); return r&&{t:'d',v:r.dataset.d};},
+  g=>{ if(distD===g.v){ setFocus(false); return; } openDist(g.v); });   // 구 이름을 누르면 그 구역 평균을 팝업으로
 bindGrp($('#cols'),t=>{const c=t.closest('#cols div'); return c&&{t:'b',v:c.dataset.b};});
 bindGrp($('#legend'),t=>{const b=t.closest('.bar i'); return b&&cur&&{t:'s',v:+b.dataset.s};});
+
+/* 구역 평균: 구 이름을 누르면 그 구역 10동의 평균을 건물 팝업과 같은 틀로 보여 줌 (9구역 평균과 비교) */
+var distD=null;
+const r1=v=>Math.round(v*10)/10;
+function avgOf(list,label,sub){ const m=k=>[0,1].map(j=>r1(list.reduce((a,o)=>a+o[k][j],0)/list.length));
+  return {d:label,b:'',name:sub,s:m('s'),w:m('w'),t:m('t'),e:m('e'),st:m('st'),fl:r1(list.reduce((a,o)=>a+o.fl,0)/list.length),notes:[],lo:false,pb:'',pa:''}; }
+function openDist(d){
+  const list=items.filter(o=>o.d===d), A=avgOf(list,d+' 평균','건물 '+list.length+'동 평균'), ALL=avgOf(items,'9구역','');
+  distD=d; focusOn=false; grid.classList.remove('focus'); items.forEach(o=>o.el.classList.remove('sel'));
+  grpLock={t:'d',v:d}; showGrp(grpLock);
+  document.querySelectorAll('#rows div').forEach(r=>{r.classList.remove('on','dim'); r.classList.toggle('d-on',r.dataset.d===d);});
+  render(A); $('#who h2').innerHTML=`${d}<span class="nm">평균 · 건물 ${list.length}동</span>`;
+  const [tb,ta]=tot(A),[ab,aa]=tot(ALL), rk=ORDER.map(g=>{const L=items.filter(o=>o.d===g),T=L.reduce((x,o)=>[x[0]+tot(o)[0],x[1]+tot(o)[1]],[0,0]);return {g,r:(T[1]-T[0])/T[0]};}).sort((a,b)=>a.r-b.r);
+  const n=rk.findIndex(x=>x.g===d)+1;
+  $('#sum').insertAdjacentHTML('beforeend',`<div class="dcmp"><span>9구역 평균</span><b>${fmtRate(ab,aa)}</b><span class="ba">${BA(ab,aa)}개</span><span class="rk">9구역 중 ${n===1?'가장 많이 줄었어요':n===9?'가장 많이 늘었어요':`줄어든 순 ${n}번째`}</span></div>`);
+  const pn=$('#panel'); pn.classList.add('open','dmode'); pn.setAttribute('aria-hidden','false'); $('#art').classList.add('pop');
+  touched=true; try{ if(parent!==window) parent.postMessage({ov:'state',view:'map',d,b:null,focus:false,user:true},'*'); }catch(e){}
+}
