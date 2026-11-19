@@ -605,3 +605,8 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 #dist[data-f="total"] .bee::before,#dist[data-f="s"] .bee::before,#dist[data-f="e"] .bee::before{background:linear-gradient(90deg in oklab,#C25AA6,#C3D132)}
 #dist[data-f="s"] .bee::before{background:linear-gradient(90deg in oklab,#7D6676,#C25AA6)}
 #dist[data-f="e"] .bee::before{background:linear-gradient(90deg in oklab,#8A8C6C,#C3D132)}
+/* v127: B 번호는 작고 흐리게 (위계 낮춤), 마우스 반응 없음 */
+.cols{top:158px}
+.cols div{font-size:13px;opacity:.3;cursor:default;letter-spacing:.02em}
+.cols div:hover{opacity:.3;color:inherit}
+.axb{font-size:12px;opacity:.5}

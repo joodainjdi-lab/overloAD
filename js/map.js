@@ -308,7 +308,7 @@ function bindGrp(el,get,onClick){
 document.querySelectorAll('#cols div').forEach((c,i)=>c.dataset.b='B'+String(i+1).padStart(2,'0'));
 bindGrp($('#rows'),t=>{const r=t.closest('#rows div'); return r&&{t:'d',v:r.dataset.d};},
   g=>{ if(distD===g.v){ setFocus(false); return; } openDist(g.v); });   // 구 이름을 누르면 그 구역 평균을 팝업으로
-bindGrp($('#cols'),t=>{const c=t.closest('#cols div'); return c&&{t:'b',v:c.dataset.b};});
+// B 번호(열)는 묶어 보기에서 뺌 — 건물 이름일 뿐이라 같은 번호끼리 묶을 의미가 없음
 bindGrp($('#legend'),t=>{const b=t.closest('.bar i'); return b&&cur&&{t:'s',v:+b.dataset.s};});
 
 /* 구역 평균: 구 이름을 누르면 그 구역 10동의 평균을 건물 팝업과 같은 틀로 보여 줌 (9구역 평균과 비교) */
