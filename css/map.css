@@ -411,3 +411,9 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 .filter{left:1176px;top:47px}
 #art>.pclose{left:1776px;top:59px}
 #panel{top:120px;height:960px}
+/* v118: 닫기(X)는 다시 팝업 안 오른쪽 위 · 보는 기준은 보기 전환 왼쪽 · 전체 광고물 TOP 5는 자주→그린 그라데이션 */
+.filter{left:1208px}
+#panel>.pin{top:76px}
+#panel[data-f="total"] .t5 .blk{background:linear-gradient(90deg,#A36693,#C3D132);color:#101010}
+#panel[data-f="total"] .t5 .ph::after{background:linear-gradient(90deg,#C3D132 0%,rgba(195,209,50,.7) 22%,rgba(195,209,50,.15) 65%,transparent 100%)}
+#panel[data-f="total"] .t5 .ph::before{background:#C3D132}

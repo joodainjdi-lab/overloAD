@@ -456,3 +456,4 @@ body:has(.drawer.open) .read{opacity:0;pointer-events:none}
   opacity:0;pointer-events:none;transition:opacity .3s,border-color .2s,color .2s}
 body:has(#drawer.open) #art>#close{opacity:1;pointer-events:auto}
 #art>#close:hover{border-color:var(--ink-3);color:var(--ink)}
+.drawer>.x{top:28px;right:63px}

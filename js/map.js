@@ -243,7 +243,7 @@ let openE=false;
 { const pn=$('#panel'); pn.insertBefore($('#who'),$('#photo')); }
 { const pn=$('#panel'), x=document.createElement('button'); x.className='x'; x.setAttribute('aria-label','닫기'); x.title='닫기 (Esc)';
   x.innerHTML='<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3l8 8M11 3l-8 8"/></svg>';
-  x.classList.add('pclose'); x.addEventListener('click',e=>{e.stopPropagation(); setFocus(false);}); $('#art').appendChild(x); pn.setAttribute('aria-hidden','true'); }   // 닫기(X)는 맨 위 줄에
+  x.addEventListener('click',e=>{e.stopPropagation(); setFocus(false);}); pn.prepend(x); pn.setAttribute('aria-hidden','true'); }   // 닫기(X)는 팝업 안 오른쪽 위
 { const pn=$('#panel'); pn.appendChild($('#top5'));   // TOP 5는 팝업 맨 아래
   const pin=document.createElement('div'); pin.className='pin';   // 내용만 스크롤 — 맨 윗줄(보는 기준·닫기)은 가리지 않음
   [...pn.children].filter(c=>!c.classList.contains('x')).forEach(c=>pin.appendChild(c)); pn.appendChild(pin); }   // 거리로 보기처럼 건물 코드를 사진 위로

@@ -359,5 +359,3 @@ addEventListener('resize',fit); fit();
 var walked=false;
 setTimeout(()=>{ const r=$('#route'); r.classList.add('peek'); setTimeout(()=>r.classList.remove('peek'),900); },3000);
 
-/* 닫기(X)는 한눈에 비교처럼 맨 위 한 줄(보기 전환 오른쪽)에 */
-$('#art').appendChild($('#close'));

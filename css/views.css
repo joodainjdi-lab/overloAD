@@ -23,3 +23,5 @@ iframe.off{opacity:0;pointer-events:none}
 /* v117: 맨 위 한 줄을 30px 위로, 소리 버튼까지 한 줄 */
 .views{top:47px;right:160px}
 .back{top:47px}
+/* v118: 닫기(X)는 팝업 안으로 → 보기 전환을 다시 오른쪽으로, 소리 버튼과 한 줄 */
+.views{right:128px}
