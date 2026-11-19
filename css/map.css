@@ -368,3 +368,27 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 /* v111: 고른 건물 + 색 켜짐이 겹칠 때 가볍게 — 흐린 칸은 filter 대신 투명도만 */
 .grid.focus .cell:not(.sel){opacity:.07;filter:none}
 .grid.focus .cell.seq{animation:none}
+/* v112: 비트맵 왼쪽 고정 · 보는 기준·보기 전환·닫기 한 줄 · TOP 5 늘 펼침 + 아래 그림자 · 묶어 보기 */
+.axb,.cols,.rows,.vline,.grid,.legend{transform:none}
+.filter{left:1208px;right:auto;top:77px}
+#art>.pclose{position:absolute;left:1829px;top:89px;z-index:50;width:28px;height:28px;border-radius:50%;border:1px solid var(--line-2);display:grid;place-items:center;color:var(--ink-2);background:none;cursor:pointer;
+  opacity:0;pointer-events:none;transition:opacity .3s,border-color .2s,color .2s}
+#art.pop>.pclose{opacity:1;pointer-events:auto}
+#art>.pclose:hover{border-color:var(--ink-3);color:var(--ink)}
+#panel>.pin{top:40px;padding-bottom:140px}
+#panel::after{content:"";position:absolute;left:0;right:0;bottom:0;height:160px;background:linear-gradient(to bottom,rgba(16,16,16,0),var(--bg) 85%);pointer-events:none;z-index:3}
+#panel .t5-hd{cursor:default;pointer-events:none}
+#panel .t5-hd:hover{color:var(--ink-3)}
+#panel .top5 .t5:nth-child(n+2){height:64px;opacity:1;filter:none}
+#panel .t5-list{gap:6px}
+/* 묶어 보기 */
+.rows div,.cols div,.legend .bar i{cursor:pointer}
+.cols div{transition:color .25s,opacity .25s}
+.cols{opacity:1}.cols div{opacity:.38}
+.cols div:hover,.cols div.g-lab,.rows div:hover,.rows div.g-lab{opacity:1;color:var(--ink)}
+.grid.grp .cell{transition:background-color .55s cubic-bezier(.2,.7,.2,1) var(--dl,0ms),color .55s var(--dl,0ms),opacity .25s,transform .35s cubic-bezier(.2,.8,.2,1.2),box-shadow .35s}
+.grid.grp .cell:not(.g-on):not(.sel){opacity:.1;filter:none}
+.grid.grp .cell.g-on:not(.sel){opacity:1;filter:none}
+.legend .bar i{transition:opacity .25s,transform .25s}
+.legend.g-any .bar i:not(.g-lab){opacity:.25}
+.legend .bar i.g-lab,.legend .bar i:hover{transform:scaleY(1.35)}

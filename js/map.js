@@ -107,8 +107,8 @@ function applyFilter(f){
   leg.querySelector('.bar').style.background='none';
   let sn=leg.querySelector('.sn'); if(!sn){sn=document.createElement('div');sn.className='sn';leg.appendChild(sn);}
   sn.innerHTML=`<span>${leg.dataset.l} · 82–90위</span><span>1–9위 · ${leg.dataset.r}</span>`;
-  leg.querySelector('.bar').innerHTML=STEPS.slice().reverse().map((s,i)=>`<i style="background:${s.c}" title="${10-i}단계 · ${(9-i)*9+1}–${(10-i)*9}위"></i>`).join('');
-  grid.classList.add('ranked');
+  leg.querySelector('.bar').innerHTML=STEPS.slice().reverse().map((s,i)=>`<i data-s="${10-i}" style="background:${s.c}" title="${10-i}단계 · ${(9-i)*9+1}–${(10-i)*9}위"></i>`).join('');
+  grid.classList.add('ranked'); if(typeof showGrp==='function') showGrp(grpLock);
   if(seqReady&&window.SND&&SND.light){ const t=[]; items.forEach(o=>{const k=o.step-1; t[k]=Math.min(t[k]??1e9,o.seq*16);}); SND.light(t.filter(v=>v<1e9)); }   // 칸 색이 단계별로 켜질 때 소리
   if(seqReady){ // 보는 기준을 바꿔도 고른 건물·팝업은 그대로 — 색만 1→90위 순서로 다시 켜짐
     items.forEach(o=>o.el.classList.remove('in','seq'));
@@ -153,9 +153,8 @@ function renderTop5(){
       <span class="ph" style="background-image:url('${o.pa}')"></span></button>`;}).join('');
   $('#t5List').querySelectorAll('.t5').forEach((b,r)=>b.addEventListener('click',e=>{e.stopPropagation(); select(+b.dataset.i,true);}));
 }
-function setT5(v){t5Open=v; $('#top5').classList.toggle('open',v); $('#t5Hd').setAttribute('aria-expanded',v);
-  const pin=document.querySelector('#panel .pin'); if(v&&pin) setTimeout(()=>pin.scrollTo({top:pin.scrollHeight,behavior:'smooth'}),380);}   // 펼치면 팝업을 아래로 내려 TOP 5가 다 보이게
-$('#t5Hd').addEventListener('click',e=>{e.stopPropagation(); setT5(!t5Open);});
+function setT5(){}   // TOP 5는 접지 않고 늘 다 펼쳐 둠 — 팝업을 스크롤해서 봄
+$('#top5').classList.add('open'); { const h=$('#t5Hd'); h.removeAttribute('aria-expanded'); h.tabIndex=-1; h.querySelector('svg')?.remove(); }
 
 /* tooltip */
 const tip=$('#tip');
@@ -201,9 +200,9 @@ addEventListener('message',e=>{ const m=e.data; if(!m||m.ov!=='apply') return;
 function setFocus(v){focusOn=v; if(v) touched=true; setTimeout(post); grid.classList.toggle('focus',v);
   $('#panel').classList.toggle('open',v); $('#panel').setAttribute('aria-hidden',!v); $('#art').classList.toggle('pop',v);   // 건물을 고르면 오른쪽 팝업이 열리고 비트맵은 왼쪽으로 비켜 줌 if(sel>=0){const c=items[sel].el.style.getPropertyValue('--c'); $('#art').style.setProperty('--sel', c?`color-mix(in srgb, ${c} 70%, #fff)`:'var(--ink)');}
   document.querySelectorAll('#rows div').forEach(r=>{r.classList.toggle('on',v&&r.dataset.d===items[sel].d); r.classList.toggle('dim',v&&r.dataset.d!==items[sel].d);});}
-$('#art').addEventListener('click',e=>{ if(!e.target.closest('.panel,.filter,.top5')){ setFocus(false);} if(!e.target.closest('.filter')) filterEl.classList.remove('open'); if(!e.target.closest('.top5')) setT5(false); });
+$('#art').addEventListener('click',e=>{ if(!e.target.closest('.panel,.filter,.top5,.rows,.cols,.legend,.pclose')){ setFocus(false);} if(!e.target.closest('.filter')) filterEl.classList.remove('open'); if(!e.target.closest('.top5')) setT5(false); });
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){setFocus(false);filterEl.classList.remove('open');}
+  if(e.key==='Escape'){setFocus(false);filterEl.classList.remove('open');grpLock=null;showGrp(null);}
   if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key) && document.activeElement?.classList.contains('cell')){
     e.preventDefault(); let r=Math.floor(sel/10), c=sel%10;
     if(e.key==='ArrowLeft')c=(c+9)%10; if(e.key==='ArrowRight')c=(c+1)%10; if(e.key==='ArrowUp')r=(r+8)%9; if(e.key==='ArrowDown')r=(r+1)%9;
@@ -242,7 +241,7 @@ let openE=false;
 { const pn=$('#panel'); pn.insertBefore($('#who'),$('#photo')); }
 { const pn=$('#panel'), x=document.createElement('button'); x.className='x'; x.setAttribute('aria-label','닫기'); x.title='닫기 (Esc)';
   x.innerHTML='<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3l8 8M11 3l-8 8"/></svg>';
-  x.addEventListener('click',e=>{e.stopPropagation(); setFocus(false);}); pn.prepend(x); pn.setAttribute('aria-hidden','true'); }
+  x.classList.add('pclose'); x.addEventListener('click',e=>{e.stopPropagation(); setFocus(false);}); $('#art').appendChild(x); pn.setAttribute('aria-hidden','true'); }   // 닫기(X)는 맨 위 줄에
 { const pn=$('#panel'); pn.appendChild($('#top5'));   // TOP 5는 팝업 맨 아래
   const pin=document.createElement('div'); pin.className='pin';   // 내용만 스크롤 — 맨 윗줄(보는 기준·닫기)은 가리지 않음
   [...pn.children].filter(c=>!c.classList.contains('x')).forEach(c=>pin.appendChild(c)); pn.appendChild(pin); }   // 거리로 보기처럼 건물 코드를 사진 위로
@@ -282,3 +281,27 @@ select(0,false);
   const place=()=>{ t5.style.top='792px'; t5.style.bottom='auto'; };   // 보는 기준과 상관없이 같은 자리
   try{ new ResizeObserver(place).observe(pn); new ResizeObserver(place).observe(t5); }catch(e){}
   addEventListener('load',place); setTimeout(place,300);})();
+
+/* 묶어 보기: 구 이름(행)·B 번호(열)·색띠에 마우스를 올리거나 누르면 그 묶음 칸만 강조 (누르면 고정, 다시 누르거나 Esc로 해제) */
+var grpLock=null;
+const grpKey=g=>g?g.t+':'+g.v:'';
+function inGrp(o,g){ return g.t==='d'?o.d===g.v : g.t==='b'?o.b===g.v : o.step===g.v; }
+function showGrp(g){
+  const on=!!g&&(g.t!=='s'||!!cur);
+  grid.classList.toggle('grp',on);
+  items.forEach(o=>o.el.classList.toggle('g-on',on&&inGrp(o,g)));
+  document.querySelectorAll('#rows div').forEach(r=>r.classList.toggle('g-lab',on&&g.t==='d'&&r.dataset.d===g.v));
+  document.querySelectorAll('#cols div').forEach(c=>c.classList.toggle('g-lab',on&&g.t==='b'&&c.dataset.b===g.v));
+  document.querySelectorAll('#legend .bar i').forEach(b=>b.classList.toggle('g-lab',on&&g.t==='s'&&+b.dataset.s===g.v));
+  $('#legend').classList.toggle('g-any',on&&g.t==='s');
+}
+function bindGrp(el,get){
+  el.addEventListener('mouseover',e=>{const g=get(e.target); if(g) showGrp(g);});
+  el.addEventListener('mouseleave',()=>showGrp(grpLock));
+  el.addEventListener('click',e=>{const g=get(e.target); if(!g) return; e.stopPropagation();
+    grpLock=grpKey(grpLock)===grpKey(g)?null:g; showGrp(grpLock||g); if(window.SND&&SND.tap) SND.tap();});
+}
+document.querySelectorAll('#cols div').forEach((c,i)=>c.dataset.b='B'+String(i+1).padStart(2,'0'));
+bindGrp($('#rows'),t=>{const r=t.closest('#rows div'); return r&&{t:'d',v:r.dataset.d};});
+bindGrp($('#cols'),t=>{const c=t.closest('#cols div'); return c&&{t:'b',v:c.dataset.b};});
+bindGrp($('#legend'),t=>{const b=t.closest('.bar i'); return b&&cur&&{t:'s',v:+b.dataset.s};});
