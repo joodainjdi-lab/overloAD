@@ -554,3 +554,16 @@ a{color:inherit;text-decoration:none}
 #adPop .apc p{margin:4px 0 0;font-size:13px;line-height:1.5;color:var(--ink-2)}
 #adPop .apc.s b{color:var(--plum-hi)} #adPop .apc.w b,#adPop .apc.t b{color:var(--lime)}
 #adPop .aps{margin:16px 0 0;font-size:11px;color:var(--ink-3)}
+/* v135: 종류 보기 버튼 — 사진 미리보기 + 라임 강조 + 처음엔 숨 쉬듯 반짝임 */
+.pcd .adhelp{bottom:36px;padding:7px 12px 7px 10px;gap:8px;font-size:14px;color:var(--lime);border-color:color-mix(in srgb,var(--lime) 55%,transparent);background:color-mix(in srgb,var(--lime) 7%,transparent)}
+.pcd .adhelp:hover{color:#101010;background:var(--lime);border-color:var(--lime)}
+.adhelp .thumbs{display:flex;margin-left:2px}
+.adhelp .thumbs i{width:24px;height:24px;border-radius:50%;background:#222 center/cover;border:2px solid #161616;margin-left:-8px;transition:transform .25s cubic-bezier(.2,.8,.2,1)}
+.adhelp .thumbs i:first-child{margin-left:0}
+.adhelp:hover .thumbs i:nth-child(1){transform:translateX(-3px) rotate(-6deg)}
+.adhelp:hover .thumbs i:nth-child(3){transform:translateX(3px) rotate(6deg)}
+.adhelp .arr{transition:transform .25s}
+.adhelp:hover .arr{transform:translateX(3px)}
+.pcd[data-pos="c"] .adhelp.lure{animation:lure 2.2s ease-in-out 1s infinite}
+@keyframes lure{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--lime) 0%,transparent)}50%{box-shadow:0 0 0 7px color-mix(in srgb,var(--lime) 18%,transparent)}}
+@media (prefers-reduced-motion:reduce){.pcd[data-pos="c"] .adhelp.lure{animation:none}}

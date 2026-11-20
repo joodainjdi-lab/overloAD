@@ -180,3 +180,10 @@ addEventListener('resize',fit); fit(); draw();
   document.addEventListener('click',()=>{ if(!pop.hidden) open(false); });
   document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!pop.hidden){ e.stopImmediatePropagation(); open(false); } },true);
 })();
+
+/* 종류 보기 버튼: 한 번 열어 보기 전까지는 은은하게 숨 쉬듯 반짝여 눌러 보고 싶게 */
+(()=>{ const b=document.getElementById('adHelp'); if(!b) return;
+  let seen=false; try{ seen=sessionStorage.getItem('ow-adhelp')==='1'; }catch(e){}
+  if(!seen) b.classList.add('lure');
+  b.addEventListener('click',()=>{ b.classList.remove('lure'); try{ sessionStorage.setItem('ow-adhelp','1'); }catch(e){} });
+})();
