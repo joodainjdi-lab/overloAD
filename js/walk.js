@@ -360,26 +360,3 @@ var walked=false;
 setTimeout(()=>{ const r=$('#route'); r.classList.add('peek'); setTimeout(()=>r.classList.remove('peek'),900); },3000);
 
 
-/* 광고물 종류 도움말 — 색 설명 옆 (i)를 누르면 조사 건물 실제 사진으로 보여 줌
-   정의: 법제처 찾기쉬운 생활법령정보 「옥외광고물의 개념 및 분류」 (옥외광고물법 시행령 제3조) 를 쉬운 말로 옮김 */
-(()=>{ const T=[
-  ['s','wall','벽면 이용 간판','건물 벽면에 길게 붙인 간판이에요. 흔히 가로형 간판이라고 불러요.'],
-  ['s','proj','돌출간판','건물 벽에서 길 쪽으로 튀어나오게 붙인 간판이에요.'],
-  ['w','win','창문 이용 광고물','유리벽 안쪽, 창문, 출입문에 붙이거나 표시한 광고물이에요. 창에 붙인 시트·글씨가 여기에 들어가요.'],
-  ['t','stand','입간판','벽에 기대 놓거나 땅에 세워 둔, 고정되지 않은 광고판이에요.'],
-  ['t','banner','배너','세로로 긴 천을 받침대에 걸어 세운 광고예요. 법에서 따로 나누지는 않아서, 이 조사에서는 입간판·현수막과 함께 셌어요.'],
-  ['t','hang','현수막','천·비닐 등에 글자를 써서 벽이나 기둥, 시설물에 매단 광고물이에요.']];
-  const G={s:'간판',w:'창문이용 광고물',t:'입간판·배너·현수막'};
-  const pop=document.createElement('div'); pop.id='adPop'; pop.setAttribute('role','dialog'); pop.setAttribute('aria-label','광고물 종류'); pop.hidden=true;
-  pop.innerHTML=`<div class="aph"><b>광고물 종류</b><span>조사한 건물 사진으로 보는 예시</span><button class="apx" aria-label="닫기"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3l8 8M11 3l-8 8"/></svg></button></div>
-    <div class="apg">${T.map(([g,f,n,d])=>`<figure class="apc ${g}"><img src="img/help/${f}.jpg" alt="${n} 예시" loading="lazy"><figcaption><span class="tag"><i class="${g}"></i>${G[g]}</span><b>${n}</b><p>${d}</p></figcaption></figure>`).join('')}</div>
-    <p class="aps">정의: 법제처 찾기쉬운 생활법령정보 「옥외광고물의 개념 및 분류」 · 사진: 조사 건물 현재 모습(동작구·강동구)</p>`;
-  document.getElementById('art').appendChild(pop);
-  const btn=document.getElementById('adHelp');
-  const open=v=>{pop.hidden=!v; btn.setAttribute('aria-expanded',v); if(v) pop.querySelector('.apx').focus(); else btn.focus();};
-  btn.addEventListener('click',e=>{e.stopPropagation(); open(pop.hidden);});
-  pop.querySelector('.apx').addEventListener('click',e=>{e.stopPropagation(); open(false);});
-  pop.addEventListener('click',e=>e.stopPropagation());
-  document.addEventListener('click',()=>{ if(!pop.hidden) open(false); });
-  document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&!pop.hidden){ e.stopImmediatePropagation(); open(false); } },true);
-})();
