@@ -420,3 +420,7 @@ html.snap-on #purpose{scroll-snap-align:start}
 #rule .lh{color:var(--lime)}
 #keyTxt.idle .lh{color:rgba(194,90,166,.35)}
 #rule.idle .lh{color:rgba(195,209,50,.35)}
+/* v130: 재질·표현(선 위)·법·제도(선 아래) 모두 오른쪽 · 연대는 선 높이에, 선은 연대 오른쪽에서 시작 */
+#key{position:fixed!important;left:auto!important;right:calc(64px*var(--k));width:calc(440px*var(--k))!important;z-index:23}
+#rule{top:calc(50% + 30px*var(--k))!important}
+#play{right:0;transition:left .5s cubic-bezier(.2,.8,.2,1),opacity .3s}

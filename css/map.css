@@ -614,3 +614,5 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 .cols div,.cols div:hover{opacity:.18}
 /* v129: 큰 증감률 숫자 작게 + 보는 기준 포인트 컬러 */
 #dist .hero2 .rate{font-size:40px;color:var(--pc,var(--ink))}
+/* v130: 보는 기준은 비트맵 쪽(왼쪽, 팝업 경계 앞)으로 */
+.filter{left:924px}

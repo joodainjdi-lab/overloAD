@@ -307,17 +307,29 @@ function placeDecs(c){
     decEls.forEach((e,j)=>{e.classList.toggle("cur",j===c);e.style.color="var(--lime)";e.style.transform=`translateY(${40*K}px)`;e.style.opacity=j===c?1:0});
     $("#key").style.top=(160*K)+"px";return;
   }
-  // 현재 연대는 가운데 선 바로 위, 그 연대의 문구는 선 바로 아래 — 오른쪽 법·제도 설명과 같은 높이
-  const gap=46,mid=H/K*.5,pos=[],CUR=150,KH=Math.max(24,($("#key").offsetHeight||0)/K);   // KH: 아래 목록 높이만큼 다음 연대를 띄움   // 강조 연도 글자 크기(css .d.cur 와 같게)
- let y=0,curY=0;
-  decEls.forEach((e,j)=>{if(j===c){y+=6;pos[j]=curY=y;y+=CUR+34+KH+40}else{pos[j]=y;y+=gap}});
-  const shift=(mid-(CUR+12))-curY;
+  // 현재 연대는 가운데 선 높이에 크게, 선은 연대 글자 오른쪽에서 시작 — 재질·표현(선 위)과 법·제도(선 아래)는 오른쪽에 함께
+  const gap=46,mid=H/K*.5,pos=[],CUR=150;
+  let y=0,curY=0;
+  decEls.forEach((e,j)=>{if(j===c){y+=28;pos[j]=curY=y;y+=CUR+28}else{pos[j]=y;y+=gap}});
+  const shift=(mid-CUR*.58)-curY;
   decEls.forEach((e,j)=>{
     e.style.transform=`translateY(${((pos[j]+shift)*K).toFixed(1)}px)`;
     e.classList.toggle("cur",j===c);e.style.color=j===c?"var(--lime)":"#bdbdbd";e.style.opacity=j<c?.1:j===c?1:.3;
   });
-  $("#key").style.top=((curY+CUR+34+shift)*K)+"px";
+  if(decEls[c]){const pl=$("#play");pl.style.left=((101+decW(decEls[c].textContent)+40)*K).toFixed(1)+"px";}
+  placeKey();
 }
+/* 큰 연대 글자 폭 (선이 그 오른쪽에서 시작하도록) */
+const decCv=document.createElement("canvas").getContext("2d");
+function decW(t){decCv.font='italic 400 150px "BlackChancery", "Pretendard", serif';return decCv.measureText(t).width}
+document.fonts&&document.fonts.ready.then(()=>{try{if(curD>=0)placeDecs(curD)}catch(e){}});
+/* 재질·표현 목록: 오른쪽, 선 위 — 모든 연대 중 가장 긴 목록 높이에 맞춰 위쪽 정렬 */
+let keyMax=0,keyK=0;
+function placeKey(){ if(innerWidth<760)return; const k=$("#key");
+  if(!keyMax||keyK!==K){ try{ const kt=$("#keyTxt"),sv=kt.innerHTML;let mx=0;
+      DECADES.forEach(d=>{const ex=EXP.filter(r=>inDec(d,r[0]));kt.innerHTML=`<p class="lh">재질 · 기술 · 표현의 변화</p><ul>${ex.length?ex.map(r=>li(r)).join(""):`<li class="none"><span>x</span></li>`}</ul>`;mx=Math.max(mx,k.offsetHeight)});
+      kt.innerHTML=sv;keyMax=mx+16*K;keyK=K; }catch(e){return} }
+  k.style.setProperty("top",(H/2-30*K-keyMax).toFixed(1)+"px","important"); }
 let curEv="";
 function setActive(p){
   const di=DECADES.indexOf(p.d);
@@ -399,7 +411,6 @@ function drawRule(pos,s0){
   let cur=-1,best=1e9;LAWP.forEach((p,j)=>{const d=Math.abs(p-pos);if(d<best){best=d;cur=j}});
   const v=best<WIN?smooth(WIN,WIN*.35,best):0;
   playEl.style.transform="none";playEl.style.opacity=(.4+.6*Math.min(1,v*1.4)).toFixed(3);playEl.className="";   // 선은 항상 보이고, 법·제도 해에 가까울수록 밝아짐
-  {const h=document.querySelector("#keyTxt .lh");if(h){const t=h.getBoundingClientRect().top;if(t>0)ruleEl.style.top=t+"px"}}   // 오른쪽 목록 제목을 왼쪽 제목과 같은 높이에
   // 법·제도가 바뀌는 해: 가운데 선이 다 펼쳐지는 순간 소리 + 메인 간판 깜빡
   if(v>.85&&ruleFired!==cur){ruleFired=cur;if(!(performance.now()-(window.__latchT||0)<600))window.SND&&SND.rule("up",LAW[cur][0]);
     const m=curI>=0&&PHOTOS[curI].el;if(m){m.classList.remove("flick","flickw");void m.offsetWidth;m.classList.add("flick")}}
