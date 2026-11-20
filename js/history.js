@@ -271,6 +271,7 @@ const sAt=pos=>{const i=Math.floor(pos),f=pos-i;return i>=N-1?S[N-1]:lerp(S[i],S
 
 /* ════════════ 큰 원호 ════════════ */
 let K=1,W=0,H=0,ARC={},COL={l:0,r:0,w:0,c:0};
+const LN=.36;   // 가운데 선 높이: 화면 위에서 36% (위 1/3 근처)
 function circle3(a,b,c){
   const d=2*(a[0]*(b[1]-c[1])+b[0]*(c[1]-a[1])+c[0]*(a[1]-b[1]));
   const A=a[0]**2+a[1]**2,B=b[0]**2+b[1]**2,C=c[0]**2+c[1]**2;
@@ -284,7 +285,8 @@ function layout(){
   // 3단 구성: 연표(왼쪽) | 간판(가운데 세로 띠) | 간판개선사업·법(오른쪽)
   COL={l:mob?0:460*K,r:mob?W:W-500*K};COL.w=COL.r-COL.l;COL.c=(COL.l+COL.r)/2;
   const bow=.5;   // 세로 띠: 휘지 않고 가운데 일직선
-  const P1=[COL.c-bow,H*1.3], P2=[COL.c,H*.5], P3=[COL.c-bow,-H*.3];
+  const P1=[COL.c-bow,H*1.3], P2=[COL.c,H*LN], P3=[COL.c-bow,-H*.3];   // 간판이 선(화면 위 LN 높이)을 지나감
+  if(!mob){$("#play").style.top=(H*LN).toFixed(1)+"px";$("#rule").style.setProperty("top",(H*LN+30*K).toFixed(1)+"px","important");}
   const c=circle3(P1,P2,P3);
   const a2=Math.atan2(P2[1]-c.y,P2[0]-c.x), a3=Math.atan2(P3[1]-c.y,P3[0]-c.x);
   let d=a3-a2;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;
@@ -308,7 +310,7 @@ function placeDecs(c){
     $("#key").style.top=(160*K)+"px";return;
   }
   // 현재 연대는 가운데 선 높이에 크게, 선은 연대 글자 오른쪽에서 시작 — 재질·표현(선 위)과 법·제도(선 아래)는 오른쪽에 함께
-  const gap=46,mid=H/K*.5,pos=[],CUR=150;
+  const gap=46,mid=H/K*LN,pos=[],CUR=150;
   let y=0,curY=0;
   decEls.forEach((e,j)=>{if(j===c){y+=28;pos[j]=curY=y;y+=CUR+28}else{pos[j]=y;y+=gap}});
   const shift=(mid-CUR*.58)-curY;
@@ -323,13 +325,9 @@ function placeDecs(c){
 const decCv=document.createElement("canvas").getContext("2d");
 function decW(t){decCv.font='italic 400 150px "BlackChancery", "Pretendard", serif';return decCv.measureText(t).width}
 document.fonts&&document.fonts.ready.then(()=>{try{if(curD>=0)placeDecs(curD)}catch(e){}});
-/* 재질·표현 목록: 오른쪽, 선 위 — 모든 연대 중 가장 긴 목록 높이에 맞춰 위쪽 정렬 */
-let keyMax=0,keyK=0;
+/* 재질·표현 목록: 오른쪽, 선 바로 위에 붙여(아래 정렬) — 제목도 목록 길이에 따라 선 쪽으로 */
 function placeKey(){ if(innerWidth<760)return; const k=$("#key");
-  if(!keyMax||keyK!==K){ try{ const kt=$("#keyTxt"),sv=kt.innerHTML;let mx=0;
-      DECADES.forEach(d=>{const ex=EXP.filter(r=>inDec(d,r[0]));kt.innerHTML=`<p class="lh">재질 · 기술 · 표현의 변화</p><ul>${ex.length?ex.map(r=>li(r)).join(""):`<li class="none"><span>x</span></li>`}</ul>`;mx=Math.max(mx,k.offsetHeight)});
-      kt.innerHTML=sv;keyMax=mx+16*K;keyK=K; }catch(e){return} }
-  k.style.setProperty("top",(H/2-30*K-keyMax).toFixed(1)+"px","important"); }
+  k.style.setProperty("top","auto","important"); k.style.setProperty("bottom",(H-H*LN+30*K).toFixed(1)+"px","important"); }
 let curEv="";
 function setActive(p){
   const di=DECADES.indexOf(p.d);
