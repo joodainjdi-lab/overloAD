@@ -424,3 +424,5 @@ html.snap-on #purpose{scroll-snap-align:start}
 #key{position:fixed!important;left:auto!important;right:calc(64px*var(--k));width:calc(440px*var(--k))!important;z-index:23}
 #rule{top:calc(50% + 30px*var(--k))!important}
 #play{right:0;transition:left .5s cubic-bezier(.2,.8,.2,1),opacity .3s}
+/* v133: 재질 제목은 목록 아래, 선 바로 위 */
+#keyTxt .lh{margin:calc(18px*var(--k)) 0 0}

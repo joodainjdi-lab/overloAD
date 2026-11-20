@@ -343,7 +343,7 @@ function renderLists(d){
   const kt=$("#keyTxt"),ru=$("#rule");
   [kt,ru].forEach(e=>e.classList.add("swap"));
   setTimeout(()=>{
-    kt.innerHTML=`<p class="lh">재질 · 기술 · 표현의 변화</p><ul>${ex.length?ex.map(r=>li(r)).join(""):none}</ul>`;
+    kt.innerHTML=`<ul>${ex.length?ex.map(r=>li(r)).join(""):none}</ul><p class="lh">재질 · 기술 · 표현의 변화</p>`;   // 제목은 선 쪽(아래)에 — 법·제도 제목과 선을 사이에 두고 마주봄
     ru.innerHTML=`<p class="lh">법 · 제도 · 정책의 변화</p><ul>${lw.length?lw.map(r=>li(r,1)).join(""):none}</ul>`;
     listYr=null;[kt,ru].forEach(e=>e.classList.remove("swap"));placeDecs(curD);
   },200);
