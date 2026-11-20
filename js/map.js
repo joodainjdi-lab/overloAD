@@ -372,7 +372,7 @@ function openDist(d){
   const bld=BV.map(x=>{const xb=(x.b/BM*100).toFixed(2), xa=(x.a/BM*100).toFixed(2), l=Math.min(+xb,+xa), w=Math.abs(xa-xb);
     return `<button class="db" data-i="${items.indexOf(x.o)}" title="${x.o.d} ${x.o.b} ${x.o.name} · ${num(x.b)} → ${num(x.a)}${u}"><span class="id">${x.o.b}</span><span class="tr"><i class="ln ${x.a>=x.b?'up':'dn'}" style="left:${l}%;width:${w}%;${K.rate?`background:${GR((Math.max(-100,Math.min(100,rateN(x.b,x.a)))+100)/2)}`:''}"></i><i class="ob" style="left:${xb}%"></i><i class="oa" style="left:${xa}%;${K.rate?`background:${GR((Math.max(-100,Math.min(100,rateN(x.b,x.a)))+100)/2)}`:''}"></i></span><span class="v ${x.a>x.b?'up':x.a<x.b?'dn':''}">${x.b?fmtRate(x.b,x.a):(x.a?'새로':'0')}</span></button>`;}).join('');
   const dist=document.getElementById('dist')||(()=>{const e=document.createElement('div');e.id='dist';$('#panel .pin').prepend(e);return e;})();
-  dist.dataset.f=fid; dist.style.setProperty('--mc',K.rate?gcol(meP):K.col);   // 전체 광고물은 이 구역 위치의 그라데이션 색
+  dist.dataset.f=fid; dist.style.setProperty('--mc',K.rate?gcol(meP):K.col); dist.style.setProperty('--pc',fid==='total'?gcol(meP):K.col);   // 큰 숫자 = 보는 기준의 포인트 컬러   // 전체 광고물은 이 구역 위치의 그라데이션 색
   dist.innerHTML=`
   <header class="dh2"><h2>${d}</h2><p>${YEAR[d]}년 간판개선사업 · 건물 ${L.length}동 · <b>${K.name}</b> 기준</p></header>
   <section class="s1">${rankBox}</section>
