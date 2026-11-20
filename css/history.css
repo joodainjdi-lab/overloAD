@@ -426,3 +426,6 @@ html.snap-on #purpose{scroll-snap-align:start}
 #play{right:0;transition:left .5s cubic-bezier(.2,.8,.2,1),opacity .3s}
 /* v133: 재질 제목은 목록 아래, 선 바로 위 */
 #keyTxt .lh{margin:calc(18px*var(--k)) 0 0}
+/* v138: 재질 목록도 선 아래 — 제목 먼저 */
+#keyTxt .lh{margin:0 0 calc(20px*var(--k))}
+#rule{transition:top .3s cubic-bezier(.2,.8,.2,1),opacity .3s}

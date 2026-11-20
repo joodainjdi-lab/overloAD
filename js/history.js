@@ -325,9 +325,10 @@ function placeDecs(c){
 const decCv=document.createElement("canvas").getContext("2d");
 function decW(t){decCv.font='italic 400 150px "BlackChancery", "Pretendard", serif';return decCv.measureText(t).width}
 document.fonts&&document.fonts.ready.then(()=>{try{if(curD>=0)placeDecs(curD)}catch(e){}});
-/* 재질·표현 목록: 오른쪽, 선 바로 위에 붙여(아래 정렬) — 제목도 목록 길이에 따라 선 쪽으로 */
-function placeKey(){ if(innerWidth<760)return; const k=$("#key");
-  k.style.setProperty("top","auto","important"); k.style.setProperty("bottom",(H-H*LN+30*K).toFixed(1)+"px","important"); }
+/* 오른쪽 목록은 모두 선 아래로: 재질·표현 → 그 아래 법·제도 */
+function placeKey(){ if(innerWidth<760)return; const k=$("#key"),top=H*LN+30*K;
+  k.style.setProperty("bottom","auto","important"); k.style.setProperty("top",top.toFixed(1)+"px","important");
+  $("#rule").style.setProperty("top",(top+k.offsetHeight+40*K).toFixed(1)+"px","important"); }
 let curEv="";
 function setActive(p){
   const di=DECADES.indexOf(p.d);
@@ -343,7 +344,7 @@ function renderLists(d){
   const kt=$("#keyTxt"),ru=$("#rule");
   [kt,ru].forEach(e=>e.classList.add("swap"));
   setTimeout(()=>{
-    kt.innerHTML=`<ul>${ex.length?ex.map(r=>li(r)).join(""):none}</ul><p class="lh">재질 · 기술 · 표현의 변화</p>`;   // 제목은 선 쪽(아래)에 — 법·제도 제목과 선을 사이에 두고 마주봄
+    kt.innerHTML=`<p class="lh">재질 · 기술 · 표현의 변화</p><ul>${ex.length?ex.map(r=>li(r)).join(""):none}</ul>`;
     ru.innerHTML=`<p class="lh">법 · 제도 · 정책의 변화</p><ul>${lw.length?lw.map(r=>li(r,1)).join(""):none}</ul>`;
     listYr=null;[kt,ru].forEach(e=>e.classList.remove("swap"));placeDecs(curD);
   },200);
