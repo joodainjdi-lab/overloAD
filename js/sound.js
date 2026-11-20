@@ -31,7 +31,7 @@ window.SND=(()=>{
   function fitBtn(){const b=document.getElementById("snd");if(!b)return;
     if(innerWidth<=760){["left","top","right","width","height"].forEach(p=>b.style.removeProperty(p));return}
     const s=Math.min(innerWidth/1920,innerHeight/1080),ox=innerWidth/2-960*s,oy=innerHeight/2-540*s,w=Math.round(Math.max(30,52*s));
-    b.style.setProperty("right","auto","important");b.style.setProperty("left",(ox+1834*s-w/2)+"px","important");b.style.setProperty("top",(oy+73*s-w/2)+"px","important");sizeBtn(b,w)}
+    b.style.setProperty("right","auto","important");b.style.setProperty("left",(ox+1862*s-w/2)+"px","important");b.style.setProperty("top",(oy+73*s-w/2)+"px","important");sizeBtn(b,w)}
   let on=true;
   try{on=localStorage.getItem("overload-sound")!=="off"}catch(_){}
 

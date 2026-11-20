@@ -81,7 +81,7 @@ function showHint(){
 (()=>{const b=document.getElementById("toTop");if(!b)return;
   function fit(){ if(innerWidth<=760){["left","right","bottom","width","height"].forEach(p=>b.style.removeProperty(p));return}
     const s=Math.min(innerWidth/1920,innerHeight/1080),ox=innerWidth/2-960*s,oy=innerHeight/2-540*s,w=Math.round(Math.max(30,52*s));
-    b.style.setProperty("right","auto","important");b.style.setProperty("left",(ox+1834*s-w/2)+"px","important");
+    b.style.setProperty("right","auto","important");b.style.setProperty("left",(ox+1862*s-w/2)+"px","important");
     b.style.setProperty("bottom",(innerHeight-(oy+(1080-73)*s)-w/2)+"px","important");
     ["width","height"].forEach(p=>b.style.setProperty(p,w+"px","important"));
     const ic=b.querySelector("svg");if(ic){const z=Math.round(w*.42);ic.setAttribute("width",z);ic.setAttribute("height",z)}}
