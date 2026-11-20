@@ -567,3 +567,13 @@ a{color:inherit;text-decoration:none}
 .pcd[data-pos="c"] .adhelp.lure{animation:lure 2.2s ease-in-out 1s infinite}
 @keyframes lure{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb,var(--lime) 0%,transparent)}50%{box-shadow:0 0 0 7px color-mix(in srgb,var(--lime) 18%,transparent)}}
 @media (prefers-reduced-motion:reduce){.pcd[data-pos="c"] .adhelp.lure{animation:none}}
+/* v136: 종류 보기 버튼 톤 다운 + 위 목록과 간격 */
+.pcd .adhelp{bottom:28px;padding:5px 11px 5px 9px;gap:7px;font-size:13px;color:var(--ink-2);border-color:var(--line-2);background:none}
+.pcd .adhelp svg:first-child{color:var(--lime)}
+.pcd .adhelp:hover{color:var(--ink);background:rgba(255,255,255,.05);border-color:var(--ink-3)}
+.adhelp .thumbs i{width:20px;height:20px;margin-left:-7px;border-width:1.5px;opacity:.85}
+.pcd #pcd3 p,#pcd3 p{margin-bottom:0}
+#pcd3 .sw:last-child{margin-bottom:0}
+.pcd[data-pos="c"] .adhelp.lure{animation:lure2 2.6s ease-in-out 1s infinite}
+@keyframes lure2{0%,100%{border-color:var(--line-2)}50%{border-color:color-mix(in srgb,var(--lime) 45%,transparent)}}
+#pcd3 .sw{margin-bottom:9px}
