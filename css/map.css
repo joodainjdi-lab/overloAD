@@ -697,3 +697,6 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 #art>.top5 .t5-hd{margin-top:auto;padding-top:34px;border-top:1px solid var(--line-2);padding-bottom:22px}
 #art>.top5 .t5-foot{margin-top:16px}
 #art>.top5 .t5-sum{padding-top:24px}
+/* 구분선은 요약 바로 아래에 붙임 */
+#art>.top5 .t5-sum{padding-bottom:30px;border-bottom:1px solid var(--line-2)}
+#art>.top5 .t5-hd{border-top:0;padding-top:0}
