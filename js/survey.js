@@ -51,7 +51,6 @@ function card(g){ const el=$('#mapinfo'), hc=$('#hcard'); if(el){el.classList.re
   hc.innerHTML=`<div class="hh"><b>${g}</b><span>${YEAR[g]} 사업 · ${2026-YEAR[g]}년 전</span></div>
     <span class="tag k-${k}">${KN[k]}</span>
     <div class="hb"><span class="hk">기타 광고물</span><b>${fmtRate(...n.e)}</b><span class="hc">${BA(n.e[0],n.e[1])}개</span></div>
-    <div class="hbars"><div class="hcap">개선 전 → 현재 늘고 준 개수 (10동 합계)</div>${row('s','간판',n.s)}${row('w','창문 광고',n.w)}${row('t','입간판·배너·현수막',n.t)}</div>
     <p class="hs">${line(g)}</p><span class="hgo">누르면 거리로 걸어 보기 →</span>`;
   // 카드는 지도 밖 빈 자리에 — 지도 왼쪽 구역은 왼쪽, 오른쪽 구역은 오른쪽 (다른 구역 이름을 가리지 않게) + 구역까지 가는 가는 선
   const [x,y]=C[g], W=380, H=hc.offsetHeight||320, lf=x<430, top=Math.max(-40,Math.min(684-H+40,y-H/2));
