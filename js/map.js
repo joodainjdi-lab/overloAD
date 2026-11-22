@@ -107,8 +107,8 @@ function applyFilter(f){
   });
   leg.querySelector('.bar').style.background='none';
   let sn=leg.querySelector('.sn'); if(!sn){sn=document.createElement('div');sn.className='sn';leg.appendChild(sn);}
-  sn.innerHTML=`<span>${leg.dataset.l} · 82–90위</span><span>1–9위 · ${leg.dataset.r}</span>`;
-  leg.querySelector('.bar').innerHTML=STEPS.slice().reverse().map((s,i)=>`<i data-s="${10-i}" style="background:${s.c}" title="${10-i}단계 · ${(9-i)*9+1}–${(10-i)*9}위"></i>`).join('');
+  sn.innerHTML=`<span>1–9위 · ${leg.dataset.r}</span><span>${leg.dataset.l} · 82–90위</span>`;   // 왼쪽부터 1위
+  leg.querySelector('.bar').innerHTML=STEPS.map((s,i)=>`<i data-s="${i+1}" style="background:${s.c}" title="${i+1}단계 · ${i*9+1}–${(i+1)*9}위"></i>`).join('');
   grid.classList.add('ranked'); if(typeof showGrp==='function') showGrp(grpLock);
   if(seqReady&&window.SND&&SND.light){ const t=[]; items.forEach(o=>{const k=o.step-1; t[k]=Math.min(t[k]??1e9,o.seq*16);}); SND.light(t.filter(v=>v<1e9)); }   // 칸 색이 단계별로 켜질 때 소리
   if(seqReady){ // 보는 기준을 바꿔도 고른 건물·팝업은 그대로 — 색만 1→90위 순서로 다시 켜짐
