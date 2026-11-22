@@ -621,3 +621,8 @@ a{color:inherit;text-decoration:none}
 .mlegend.dim{opacity:0}
 /* 범례: 지도 오른쪽 아래 */
 .mlegend{left:930px;top:auto;bottom:0;width:340px}
+/* 증감률 구간 태그 · 범례 범위 */
+.hcard .tag.k-u{color:var(--lime);border-color:var(--lime)}
+.hcard .tag.k-n{color:#B9BB8E;border-color:#6f7150}
+.hcard .tag.k-d{color:#9a9a9a;border-color:#555}
+.mlegend .li b em{font-style:normal;font-weight:500;color:var(--lime);margin-left:6px;font-variant-numeric:tabular-nums}
