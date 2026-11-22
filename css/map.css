@@ -670,3 +670,20 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 #panel .rank{margin-top:28px;padding-top:22px}
 .rank svg{height:102px}
 .rank rect{opacity:.5}
+/* v148: TOP 5 칸은 원래 크기(84px)로, 요약 % 는 작게 + 포인트 컬러, 늘어난/줄어든은 막대 양 끝에 붙여 한눈에 */
+#art>.top5{height:auto}
+#art>.top5 .t5-list{flex:none;gap:8px}
+#art>.top5 .t5,#art>.top5 .t5:nth-child(n+2){flex:none;height:84px}
+.t5-sum .big{font-size:44px;color:var(--pc,#fafafa)}
+.top5[data-f="total"] .t5-sum .big{background:linear-gradient(90deg in oklab,#C25AA6,#C3D132);-webkit-background-clip:text;background-clip:text;color:transparent}
+.t5-sum .cnt{font-size:20px}
+.t5-sum .sl{display:flex;justify-content:space-between;gap:0;margin-top:22px;font-size:15px;color:var(--ink-2)}
+.t5-sum .sl b{font-size:18px;font-weight:700;margin:0 2px}
+.t5-sum .sl .u,.t5-sum .sl .u b{color:var(--pc,#C3D132)}
+.t5-sum .sl .d b{color:var(--ink)}
+.top5[data-f="total"] .t5-sum .sl .u,.top5[data-f="total"] .t5-sum .sl .u b{color:#C3D132}
+.t5-sum .split{display:flex;justify-content:space-between;margin-top:8px;height:10px;gap:0;border-radius:5px;background:#262626}
+.t5-sum .split i{border-radius:5px}
+.t5-sum .split .u{background:var(--pc,#C3D132)} .t5-sum .split .d{background:#7a7a7a}
+.top5[data-f="per"] .t5-sum .split .u{background:#e8e8e8} .top5[data-f="per"] .t5-sum .split .d{background:#5a5a5a}
+.t5-sum .eq{margin-top:8px;font-size:13px;color:var(--ink-3);text-align:center}

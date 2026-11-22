@@ -170,8 +170,9 @@ function renderSum(){ const box=$('#t5Sum'); if(!cur||!MET||!MET[cur.id]){box.in
   const W=v=>(v/items.length*100).toFixed(2)+'%';
   box.innerHTML=`<div class="k">90동 전체 · ${K.name}${K.rate?' (개선 전 → 현재)':' (가게 1곳당)'}</div>
     <div class="row"><span class="big">${big}</span><span class="cnt">${ba}</span></div>
-    <div class="split"><i class="u" style="width:${W(up)}"></i><i class="e" style="width:${W(eq)}"></i><i class="d" style="width:${W(dn)}"></i></div>
-    <div class="sl"><span class="u">늘어난 <b>${up}</b>동</span>${eq?`<span class="e">그대로 <b>${eq}</b>동</span>`:''}<span class="d">줄어든 <b>${dn}</b>동</span></div>`;
+    <div class="sl"><span class="u">▲ 늘어난 건물 <b>${up}</b>동</span><span class="d">줄어든 건물 <b>${dn}</b>동 ▼</span></div>
+    <div class="split"><i class="u" style="width:${W(up)}"></i><i class="d" style="width:${W(dn)}"></i></div>
+    ${eq?`<div class="eq">변화 없음 ${eq}동 · 막대 = 90동</div>`:'<div class="eq">막대 = 90동</div>'}`;
 }
 /* 건물 팝업 아래: 보는 기준으로 이 건물이 90동 중 어디쯤인지 — 1위→90위로 늘어선 막대 */
 function renderRank(o){ const box=$('#rank'); if(!box) return; if(!cur||!o||!o.rank||!MET){box.innerHTML='';return;}
