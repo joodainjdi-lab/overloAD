@@ -307,11 +307,15 @@ function sweep(){ const t0=performance.now(); const step=t=>{const k=Math.min(1,
   if(matchMedia('(prefers-reduced-motion: reduce)').matches) setP(50); else requestAnimationFrame(step); }
 
 let openE=false, openD=false;
-/* 드롭박스를 열면 그 내용이 보이도록 팝업을 알아서 내려 줌 (아래 '구역 이동' 바 높이만큼 비워 둠) */
-function showIn(el){ if(!el) return; setTimeout(()=>{ const d=$('#drawer'); if(!d||!el.isConnected) return;
-  const k=d.getBoundingClientRect().height/d.offsetHeight||1, db=d.getBoundingClientRect(), eb=el.getBoundingClientRect();
-  const top=(eb.top-db.top)/k+d.scrollTop, bot=(eb.bottom-db.top)/k+d.scrollTop, vis=d.clientHeight-110;
-  if(bot>d.scrollTop+vis) d.scrollTo({top:Math.min(bot-vis,top-24),behavior:'smooth'}); },360); }
+/* 드롭박스를 열면 펼쳐지는 동안 같이 내려가서 그 내용이 보이게 (아래 '구역 이동' 바 높이만큼 비워 둠) */
+let showRaf=0;
+function showIn(el){ if(!el) return; cancelAnimationFrame(showRaf); const d=$('#drawer'); if(!d) return; const t0=performance.now();
+  const step=now=>{ if(!el.isConnected) return;
+    const k=d.getBoundingClientRect().height/d.offsetHeight||1, db=d.getBoundingClientRect(), eb=el.getBoundingClientRect();
+    const top=(eb.top-db.top)/k+d.scrollTop, bot=(eb.bottom-db.top)/k+d.scrollTop, vis=d.clientHeight-110;
+    const want=Math.min(bot-vis,top-24); if(want>d.scrollTop) d.scrollTop=want;   // 펼쳐지는 만큼 따라 내려감
+    if(now-t0<450) showRaf=requestAnimationFrame(step); };
+  showRaf=requestAnimationFrame(step); }
 function setD(v){ openD=v; const d=$('#psum .det'), t=$('#psum .tgD'); if(!d) return; d.classList.toggle('open',v); t.setAttribute('aria-expanded',v); t.setAttribute('aria-label','세부 정보 '+(v?'접기':'펼치기')); }
 function setE(v){ openE=v; const g=$('#bars .grp'), t=$('#tgE'); if(!g) return; g.classList.toggle('open',v); t.setAttribute('aria-expanded',v); }
 { const pn=$('#drawer .panel'); pn.insertBefore($('#pw'),$('#photo')); }   // 건물 이름을 사진 위로
