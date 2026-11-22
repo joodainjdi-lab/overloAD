@@ -463,3 +463,10 @@ body:has(#drawer.open) #art>#close{opacity:1;pointer-events:auto}
 #drawer .bars .hd{margin-bottom:0}
 #drawer .bar-row .top{margin-bottom:12px}
 #drawer .notes{margin-top:22px}
+/* 유형별 제목 줄은 살짝 위로, 간판↔기타 간격 조금 더, 이름·숫자 조금 크고 굵게 */
+#drawer .bars{margin-top:20px}
+#drawer .bars .hd{margin-bottom:4px}
+#drawer .bars .r-win{margin-top:8px}
+#drawer .bar-row .name{font-size:19px;font-weight:500}
+#drawer .bar-row .val{font-size:19px;font-weight:500}
+#drawer .bar-row .val b{font-weight:700}
