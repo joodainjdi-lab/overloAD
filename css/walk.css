@@ -457,3 +457,9 @@ body:has(.drawer.open) .read{opacity:0;pointer-events:none}
 body:has(#drawer.open) #art>#close{opacity:1;pointer-events:auto}
 #art>#close:hover{border-color:var(--ink-3);color:var(--ink)}
 .drawer>.x{top:28px;right:63px}
+/* 데이터 묶음마다 아래 여백 확보 (전체 → 유형별 → 간판 → 기타 → 주석) */
+#drawer .psum{padding-bottom:22px}
+#drawer .bars{margin-top:24px;gap:22px}
+#drawer .bars .hd{margin-bottom:0}
+#drawer .bar-row .top{margin-bottom:12px}
+#drawer .notes{margin-top:22px}
