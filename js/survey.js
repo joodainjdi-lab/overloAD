@@ -31,11 +31,32 @@ function setHov(g){ if(g===hov) return; hov=g; draw(); if(g&&SURV.includes(g)&&w
   card(g&&SURV.includes(g)?g:null); }
 // 지도 아래 한 줄: 평소엔 안내, 구역 위에 올리면 그 자리에서 그 구역 숫자로 바뀜 (데이터는 늘 같은 곳에만)
 const HINT='<svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13.5v-11M3.5 7 8 2.5 12.5 7"/></svg>지도에서 구역을 눌러 시작하세요';
-function card(g){ const el=$('#mapinfo'); if(!el) return;
-  if(!g){ el.classList.remove('on'); el.innerHTML=HINT; return; }
-  const bl=items.filter(o=>o.d===g), s=sum(bl,'s'), e=sum(bl,'e'), t=sum(bl,'tot');
-  el.innerHTML=`<b class="g">${g}</b><span class="y">${YEAR[g]}</span><span class="k">전체</span><b>${fmtRate(...t)}</b><span class="k c-s">간판</span><b class="c-s">${fmtRate(...s)}</b><span class="k c-e">기타 광고물</span><b class="c-e">${fmtRate(...e)}</b>`;
-  el.classList.add('on'); }
+/* 구역에 올리면 그 구역 옆에 호버 카드 — 기타 광고물이 '어디로' 늘었는지 (간판·창문·입간판 등 순증, 9구역 같은 눈금)
+   거리 유형 기준 (데이터로 계산): 창문 순증 50개 이상 → 창문 광고가 늘어난 거리
+   입간판·배너·현수막 순증이 창문보다 크고 0보다 큼 → 입간판·배너·현수막이 늘어난 거리 / 그 밖 → 크게 변하지 않은 거리 */
+const NET={}; SURV.forEach(g=>{const bl=items.filter(o=>o.d===g), s=sum(bl,'s'), w=sum(bl,'w'), t=sum(bl,'t'), e=sum(bl,'e');
+  NET[g]={s:s[1]-s[0], w:w[1]-w[0], t:t[1]-t[0], e, tot:sum(bl,'tot')};});
+const NMAX=Math.max(...SURV.flatMap(g=>[NET[g].s,NET[g].w,NET[g].t].map(Math.abs)));
+function kind(g){const n=NET[g]; if(n.w>=50) return 'w'; if(n.t>n.w&&n.t>0) return 't'; return 'n';}
+const KN={w:'창문 광고가 늘어난 거리', t:'입간판·배너·현수막이 늘어난 거리', n:'크게 변하지 않은 거리'};
+function line(g){const n=NET[g], k=kind(g);
+  if(k==='w') return '늘어난 광고물 대부분이 창문으로 갔어요.';
+  if(k==='t') return n.w<0?'창문 광고는 줄고, 입간판·배너·현수막이 늘었어요.':'창문보다 가게 앞 입간판·배너·현수막이 더 늘었어요.';
+  return (n.e[1]-n.e[0])/n.e[0]<=-.1?'기타 광고물이 오히려 줄었어요.':'기타 광고물 수가 크게 바뀌지 않았어요.';}
+function card(g){ const el=$('#mapinfo'), hc=$('#hcard'); if(el){el.classList.remove('on'); el.innerHTML=HINT;} if(!hc) return;
+  if(!g){ hc.classList.remove('on'); const ln=$('#hlink'); if(ln) ln.classList.remove('on'); return; }
+  const n=NET[g], k=kind(g), sg=v=>v>0?'+'+v:v<0?'−'+Math.abs(v):'0';
+  const row=(cls,lab,v)=>{const w=Math.abs(v)/NMAX*50;
+    return `<div class="hr ${cls}"><span class="hl">${lab}</span><span class="ht"><i style="${v>=0?'left:50%':'right:50%'};width:${Math.max(w,.6).toFixed(2)}%"></i></span><span class="hv">${sg(v)}</span></div>`;};
+  hc.innerHTML=`<div class="hh"><b>${g}</b><span>${YEAR[g]} 사업 · ${2026-YEAR[g]}년 전</span></div>
+    <span class="tag k-${k}">${KN[k]}</span>
+    <div class="hb"><span class="hk">기타 광고물</span><b>${fmtRate(...n.e)}</b><span class="hc">${BA(n.e[0],n.e[1])}개</span></div>
+    <div class="hbars"><div class="hcap">개선 전 → 현재 늘고 준 개수 (10동 합계)</div>${row('s','간판',n.s)}${row('w','창문 광고',n.w)}${row('t','입간판·배너·현수막',n.t)}</div>
+    <p class="hs">${line(g)}</p><span class="hgo">누르면 거리로 걸어 보기 →</span>`;
+  // 카드는 지도 밖 빈 자리에 — 지도 왼쪽 구역은 왼쪽, 오른쪽 구역은 오른쪽 (다른 구역 이름을 가리지 않게) + 구역까지 가는 가는 선
+  const [x,y]=C[g], W=380, H=hc.offsetHeight||320, lf=x<430, top=Math.max(-40,Math.min(684-H+40,y-H/2));
+  hc.style.left=(lf?-W-60:930)+'px'; hc.style.top=top+'px'; hc.classList.toggle('lf',lf); hc.classList.add('on');
+  const ln=$('#hlink'); if(ln){ const x0=lf?-60:930, x1=lf?x-34:x+34; ln.style.left=Math.min(x0,x1)+'px'; ln.style.width=Math.abs(x1-x0)+'px'; ln.style.top=y+'px'; ln.classList.add('on'); } }
 const box=$('.mapbox'), MAPX=510, MAPY=222, MAPK=1.05;   // 지도 위치·확대 배율 (css .mapbox와 같게)
 const local=e=>{const r=cv.getBoundingClientRect(); return [(e.clientX-r.left)/r.width*DW,(e.clientY-r.top)/r.height*MAP.h*S];};
 box.addEventListener('pointermove',e=>{ if(e.target.closest('.card')) return; const b=e.target.closest('.lb.on'); const g=b?b.dataset.g:guAt(...local(e)); setHov(SURV.includes(g)?g:null); });   // 조사하지 않은 구는 반응 없음
