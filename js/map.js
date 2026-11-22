@@ -117,7 +117,7 @@ function applyFilter(f){
     else { void grid.offsetWidth; items.forEach(o=>o.el.classList.add('seq')); } }
   else if(focusOn) setFocus(true);
   seqReady=true;
-  renderTop5();
+  renderTop5(); if(sel>=0) renderRank(items[sel]);
   if(distD) openDist(distD);   // 구역 전체 팝업도 보는 기준에 맞춰 다시 정리
 }
 
@@ -148,6 +148,7 @@ function renderTop5(){
   const box=$('#top5');
   if(!cur){box.classList.add('off');return;} box.classList.remove('off');
   $('#t5T').innerHTML=`<b>TOP 5</b> ${T5[cur.id].t.replace(' TOP 5','')}`;
+  renderSum();
   $('#t5List').innerHTML=top5List(cur).map((i,r)=>{const o=items[i],e=o.ev,sc=Math.min(54/e.w,46/e.h);
     return `<button class="t5" data-i="${i}" style="--c:${o.el.style.getPropertyValue('--c')||'#333'};--k:${o.el.style.getPropertyValue('--k')||'#fff'}">
       <span class="blk"><span class="ev"><svg width="${(e.w*sc).toFixed(1)}" height="${(e.h*sc).toFixed(1)}" viewBox="0 0 ${e.w} ${e.h}" fill="none" stroke="currentColor" stroke-width="0.5">${e.g}</svg></span>
@@ -158,6 +159,46 @@ function renderTop5(){
 function setT5(){}   // TOP 5는 접지 않고 늘 다 펼쳐 둠 — 팝업을 스크롤해서 봄
 $('#top5').classList.add('open'); { const h=$('#t5Hd'); h.removeAttribute('aria-expanded'); h.tabIndex=-1; h.querySelector('svg')?.remove(); }
 
+
+/* 아무것도 고르지 않았을 때 오른쪽 위: 보는 기준으로 본 90동 전체 요약 */
+function renderSum(){ const box=$('#t5Sum'); if(!cur||!MET||!MET[cur.id]){box.innerHTML='';return;}
+  const K=MET[cur.id], P=K.pair(items);
+  const pr=cur.id==='per'?o=>per(o):cur.id==='s'?o=>o.s:cur.id==='e'?o=>o.e:o=>tot(o);
+  let up=0,dn=0,eq=0; items.forEach(o=>{const [b,a]=pr(o); const d=+(a-b).toFixed(3); d>0?up++:d<0?dn++:eq++;});
+  const big=K.rate?fmtRate(P[0],P[1]):`${f1(P[1])}<small>개</small>`;
+  const ba=K.rate?`${BA(P[0].toLocaleString(),P[1].toLocaleString())}<small>개</small>`:`<span class="pre">개선 전 ${f1(P[0])}</span><span class="ar">→</span><span class="now">현재 ${f1(P[1])}</span><small>개</small>`;
+  const W=v=>(v/items.length*100).toFixed(2)+'%';
+  box.innerHTML=`<div class="k">90동 전체 · ${K.name}${K.rate?' (개선 전 → 현재)':' (가게 1곳당)'}</div>
+    <div class="row"><span class="big">${big}</span><span class="cnt">${ba}</span></div>
+    <div class="split"><i class="u" style="width:${W(up)}"></i><i class="e" style="width:${W(eq)}"></i><i class="d" style="width:${W(dn)}"></i></div>
+    <div class="sl"><span class="u">늘어난 <b>${up}</b>동</span>${eq?`<span class="e">그대로 <b>${eq}</b>동</span>`:''}<span class="d">줄어든 <b>${dn}</b>동</span></div>`;
+}
+/* 건물 팝업 아래: 보는 기준으로 이 건물이 90동 중 어디쯤인지 — 1위→90위로 늘어선 막대 */
+function renderRank(o){ const box=$('#rank'); if(!box) return; if(!cur||!o||!o.rank||!MET){box.innerHTML='';return;}
+  const K=MET[cur.id], ord=rankOrder(cur), vals=ord.map(i=>cur.v(items[i]));
+  // 비율은 +1000%처럼 튀는 값이 있어 제곱근 눈금으로 펼침 (부호 유지) · 개선 전 0개(비율 없음)는 회색 짧은 눈금
+  const T=v=>Math.sign(v)*Math.sqrt(Math.abs(v));
+  const fin=vals.filter(isFinite).map(T), mx=Math.max(...fin,0), mn=Math.min(...fin,0);
+  const Wd=514,H=78,bw=Wd/90, Y=t=>H-(t-mn)/((mx-mn)||1)*H, y0=Y(0);
+  const P=K.pair(items), ref=K.rate?(P[1]-P[0])/P[0]:P[1], ry=Y(T(ref)).toFixed(1);
+  const me=ord.indexOf(items.indexOf(o));
+  const bars=ord.map((i,m)=>{const v=vals[m], x=(m*bw+.6).toFixed(2), w=(bw-1.2).toFixed(2), cls=m===me?' class="me"':'';
+    if(!isFinite(v)) return `<rect x="${x}" y="${(y0-3).toFixed(1)}" width="${w}" height="3" fill="#555"${cls}/>`;
+    const y=Y(T(v)), top=Math.min(y,y0), h=Math.max(Math.abs(y-y0),1.5), c=items[i].el.style.getPropertyValue('--c')||'#888';
+    return `<rect x="${x}" y="${top.toFixed(1)}" width="${w}" height="${h.toFixed(1)}" fill="${c}"${cls}/>`;}).join('');
+  const fx=v=>!isFinite(v)?'비율 없음':K.rate?(v>0?'+':v<0?'−':'')+Math.abs(Math.round(v*100))+'%':f1(v)+'개';
+  const mxL=(me*bw+bw/2), al=mxL<50?'start':mxL>Wd-50?'end':'middle';
+  const myV=vals[me], tag=isFinite(myV)?cur.fmt(o):'개선 전 0개';
+  box.innerHTML=`<div class="rk-hd"><span>${K.name} 순위</span><span class="rk-n">90동 중 <b>${o.rank}</b>위</span></div>
+    <svg viewBox="0 0 ${Wd} ${H+24}" width="100%" preserveAspectRatio="none" style="overflow:visible">
+      <g transform="translate(0,22)">${bars}
+        ${K.rate?`<line x1="0" x2="${Wd}" y1="${y0.toFixed(1)}" y2="${y0.toFixed(1)}" class="z"/>`:''}
+        <line x1="0" x2="${Wd}" y1="${ry}" y2="${ry}" class="ref"/>
+        <line x1="${mxL.toFixed(1)}" x2="${mxL.toFixed(1)}" y1="-6" y2="${H}" class="mk"/></g>
+      <text x="${mxL.toFixed(1)}" y="10" text-anchor="${al}" class="mt">${tag}</text>
+    </svg>
+    <div class="rk-ax"><span>1위 ${fx(vals[0])}</span><span class="rf"><i></i>90동 전체 ${K.rate?fmtRate(P[0],P[1]):f1(ref)+'개'}</span><span>90위 ${fx(vals[89])}</span></div>`;
+}
 /* tooltip */
 const tip=$('#tip');
 function showTip(i,el){
@@ -270,6 +311,7 @@ function render(o){
      <div class="fold" id="subE"><div class="wrap"><div class="subs">${sub('창문이용 광고물','w')}${sub('입간판 배너 현수막','t')}</div></div></div></div>`;
   $('#tgE').addEventListener('click',e=>{e.stopPropagation(); openE=!openE; $('#bars .grp').classList.toggle('open',openE); e.currentTarget.setAttribute('aria-expanded',openE);});
   $('#notes').innerHTML='막대 길이는 90동 중 유형별 최댓값 기준 · 세부 항목은 기타 광고물과 같은 축'+(o.notes.length?` · <em>${o.notes.join(' / ')}</em>`:'');
+  renderRank(o);
 }
 
 /* scale artboard */
@@ -316,17 +358,17 @@ var distD=null;
 const r1=v=>Math.round(v*10)/10;
 function avgOf(list,label,sub){ const m=k=>[0,1].map(j=>r1(list.reduce((a,o)=>a+o[k][j],0)/list.length));
   return {d:label,b:'',name:sub,s:m('s'),w:m('w'),t:m('t'),e:m('e'),st:m('st'),fl:r1(list.reduce((a,o)=>a+o.fl,0)/list.length),notes:[],lo:false,pb:'',pa:''}; }
-const sumOf=(L,k)=>[0,1].map(j=>L.reduce((a,o)=>a+o[k][j],0));
-const rateN=(b,a)=>b?(a-b)/b*100:0;
+var sumOf=(L,k)=>[0,1].map(j=>L.reduce((a,o)=>a+o[k][j],0));
+var rateN=(b,a)=>b?(a-b)/b*100:0;
 /* 보는 기준별 구역 데이터 정의 */
-const sum2=(L,f)=>[0,1].map(j=>L.reduce((a,o)=>a+f(o)[j],0));
-const MET={
+var sum2=(L,f)=>[0,1].map(j=>L.reduce((a,o)=>a+f(o)[j],0));
+var MET={
   total:{name:'전체 광고물',col:'var(--cw)',neg:'var(--cs)',pair:L=>sum2(L,tot),rate:true},
   s:{name:'간판',col:'var(--cs)',neg:'#6a6a6a',pair:L=>sum2(L,o=>o.s),rate:true},
   e:{name:'기타 광고물',col:'var(--cw)',neg:'#6a6a6a',pair:L=>sum2(L,o=>o.e),rate:true},
   per:{name:'가게당 광고물',col:'#e8e8e8',neg:'#6a6a6a',pair:L=>{const T=sum2(L,tot),S=sum2(L,o=>o.st);return [T[0]/S[0],T[1]/S[1]];},rate:false}
 };
-const f1=v=>(Math.round(v*10)/10).toFixed(1);
+var f1=v=>(Math.round(v*10)/10).toFixed(1);
 function openDist(d){
   const fid=cur&&MET[cur.id]?cur.id:'total', K=MET[fid];
   const L=items.filter(o=>o.d===d).sort((a,b)=>a.b<b.b?-1:1);
@@ -387,3 +429,6 @@ function openDist(d){
 
 /* 등장 애니메이션이 끝나면 표시 클래스를 떼어 둠 — 팝업을 닫을 때 90칸이 다시 켜지는 것 방지 */
 grid.addEventListener('animationend',e=>{ const c=e.target; if(c.classList&&c.classList.contains('cell')) c.classList.remove('seq','in'); });
+
+/* 요약·순위는 MET가 정의된 뒤 한 번 더 그림 (첫 applyFilter는 그 전에 실행됨) */
+renderTop5(); if(sel>=0) renderRank(items[sel]);

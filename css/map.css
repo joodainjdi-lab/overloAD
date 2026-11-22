@@ -632,3 +632,41 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 .top5[data-f="total"] .t5 .blk{background:linear-gradient(90deg,#A36693,#C3D132);color:#101010}
 .top5[data-f="total"] .t5 .ph::after{background:linear-gradient(90deg,#C3D132 0%,rgba(195,209,50,.7) 22%,rgba(195,209,50,.15) 65%,transparent 100%)}
 .top5[data-f="total"] .t5 .ph::before{background:#C3D132}
+/* v147: 오른쪽 열을 비트맵 높이(첫 줄 ~ 범례 끝)에 맞춤 — 위: 90동 전체 요약, 아래: TOP 5가 남은 높이를 채움 */
+#art>.top5{top:190px!important;height:850px;display:flex;flex-direction:column}
+#art>.top5 .t5-sum{padding-bottom:30px;margin-bottom:30px;border-bottom:1px solid var(--line-2)}
+.t5-sum .k{font-size:17px;color:var(--ink-2)}
+.t5-sum .row{display:flex;align-items:baseline;gap:22px;margin-top:12px;white-space:nowrap}
+.t5-sum .big{font-size:56px;font-weight:700;line-height:1;color:var(--ink);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.t5-sum .big small{font-size:22px;font-weight:500;margin-left:4px;color:var(--ink-2)}
+.t5-sum .cnt{font-size:22px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.t5-sum .cnt .now{color:var(--ink);font-weight:700} .t5-sum .cnt .ar{margin:0 .3em} .t5-sum .cnt small{font-size:15px;margin-left:4px}
+.t5-sum .split{display:flex;height:8px;margin-top:24px;border-radius:4px;overflow:hidden;gap:2px}
+.t5-sum .split i{display:block;height:100%}
+.t5-sum .split .u{background:var(--pc,#C3D132)} .t5-sum .split .e{background:#555} .t5-sum .split .d{background:#3a3a3a}
+.t5-sum .sl{display:flex;gap:18px;margin-top:10px;font-size:15px;color:var(--ink-3)}
+.t5-sum .sl b{color:var(--ink);font-weight:600} .t5-sum .sl .u b{color:var(--pc,#C3D132)}
+.top5[data-f="s"]{--pc:#C25AA6} .top5[data-f="e"]{--pc:#C3D132} .top5[data-f="per"]{--pc:#e8e8e8}
+.top5[data-f="total"] .t5-sum .split .u{background:linear-gradient(90deg in oklab,#C25AA6,#C3D132)} .top5[data-f="total"] .t5-sum .sl .u b{color:#C3D132}
+#art>.top5 .t5-hd{padding-bottom:16px}
+#art>.top5 .t5-list{flex:1;min-height:0;display:flex;flex-direction:column;gap:8px}
+#art>.top5 .t5,#art>.top5 .t5:nth-child(n+2){height:auto;flex:1;min-height:70px}
+#art>.top5 .t5-foot{margin-top:14px}
+/* 건물 팝업 맨 아래: 90동 중 이 건물의 순위 막대 */
+#panel .rank{margin-top:34px;padding-top:26px;border-top:1px solid var(--line-2)}
+#panel[data-f="all"] .rank{display:none}
+.rank .rk-hd{display:flex;justify-content:space-between;align-items:baseline;font-size:17px;color:var(--ink-2);margin-bottom:14px}
+.rank .rk-n{font-size:17px;color:var(--ink-2)} .rank .rk-n b{font-size:30px;font-weight:700;color:var(--ink);margin:0 3px;font-variant-numeric:tabular-nums}
+.rank svg{display:block;height:126px}
+.rank rect{opacity:.38} .rank rect.me{opacity:1}
+.rank .z{stroke:#555;stroke-width:1}
+.rank .ref{stroke:#fafafa;stroke-width:1;stroke-dasharray:3 3;opacity:.55}
+.rank .mk{stroke:#fafafa;stroke-width:1.5}
+.rank .mt{fill:#fafafa;font-size:14px;font-weight:600;font-family:inherit}
+.rank .rk-ax{display:flex;justify-content:space-between;margin-top:10px;font-size:14px;color:var(--ink-3);font-variant-numeric:tabular-nums}
+.rank .rk-ax .rf i{display:inline-block;width:14px;border-top:1.5px dashed rgba(250,250,250,.6);vertical-align:middle;margin-right:6px}
+#panel::after{height:48px}
+#panel>.pin{padding-bottom:56px}
+#panel .rank{margin-top:28px;padding-top:22px}
+.rank svg{height:102px}
+.rank rect{opacity:.5}
