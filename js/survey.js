@@ -44,9 +44,7 @@ const pct=v=>(v>0?'+':v<0?'−':'')+Math.abs(Math.round(v*100))+'%';
 function rng(k){const r=SURV.filter(g=>kind(g)===k).map(g=>NET[g].r).sort((a,b)=>a-b); return r.length>1?`${pct(r[0])} ~ ${pct(r[r.length-1])}`:pct(r[0]);}
 /* 지도 범례 — 진하기가 뜻하는 것 (구역·범위는 데이터에서 계산) */
 (()=>{const el=$('#mlegend'); if(!el) return; const who=k=>SURV.filter(g=>kind(g)===k).sort((a,b)=>NET[b].r-NET[a].r).map(g=>g.replace('구','')).join('·');
-  const nu=SURV.filter(g=>kind(g)==='u').length;
-  el.innerHTML=`<p class="lh">간판은 정리됐지만,<br>광고는 창문으로 갔어요.</p><p class="lh2">${SURV.length}구역 중 ${nu}구역에서 기타 광고물이 크게 늘었어요.</p><p class="lt">기타 광고물 증감률</p><p class="ls">개선 전 → 현재 · 구역마다 한 거리 10동</p>`+
-   ['u','n','d'].filter(k=>SURV.some(g=>kind(g)===k)).map(k=>`<div class="li"><i style="background:rgba(195,209,50,${KA[k]})"></i><span><b>${KN[k].replace('기타 광고물이 ','')} <em>${rng(k)}</em></b><small>${who(k)}</small></span></div>`).join('')+
+  el.innerHTML=['u','n','d'].filter(k=>SURV.some(g=>kind(g)===k)).map(k=>`<div class="li"><i style="background:rgba(195,209,50,${KA[k]})"></i><span><b>${KN[k].replace('기타 광고물이 ','')}</b><small>${who(k)}</small></span></div>`).join('')+
    `<div class="li"><i style="background:rgba(250,250,250,.11)"></i><span><b class="mu">조사하지 않은 구</b></span></div>`;})();
 /* 카드 설명 = '무엇이' (창문 vs 입간판·배너·현수막, 개수로) — 10개 미만 변화는 '크게 바뀌지 않음'으로 봄 */
 function line(g){const n=NET[g], k=kind(g), A=Math.abs, big=v=>A(v)>=10;
