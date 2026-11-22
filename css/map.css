@@ -616,3 +616,19 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 #dist .hero2 .rate{font-size:40px;color:var(--pc,var(--ink))}
 /* v130: 보는 기준은 비트맵 쪽(왼쪽, 팝업 경계 앞)으로 */
 .filter{left:924px}
+/* v146: TOP 5는 팝업 밖으로 — 아무것도 고르지 않았을 때 오른쪽에 보는 기준별 전체 TOP 5, 건물·구역 팝업이 열리면 사라짐 */
+#art>.top5{left:1289px!important;right:auto!important;top:175px!important;bottom:auto!important;width:513px;background:none;box-shadow:none!important;
+  opacity:1;transform:none;transition:opacity .35s cubic-bezier(.2,.8,.2,1),transform .45s cubic-bezier(.2,.8,.2,1),visibility 0s}
+#art.pop>.top5{opacity:0;transform:translateX(24px);visibility:hidden;pointer-events:none;transition:opacity .25s,transform .35s,visibility 0s linear .35s}
+#art>.top5 .t5-hd{cursor:default;pointer-events:none;border-top:0;padding:0 2px 18px;font-size:17px}
+#art>.top5 .t5-hd b{font-size:20px}
+#art>.top5 .t5-list{max-height:none;overflow:visible;gap:8px}
+#art>.top5 .t5,#art>.top5 .t5:nth-child(n+2){height:84px;opacity:1;filter:none}
+#art>.top5 .t5:hover{filter:brightness(1.12)}
+#art>.top5 .t5 .ev,#art>.top5 .t5:nth-child(n+2) .ev{width:60px;height:60px;opacity:1;margin-right:0}
+#art>.top5 .t5 .tx,#art>.top5 .t5:nth-child(n+2) .tx{flex-direction:column;align-items:stretch;gap:4px}
+#art>.top5 .t5 .tx b{font-size:15px} #art>.top5 .t5 .tx span{font-size:17px} #art>.top5 .t5 .v{font-size:18px}
+#art>.top5 .t5-foot{margin-top:16px;font-size:14px;color:var(--ink-3)}
+.top5[data-f="total"] .t5 .blk{background:linear-gradient(90deg,#A36693,#C3D132);color:#101010}
+.top5[data-f="total"] .t5 .ph::after{background:linear-gradient(90deg,#C3D132 0%,rgba(195,209,50,.7) 22%,rgba(195,209,50,.15) 65%,transparent 100%)}
+.top5[data-f="total"] .t5 .ph::before{background:#C3D132}

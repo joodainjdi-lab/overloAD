@@ -64,7 +64,7 @@ $('#reset').addEventListener('click',e=>{e.stopPropagation(); applyFilter(null);
 
 let seqReady=false; // 첫 로딩은 기존 등장 애니메이션, 이후 필터를 바꿀 때마다 순위 순서로 페이드인
 function applyFilter(f){
-  cur=f; $('#panel').dataset.f=f?f.id:'all';
+  cur=f; $('#panel').dataset.f=$('#top5').dataset.f=f?f.id:'all';
   if(seqReady) sweep();   // 보는 기준을 바꿀 때도 건물을 고를 때처럼 개선 전/현재 사진이 한 번 쓸고 지나감
 
   document.querySelectorAll('.opt').forEach(b=>b.setAttribute('aria-checked',!!f&&FILTERS[+b.dataset.i]===f));
@@ -245,7 +245,7 @@ let openE=false;
 { const pn=$('#panel'), x=document.createElement('button'); x.className='x'; x.setAttribute('aria-label','닫기'); x.title='닫기 (Esc)';
   x.innerHTML='<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3l8 8M11 3l-8 8"/></svg>';
   x.addEventListener('click',e=>{e.stopPropagation(); setFocus(false);}); pn.prepend(x); pn.setAttribute('aria-hidden','true'); }   // 닫기(X)는 팝업 안 오른쪽 위
-{ const pn=$('#panel'); pn.appendChild($('#top5'));   // TOP 5는 팝업 맨 아래
+{ const pn=$('#panel');   // TOP 5는 팝업 밖 — 아무것도 고르지 않았을 때 오른쪽에 보는 기준별 전체 TOP 5
   const pin=document.createElement('div'); pin.className='pin';   // 내용만 스크롤 — 맨 윗줄(보는 기준·닫기)은 가리지 않음
   [...pn.children].filter(c=>!c.classList.contains('x')).forEach(c=>pin.appendChild(c)); pn.appendChild(pin); }   // 거리로 보기처럼 건물 코드를 사진 위로
 function render(o){
@@ -281,7 +281,7 @@ select(0,false);
 
 /* TOP 5 는 화면 맨 아래에 고정하지 않고, 위 내용 바로 아래(간격 28px)에 붙임 — 화면을 넘치면 아래쪽에 맞춤 */
 (()=>{const pn=$('#panel'), t5=$('#top5'); if(!pn||!t5) return;
-  const place=()=>{ t5.style.top='792px'; t5.style.bottom='auto'; };   // 보는 기준과 상관없이 같은 자리
+  const place=()=>{};   // 자리는 CSS(#art>.top5)에서 고정
   try{ new ResizeObserver(place).observe(pn); new ResizeObserver(place).observe(t5); }catch(e){}
   addEventListener('load',place); setTimeout(place,300);})();
 
