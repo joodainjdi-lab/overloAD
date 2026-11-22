@@ -168,7 +168,7 @@ function renderSum(){ const box=$('#t5Sum'); if(!cur||!MET||!MET[cur.id]){box.in
   const big=K.rate?fmtRate(P[0],P[1]):`${f1(P[1])}<small>개</small>`;
   const ba=K.rate?`${BA(P[0].toLocaleString(),P[1].toLocaleString())}<small>개</small>`:`<span class="pre">개선 전 ${f1(P[0])}</span><span class="ar">→</span><span class="now">현재 ${f1(P[1])}</span><small>개</small>`;
   const W=v=>(v/items.length*100).toFixed(2)+'%';
-  box.innerHTML=`<div class="k">90동 전체 · ${K.name}${K.rate?' (개선 전 → 현재)':' (가게 1곳당)'}</div>
+  box.innerHTML=`<div class="k">${K.rate?K.name+' 증감률':K.name+' (가게 1곳당)'}</div>
     <div class="row"><span class="big">${big}</span><span class="cnt">${ba}</span></div>
     <div class="sl"><span class="u">▲ 늘어난 건물 <b>${up}</b>동</span><span class="d">줄어든 건물 <b>${dn}</b>동 ▼</span></div>
     <div class="split"><i class="u" style="width:${W(up)}"></i><i class="d" style="width:${W(dn)}"></i></div>
