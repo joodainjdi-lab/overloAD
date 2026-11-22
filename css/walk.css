@@ -470,3 +470,8 @@ body:has(#drawer.open) #art>#close{opacity:1;pointer-events:auto}
 #drawer .bar-row .name{font-size:19px;font-weight:500}
 #drawer .bar-row .val{font-size:19px;font-weight:500}
 #drawer .bar-row .val b{font-weight:700}
+/* 드롭박스를 열어도 끝까지 보이게: 아래 '구역 이동' 바에 가리지 않도록 스크롤 끝 여백 */
+.drawer .panel{padding-bottom:110px}
+#drawer .sub-row .top{gap:10px}
+#drawer .sub-row .name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#drawer .sub-row .pc{flex:none}

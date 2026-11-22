@@ -307,6 +307,11 @@ function sweep(){ const t0=performance.now(); const step=t=>{const k=Math.min(1,
   if(matchMedia('(prefers-reduced-motion: reduce)').matches) setP(50); else requestAnimationFrame(step); }
 
 let openE=false, openD=false;
+/* 드롭박스를 열면 그 내용이 보이도록 팝업을 알아서 내려 줌 (아래 '구역 이동' 바 높이만큼 비워 둠) */
+function showIn(el){ if(!el) return; setTimeout(()=>{ const d=$('#drawer'); if(!d||!el.isConnected) return;
+  const k=d.getBoundingClientRect().height/d.offsetHeight||1, db=d.getBoundingClientRect(), eb=el.getBoundingClientRect();
+  const top=(eb.top-db.top)/k+d.scrollTop, bot=(eb.bottom-db.top)/k+d.scrollTop, vis=d.clientHeight-110;
+  if(bot>d.scrollTop+vis) d.scrollTo({top:Math.min(bot-vis,top-24),behavior:'smooth'}); },360); }
 function setD(v){ openD=v; const d=$('#psum .det'), t=$('#psum .tgD'); if(!d) return; d.classList.toggle('open',v); t.setAttribute('aria-expanded',v); t.setAttribute('aria-label','세부 정보 '+(v?'접기':'펼치기')); }
 function setE(v){ openE=v; const g=$('#bars .grp'), t=$('#tgE'); if(!g) return; g.classList.toggle('open',v); t.setAttribute('aria-expanded',v); }
 { const pn=$('#drawer .panel'); pn.insertBefore($('#pw'),$('#photo')); }   // 건물 이름을 사진 위로
@@ -326,9 +331,9 @@ function render(o){
     `<div class="bar-row r-sign"><div class="top"><span class="name">간판</span>${val(...o.s)}</div>${track(...o.s,MAX.s)}</div>`+
     `<div class="bar-row r-win grp${openE?' open':''}"><div class="top"><button class="name tg" id="tgE" aria-expanded="${openE}">기타 광고물<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3.5 6l4.5 4.5L12.5 6"/></svg></button>${val(...o.e)}</div>${track(...o.e,MAX.e)}
      <div class="fold"><div class="wrap"><div class="subs">${sub('창문이용 광고물','w')}${sub('입간판 배너 현수막','t')}</div></div></div></div>`;
-  $('#tgE').addEventListener('click',e=>{openE=!openE; $('#bars .grp').classList.toggle('open',openE); e.currentTarget.setAttribute('aria-expanded',openE); if(openE) setD(false);});
+  $('#tgE').addEventListener('click',e=>{openE=!openE; $('#bars .grp').classList.toggle('open',openE); e.currentTarget.setAttribute('aria-expanded',openE); if(openE){ setD(false); showIn($('#notes')); }});
   $('#psum .st').innerHTML=$('#stats').innerHTML;   // 세부 숫자는 접힌 영역 안으로
-  $('#psum .tgD').addEventListener('click',()=>{ setD(!openD); if(openD) setE(false); });   // 하나를 열면 다른 하나는 닫힘
+  $('#psum .tgD').addEventListener('click',()=>{ setD(!openD); if(openD){ setE(false); showIn($('#psum')); } });   // 하나를 열면 다른 하나는 닫힘
   $('#notes').innerHTML='막대 길이는 90동 중 유형별 최댓값 기준 · 세부 항목은 기타 광고물과 같은 축'+(o.notes.length?` · <em>${o.notes.join(' / ')}</em>`:'');
 }
 
