@@ -700,3 +700,4 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 /* 구분선은 요약 바로 아래에 붙임 */
 #art>.top5 .t5-sum{padding-bottom:30px;border-bottom:1px solid var(--line-2)}
 #art>.top5 .t5-hd{border-top:0;padding-top:0}
+#art>.top5 .t5-foot{padding-bottom:40px}
