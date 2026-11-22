@@ -626,3 +626,8 @@ a{color:inherit;text-decoration:none}
 .hcard .tag.k-n{color:#B9BB8E;border-color:#6f7150}
 .hcard .tag.k-d{color:#9a9a9a;border-color:#555}
 .mlegend .li b em{font-style:normal;font-weight:500;color:var(--lime);margin-left:6px;font-variant-numeric:tabular-nums}
+/* 범례 위 핵심 문장 · 카드 개수 줄 */
+.mlegend .lh{margin:0;font-size:24px;font-weight:700;line-height:1.35;color:var(--ink)}
+.mlegend .lh2{margin:10px 0 26px;font-size:16px;color:var(--ink-2)}
+.hcard .hn{display:flex;flex-wrap:wrap;gap:4px 16px;margin-top:10px;font-size:14px;color:var(--ink-3)}
+.hcard .hn b{color:var(--lime);font-weight:600;font-variant-numeric:tabular-nums}
