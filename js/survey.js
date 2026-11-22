@@ -15,7 +15,8 @@ let hov=null;
 function draw(){
   cx.setTransform(R,0,0,R,0,0); cx.clearRect(0,0,DW,MAP.h*S);
   MAP.gu.forEach(g=>{ const on=SURV.includes(g.n), h=g.n===hov;
-    cx.fillStyle= h?'#C3D132': on?(hov?'rgba(195,209,50,.38)':'rgba(195,209,50,.62)'):'rgba(250,250,250,.11)';
+    const al=on?KA[kind(g.n)]:0;   // 거리 유형별 진하기 — 창문 광고 ↑ 진하게 / 입간판 등 ↑ 중간 / 크게 변하지 않음 옅게
+    cx.fillStyle= h?'#C3D132': on?`rgba(195,209,50,${(hov?al*.6:al).toFixed(2)})`:'rgba(250,250,250,.11)';
     const r= h?4.2: on?3.4:2.6;
     for(let k=0;k<g.d.length;k+=2){cx.beginPath(); cx.arc(g.d[k]*S,g.d[k+1]*S,r,0,7); cx.fill();}});
 }
@@ -39,12 +40,18 @@ const NET={}; SURV.forEach(g=>{const bl=items.filter(o=>o.d===g), s=sum(bl,'s'),
 const NMAX=Math.max(...SURV.flatMap(g=>[NET[g].s,NET[g].w,NET[g].t].map(Math.abs)));
 function kind(g){const n=NET[g]; if(n.w>=50) return 'w'; if(n.t>n.w&&n.t>0) return 't'; return 'n';}
 const KN={w:'창문 광고가 늘어난 거리', t:'입간판·배너·현수막이 늘어난 거리', n:'크게 변하지 않은 거리'};
+const KA={w:.92,t:.5,n:.2};   // 지도 칠하기 진하기 (범례와 같은 값)
+/* 지도 범례 — 색 진하기가 뜻하는 것 (구역 수는 데이터에서 계산) */
+(()=>{const el=$('#mlegend'); if(!el) return; const cnt=k=>SURV.filter(g=>kind(g)===k).map(g=>g.replace('구','')).join('·');
+  el.innerHTML=`<p class="lt">기타 광고물이 어디서 늘었나</p><p class="ls">개선 전 → 현재 · 구역마다 한 거리 10동</p>`+
+   ['w','t','n'].map(k=>`<div class="li"><i style="background:rgba(195,209,50,${KA[k]})"></i><span><b>${KN[k]}</b><small>${cnt(k)}</small></span></div>`).join('')+
+   `<div class="li"><i style="background:rgba(250,250,250,.11)"></i><span><b class="mu">조사하지 않은 구</b></span></div>`;})();
 function line(g){const n=NET[g], k=kind(g);
   if(k==='w') return '늘어난 광고물 대부분이 창문으로 갔어요.';
   if(k==='t') return n.w<0?'창문 광고는 줄고, 입간판·배너·현수막이 늘었어요.':'창문보다 가게 앞 입간판·배너·현수막이 더 늘었어요.';
   return (n.e[1]-n.e[0])/n.e[0]<=-.1?'기타 광고물이 오히려 줄었어요.':'기타 광고물 수가 크게 바뀌지 않았어요.';}
 function card(g){ const el=$('#mapinfo'), hc=$('#hcard'); if(el){el.classList.remove('on'); el.innerHTML=HINT;} if(!hc) return;
-  if(!g){ hc.classList.remove('on'); const ln=$('#hlink'); if(ln) ln.classList.remove('on'); return; }
+  if(!g){ const lg=$('#mlegend'); if(lg) lg.classList.remove('dim'); hc.classList.remove('on'); const ln=$('#hlink'); if(ln) ln.classList.remove('on'); return; }
   const n=NET[g], k=kind(g), sg=v=>v>0?'+'+v:v<0?'−'+Math.abs(v):'0';
   const row=(cls,lab,v)=>{const w=Math.abs(v)/NMAX*50;
     return `<div class="hr ${cls}"><span class="hl">${lab}</span><span class="ht"><i style="${v>=0?'left:50%':'right:50%'};width:${Math.max(w,.6).toFixed(2)}%"></i></span><span class="hv">${sg(v)}</span></div>`;};
@@ -54,7 +61,7 @@ function card(g){ const el=$('#mapinfo'), hc=$('#hcard'); if(el){el.classList.re
     <p class="hs">${line(g)}</p><span class="hgo">누르면 거리로 걸어 보기 →</span>`;
   // 카드는 지도 밖 빈 자리에 — 지도 왼쪽 구역은 왼쪽, 오른쪽 구역은 오른쪽 (다른 구역 이름을 가리지 않게) + 구역까지 가는 가는 선
   const [x,y]=C[g], W=380, H=hc.offsetHeight||320, lf=x<430, top=Math.max(-40,Math.min(684-H+40,y-H/2));
-  hc.style.left=(lf?-W-60:930)+'px'; hc.style.top=top+'px'; hc.classList.toggle('lf',lf); hc.classList.add('on');
+  hc.style.left=(lf?-W-60:930)+'px'; hc.style.top=top+'px'; hc.classList.toggle('lf',lf); hc.classList.add('on'); const lg=$('#mlegend'); if(lg) lg.classList.toggle('dim',lf);
   const ln=$('#hlink'); if(ln){ const x0=lf?-60:930, x1=lf?x-34:x+34; ln.style.left=Math.min(x0,x1)+'px'; ln.style.width=Math.abs(x1-x0)+'px'; ln.style.top=y+'px'; ln.classList.add('on'); } }
 const box=$('.mapbox'), MAPX=510, MAPY=222, MAPK=1.05;   // 지도 위치·확대 배율 (css .mapbox와 같게)
 const local=e=>{const r=cv.getBoundingClientRect(); return [(e.clientX-r.left)/r.width*DW,(e.clientY-r.top)/r.height*MAP.h*S];};

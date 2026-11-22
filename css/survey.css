@@ -607,3 +607,15 @@ a{color:inherit;text-decoration:none}
 /* 막대 없이: 태그는 기타 광고물 색(그린)으로 통일, 설명 줄 위에 구분선 */
 .hcard .tag.k-t{color:var(--lime);border-color:var(--lime)}
 .hcard .hs{margin-top:18px;padding-top:16px;border-top:1px solid #2e2e2e}
+/* 지도 범례 — 지도 왼쪽 빈 자리, 왼쪽 구역 카드가 뜨면 잠시 흐려짐 */
+.mlegend{position:absolute;left:-450px;top:40px;width:380px;pointer-events:none;transition:opacity .25s var(--ease)}
+.mlegend.dim{opacity:.08}
+.mlegend .lt{margin:0;font-size:20px;font-weight:600;color:var(--ink)}
+.mlegend .ls{margin:6px 0 22px;font-size:14px;color:var(--ink-3)}
+.mlegend .li{display:flex;align-items:flex-start;gap:14px;margin-top:16px}
+.mlegend .li i{flex:none;width:20px;height:20px;border-radius:50%;margin-top:2px}
+.mlegend .li span{display:flex;flex-direction:column;gap:3px}
+.mlegend .li b{font-size:16px;font-weight:600;color:var(--ink)} .mlegend .li b.mu{color:var(--ink-3);font-weight:500}
+.mlegend .li small{font-size:13px;color:var(--ink-3)}
+.mlegend{left:-381px;width:340px}
+.mlegend.dim{opacity:0}
