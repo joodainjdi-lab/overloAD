@@ -234,11 +234,14 @@ addEventListener('message',e=>{ const m=e.data; if(!m||m.ov!=='replay') return;
   setFocus(false); items.forEach(o=>o.el.classList.remove('in','seq')); grid.style.visibility='hidden';
   clearTimeout(window.__selT);
   setTimeout(()=>{ grid.style.visibility=''; applyFilter(DEF);
-    const w=m.sel; if(!w||!w.d) return;   // 거리로 보기에서 고른 건물: 90칸이 다 켜진 뒤 강조
-    window.__selT=setTimeout(()=>{ const i=items.findIndex(o=>o.d===w.d&&o.b===(w.b||'B01')); if(i<0) return;
+    const w=m.sel;
+    window.__selT=setTimeout(()=>{ const go=()=>{ if(!w||!w.d) return;   // 거리로 보기에서 고른 건물: 90칸이 다 켜진 뒤 (처음이면 보는 방법 다음에) 강조
+     window.__selT=setTimeout(()=>{ const i=items.findIndex(o=>o.d===w.d&&o.b===(w.b||'B01')); if(i<0) return;
       touched=true; select(i,false);
       if(w.b&&w.focus){ setFocus(true); }
       else { const r=[...document.querySelectorAll('#rows div')].find(x=>x.dataset.d===w.d); if(r){r.classList.remove('flash'); void r.offsetWidth; r.classList.add('flash');} }
+    },0); };
+     if(!(window.__mgAuto&&window.__mgAuto(go))) go();
     },items.length*16+650);
   },220); });
 addEventListener('message',e=>{ const m=e.data; if(!m||m.ov!=='apply') return;
@@ -440,30 +443,38 @@ grid.addEventListener('animationend',e=>{ const c=e.target; if(c.classList&&c.cl
 /* 요약·순위는 MET가 정의된 뒤 한 번 더 그림 (첫 applyFilter는 그 전에 실행됨) */
 renderTop5(); if(sel>=0) renderRank(items[sel]);
 
-/* 보는 방법 — 실제 화면 위에 번호와 짧은 설명을 띄움 (처음 한 번은 자동) */
+/* 보는 방법 — 실제 화면 위에서 한 단계씩 번호와 짧은 설명을 띄움 (처음 한 번은 자동) */
 (()=>{const g=$('#mguide'), box=$('#mgMarks'), btn=$('#howBtn'); if(!g||!btn) return;
-  const art=$('#art');
+  const art=$('#art'), cnt=$('#mgCnt'), nx=$('#mgOk'), sk=$('#mgSkip');
   const rect=el=>{const a=art.getBoundingClientRect(), k=a.width/1920, r=el.getBoundingClientRect();
     return {x:(r.left-a.left)/k, y:(r.top-a.top)/k, w:r.width/k, h:r.height/k};};
-  const STEPS=()=>{const cell=items[14]&&items[14].el, row=document.querySelector('#rows div:nth-child(6)');
+  const STEPS=()=>{const cell=items[14]&&items[14].el, row=document.querySelector('#rows div:nth-child(6)'), pOpen=!!document.querySelector('#panel.open');
     return [
     [$('#filterBtn'),'보는 기준','무엇을 비교할지 골라요. 전체 광고물 · 간판 · 기타 광고물 · 가게당 광고물','b'],
-    [cell,'칸 = 건물 1동','색이 밝을수록 순위가 높아요. 누르면 개선 전·현재 사진과 숫자가 열려요.','r'],
+    [cell,'칸 = 건물 1동','칸 색은 순위를 나타내요. 누르면 개선 전·현재 사진과 숫자가 열려요.','r'],
     [row,'구 이름','누르면 그 구역 10동을 한꺼번에 비교하고, 9구역 중 어디쯤인지 보여요.','r'],
-    [$('#legend .bar'),'색 띠','한 칸을 누르면 같은 순위 구간의 건물끼리만 모아 봐요.','t'],
-    [$('#t5List'),'TOP 5','올리면 비트맵에서 그 건물 위치가 보이고, 누르면 자세히 열려요.','l']];};
-  function show(){ box.innerHTML=''; STEPS().forEach(([el,t,d,side],i)=>{ if(!el) return; const r=rect(el);
-      const ring=document.createElement('div'); ring.className='mg-ring';
-      Object.assign(ring.style,{left:(r.x-6)+'px',top:(r.y-6)+'px',width:(r.w+12)+'px',height:(r.h+12)+'px'}); box.appendChild(ring);
-      const c=document.createElement('div'); c.className='mg-card s-'+side;
-      c.innerHTML=`<b><i>${i+1}</i>${t}</b><p>${d}</p>`; box.appendChild(c);
-      const W=300, cx=r.x+r.w/2, cy=r.y+r.h/2;
-      const pos={b:[cx-W/2, r.y+r.h+18], t:[cx-W/2, r.y-18], r:[r.x+r.w+22, cy], l:[r.x-22-W, cy]}[side];
-      c.style.left=Math.max(20,Math.min(1900-W,pos[0]))+'px'; c.style.top=pos[1]+'px'; });
-    g.hidden=false; requestAnimationFrame(()=>g.classList.add('on')); }
-  function hide(){ g.classList.remove('on'); setTimeout(()=>{g.hidden=true;},250); try{sessionStorage.setItem('ow-mapguide','1');}catch(_){} }
+    [$('#legend .bar'),'색 띠','칸 색이 몇 위 구간인지 여기서 확인할 수 있어요. 왼쪽 끝이 1위 쪽이에요.','t'],
+    pOpen?null:[$('#t5List'),'TOP 5','올리면 비트맵에서 그 건물 위치가 보이고, 누르면 자세히 열려요.','l']].filter(x=>x&&x[0]);};
+  let list=[], at=0, after=null;
+  function step(){ const [el,t,d,side]=list[at]; const r=rect(el); box.innerHTML='';
+    const ring=document.createElement('div'); ring.className='mg-ring';
+    Object.assign(ring.style,{left:(r.x-6)+'px',top:(r.y-6)+'px',width:(r.w+12)+'px',height:(r.h+12)+'px'}); box.appendChild(ring);
+    const c=document.createElement('div'); c.className='mg-card s-'+side;
+    c.innerHTML=`<b><i>${at+1}</i>${t}</b><p>${d}</p>`; box.appendChild(c);
+    const W=300, cx=r.x+r.w/2, cy=r.y+r.h/2;
+    const pos={b:[cx-W/2, r.y+r.h+18], t:[cx-W/2, r.y-18], r:[r.x+r.w+22, cy], l:[r.x-22-W, cy]}[side];
+    c.style.left=Math.max(20,Math.min(1900-W,pos[0]))+'px'; c.style.top=pos[1]+'px';
+    cnt.innerHTML=`<b>${at+1}</b> / ${list.length}`; nx.textContent=at<list.length-1?'다음':'알겠어요';
+    sk.style.visibility=at<list.length-1?'':'hidden'; }
+  function show(cb){ list=STEPS(); if(!list.length){ cb&&cb(); return; } at=0; after=cb||null; step();
+    g.hidden=false; requestAnimationFrame(()=>g.classList.add('on')); nx.focus({preventScroll:true}); }
+  function hide(){ g.classList.remove('on'); setTimeout(()=>{g.hidden=true;},250); try{sessionStorage.setItem('ow-mapguide','1');}catch(_){}
+    const f=after; after=null; if(f) setTimeout(f,280); }
+  function next(){ if(at<list.length-1){ at++; step(); } else hide(); }
   btn.addEventListener('click',e=>{e.stopPropagation(); show();});
-  g.addEventListener('click',hide); addEventListener('keydown',e=>{if(e.key==='Escape'&&!g.hidden) hide();});
-  let seen=false; try{seen=sessionStorage.getItem('ow-mapguide')==='1';}catch(_){}
-  if(!seen) setTimeout(()=>{ if(!document.querySelector('#panel.open')) show(); },2600);   // 90칸이 다 켜진 뒤
+  g.addEventListener('click',e=>{ e.stopPropagation(); if(e.target.closest('#mgSkip')) hide(); else next(); });   // 화면 아무 곳 = 다음
+  addEventListener('keydown',e=>{ if(g.hidden) return; if(e.key==='Escape') hide(); else if(e.key==='ArrowRight'||e.key==='Enter'){ e.preventDefault(); next(); } });
+  const seen=()=>{try{return sessionStorage.getItem('ow-mapguide')==='1';}catch(_){return true;}};
+  window.__mgAuto=cb=>{ if(seen()) return false; show(cb); return true; };   // 거리로 보기에서 넘어올 때: 설명 먼저 → 닫으면 고른 건물 열기
+  if(parent===window && !seen()) setTimeout(()=>{ if(!document.querySelector('#panel.open')) show(); },2600);   // 단독으로 열 때: 90칸이 다 켜진 뒤
 })();

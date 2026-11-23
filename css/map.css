@@ -731,3 +731,13 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 .mg-foot button{height:40px;padding:0 22px;border:0;border-radius:99px;background:var(--lime);color:#101010;font:inherit;font-size:15px;font-weight:700;cursor:pointer}
 .mg-foot{left:auto;right:110px;bottom:40px;transform:none}
 .mg-ring{z-index:1}
+/* 보는 방법: 한 단계씩 */
+.mg-foot{right:110px;bottom:38px;gap:22px}
+.mg-cnt{font-size:16px;color:var(--ink-3);font-variant-numeric:tabular-nums;min-width:44px;text-align:center}
+.mg-cnt b{color:var(--ink);font-weight:700}
+.mg-foot .mg-skip{height:auto;padding:6px 4px;background:none;color:var(--ink-3);font-size:15px;font-weight:500;border-radius:0}
+.mg-foot .mg-skip:hover{color:var(--ink)}
+.mg-foot .mg-ok{height:56px;min-width:150px;padding:0 36px;font-size:19px;font-weight:700}
+.mg-foot .mg-ok:hover{filter:brightness(1.08)}
+.mg-ring,.mg-card{animation:mgin .3s var(--ease,ease) both}
+@keyframes mgin{from{opacity:0}to{opacity:1}}
