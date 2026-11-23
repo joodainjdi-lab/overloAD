@@ -65,7 +65,7 @@ function card(g){ const el=$('#mapinfo'), hc=$('#hcard'); if(el){el.classList.re
     <div class="hb"><span class="hk">기타 광고물<small>10동 합계</small></span><b>${sgn(n.e[1]-n.e[0])}<i>개</i></b><span class="hc">${BA(n.e[0],n.e[1])}개 · ${fmtRate(...n.e)}</span></div>
     <p class="hs">${line(g)}</p>${nums(g)}<span class="hgo">누르면 거리로 걸어 보기 →</span>`;
   // 카드는 지도 밖 빈 자리에 — 지도 왼쪽 구역은 왼쪽, 오른쪽 구역은 오른쪽 (다른 구역 이름을 가리지 않게) + 구역까지 가는 가는 선
-  const [x,y]=C[g], W=380, H=hc.offsetHeight||320, lf=x<430, top=Math.max(-40,Math.min(684-H+40,y-H/2));
+  const [x,y]=C[g], W=380, H=hc.offsetHeight||320, lf=x<430, top=Math.max(-40,Math.min(684-H,y-H/2));   // 아래로는 지도 끝을 넘지 않게 (범례 줄과 겹치지 않음)
   // 카드가 차지하는 높이 범위 안에서 지도 점의 가장 바깥쪽을 찾아, 그 바로 옆(28px)에 붙임 — 지도를 가리지 않으면서 가깝게
   let ex=lf?1e9:-1e9; MAP.gu.forEach(q=>{for(let k=0;k<q.d.length;k+=2){const py=q.d[k+1]*S; if(py<top-6||py>top+H+6) continue; const px=q.d[k]*S; ex=lf?Math.min(ex,px):Math.max(ex,px);}});
   if(!isFinite(ex)) ex=lf?0:900;
