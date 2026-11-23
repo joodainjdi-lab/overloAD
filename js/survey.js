@@ -66,7 +66,10 @@ function card(g){ const el=$('#mapinfo'), hc=$('#hcard'); if(el){el.classList.re
     <p class="hs">${line(g)}</p>${nums(g)}<span class="hgo">누르면 거리로 걸어 보기 →</span>`;
   // 카드는 지도 밖 빈 자리에 — 지도 왼쪽 구역은 왼쪽, 오른쪽 구역은 오른쪽 (다른 구역 이름을 가리지 않게) + 구역까지 가는 가는 선
   const [x,y]=C[g], W=380, H=hc.offsetHeight||320, lf=x<430, top=Math.max(-40,Math.min(684-H+40,y-H/2));
-  hc.style.left=(lf?-W-60:930)+'px'; hc.style.top=top+'px'; hc.classList.toggle('lf',lf); hc.classList.add('on'); const lg=$('#mlegend'); if(lg) lg.classList.toggle('dim',!lf);   // 범례는 오른쪽 아래 — 오른쪽 카드가 뜨면 잠시 숨김
+  // 카드가 차지하는 높이 범위 안에서 지도 점의 가장 바깥쪽을 찾아, 그 바로 옆(28px)에 붙임 — 지도를 가리지 않으면서 가깝게
+  let ex=lf?1e9:-1e9; MAP.gu.forEach(q=>{for(let k=0;k<q.d.length;k+=2){const py=q.d[k+1]*S; if(py<top-6||py>top+H+6) continue; const px=q.d[k]*S; ex=lf?Math.min(ex,px):Math.max(ex,px);}});
+  if(!isFinite(ex)) ex=lf?0:900;
+  hc.style.left=(lf?ex-28-W:ex+28)+'px'; hc.style.top=top+'px'; hc.classList.toggle('lf',lf); hc.classList.add('on'); const lg=$('#mlegend'); if(lg) lg.classList.toggle('dim',!lf);   // 범례는 오른쪽 아래 — 오른쪽 카드가 뜨면 잠시 숨김
   const ln=$('#hlink'); if(ln){ const x0=lf?-60:930, x1=lf?x-34:x+34; ln.style.left=Math.min(x0,x1)+'px'; ln.style.width=Math.abs(x1-x0)+'px'; ln.style.top=y+'px'; ln.classList.add('on'); } }
 const box=$('.mapbox'), MAPX=510, MAPY=222, MAPK=1.05;   // 지도 위치·확대 배율 (css .mapbox와 같게)
 const local=e=>{const r=cv.getBoundingClientRect(); return [(e.clientX-r.left)/r.width*DW,(e.clientY-r.top)/r.height*MAP.h*S];};
