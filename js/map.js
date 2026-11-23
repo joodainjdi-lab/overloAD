@@ -155,6 +155,12 @@ function renderTop5(){
       <span class="tx"><b>TOP${r+1}</b><span>${o.b}<em>${o.name}</em></span></span><span class="v">${cur.fmt(o)}</span></span>
       <span class="ph"><img src="${o.pa}" alt="" decoding="async"></span></button>`;}).join('');
   $('#t5List').querySelectorAll('.t5').forEach((b,r)=>b.addEventListener('click',e=>{e.stopPropagation(); select(+b.dataset.i,true);}));
+  // TOP 5에 올리면 비트맵에서 그 건물 칸만 띄워 보여 줌 (해당 구 이름도 함께)
+  $('#t5List').querySelectorAll('.t5').forEach(b=>{const o=items[+b.dataset.i];
+    b.addEventListener('mouseenter',()=>{grid.classList.add('t5h'); o.el.classList.add('t5on');
+      document.querySelectorAll('#rows div').forEach(r=>r.classList.toggle('g-lab',r.dataset.d===o.d));});
+    b.addEventListener('mouseleave',()=>{grid.classList.remove('t5h'); o.el.classList.remove('t5on');
+      document.querySelectorAll('#rows div').forEach(r=>r.classList.remove('g-lab'));});});
 }
 function setT5(){}   // TOP 5는 접지 않고 늘 다 펼쳐 둠 — 팝업을 스크롤해서 봄
 $('#top5').classList.add('open'); { const h=$('#t5Hd'); h.removeAttribute('aria-expanded'); h.tabIndex=-1; h.querySelector('svg')?.remove(); }

@@ -709,3 +709,7 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 #art>.top5 .t5-sum .big{font-size:44px;color:var(--ink);background:none;-webkit-background-clip:border-box;background-clip:border-box}
 #art>.top5 .t5-hd{margin-top:30px}
 #art>.top5 .t5-foot{padding-bottom:0}
+/* TOP 5 호버 → 비트맵에서 그 건물 칸 강조 (나머지는 어둡게) */
+.grid.t5h .cell:not(.t5on){opacity:.16;filter:brightness(.45) saturate(.5)}
+.grid.t5h .cell.t5on{opacity:1;filter:brightness(1.12);transform:scale(1.32);z-index:6;
+  --gl:color-mix(in srgb,var(--c,#FAFAFA) 78%,#fff);box-shadow:0 0 0 1px var(--gl),0 0 22px 4px color-mix(in srgb,var(--gl) 60%,transparent),0 0 70px 14px color-mix(in srgb,var(--gl) 26%,transparent)}
