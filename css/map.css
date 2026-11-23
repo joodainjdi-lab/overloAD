@@ -753,3 +753,7 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 .mg-card b{font-size:17px}
 .mg-card p{font-size:15.5px;line-height:1.6;white-space:nowrap}
 .mg-card{width:max-content;padding:15px 20px 16px 18px}
+.mg-foot .mg-prev{width:64px;height:64px;padding:0;border-radius:50%;display:grid;place-items:center;background:none;border:1.5px solid var(--lime);color:var(--lime);margin-right:-8px}
+.mg-foot .mg-prev:hover{background:rgba(195,209,50,.1)}
+.mg-foot .mg-prev:disabled{border-color:#3a3a3a;color:#4a4a4a;cursor:default;background:none}
+.mg-foot .mg-prev[hidden]{display:none}

@@ -447,7 +447,7 @@ renderTop5(); if(sel>=0) renderRank(items[sel]);
 
 /* 보는 방법 — 실제 화면 위에서 한 단계씩 번호와 짧은 설명을 띄움 (처음 한 번은 자동) */
 (()=>{const g=$('#mguide'), box=$('#mgMarks'), btn=$('#howBtn'); if(!g||!btn) return;
-  const art=$('#art'), cnt=$('#mgCnt'), nx=$('#mgOk'), sk=$('#mgSkip');
+  const art=$('#art'), cnt=$('#mgCnt'), nx=$('#mgOk'), sk=$('#mgSkip'), pv=$('#mgPrev');
   const rect=el=>{const a=art.getBoundingClientRect(), k=a.width/1920, r=el.getBoundingClientRect();
     return {x:(r.left-a.left)/k, y:(r.top-a.top)/k, w:r.width/k, h:r.height/k};};
   const STEPS=()=>{const cell=items[14]&&items[14].el, row=document.querySelector('#rows div:nth-child(6)'), pOpen=!!document.querySelector('#panel.open');
@@ -468,8 +468,8 @@ renderTop5(); if(sel>=0) renderRank(items[sel]);
     const pos={b:[cx-W/2, r.y+r.h+18], t:[cx-W/2, r.y-18], r:[r.x+r.w+22, cy], l:[r.x-22-W, cy]}[side];
     c.style.left=Math.max(20,Math.min(1900-W,pos[0]))+'px'; c.style.top=pos[1]+'px'; }
   function step(){ box.innerHTML='';
-    if(all){ list.forEach((_,i)=>mark(i)); cnt.innerHTML=''; nx.classList.add('last'); nx.textContent='알겠어요'; nx.setAttribute('aria-label','알겠어요'); sk.style.visibility='hidden'; return; }
-    mark(at);
+    if(all){ list.forEach((_,i)=>mark(i)); cnt.innerHTML=''; pv.hidden=true; nx.classList.add('last'); nx.textContent='알겠어요'; nx.setAttribute('aria-label','알겠어요'); sk.style.visibility='hidden'; return; }
+    mark(at); pv.hidden=false; pv.disabled=at===0;
     cnt.innerHTML=`<b>${at+1}</b><span>/ ${list.length}</span>`; const last=at===list.length-1; nx.classList.toggle('last',last);
     nx.innerHTML=last?'알겠어요':'<svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 6.5l8.5 8.5-8.5 8.5"/></svg>'; nx.setAttribute('aria-label',last?'알겠어요':'다음');
     sk.style.visibility=at<list.length-1?'':'hidden'; }
@@ -479,9 +479,10 @@ renderTop5(); if(sel>=0) renderRank(items[sel]);
   function hide(){ g.classList.remove('on'); setTimeout(()=>{g.hidden=true;},250); done=true;
     const f=after; after=null; if(f) setTimeout(f,280); }
   function next(){ if(!all&&at<list.length-1){ at++; step(); } else hide(); }
+  function prev(){ if(!all&&at>0){ at--; step(); } }
   btn.addEventListener('click',e=>{e.stopPropagation(); show(null,true);});   // 다시 볼 때는 한 번에 모두 → 알겠어요
-  g.addEventListener('click',e=>{ e.stopPropagation(); if(e.target.closest('#mgSkip')) hide(); else next(); });   // 화면 아무 곳 = 다음
-  addEventListener('keydown',e=>{ if(g.hidden) return; if(e.key==='Escape') hide(); else if(e.key==='ArrowRight'||e.key==='Enter'){ e.preventDefault(); next(); } });
+  g.addEventListener('click',e=>{ e.stopPropagation(); if(e.target.closest('#mgSkip')) hide(); else if(e.target.closest('#mgPrev')) prev(); else next(); });   // 화면 아무 곳 = 다음
+  addEventListener('keydown',e=>{ if(g.hidden) return; if(e.key==='Escape') hide(); else if(e.key==='ArrowRight'||e.key==='Enter'){ e.preventDefault(); next(); } else if(e.key==='ArrowLeft'){ e.preventDefault(); prev(); } });
   const seen=()=>done;
   window.__mgAuto=cb=>{ if(seen()) return false; show(cb); return true; };   // 거리로 보기에서 넘어올 때: 설명 먼저 → 닫으면 고른 건물 열기
   if(parent===window && !seen()) setTimeout(()=>{ if(!document.querySelector('#panel.open')) show(); },2600);   // 단독으로 열 때: 90칸이 다 켜진 뒤
