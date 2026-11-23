@@ -33,11 +33,12 @@ function setHov(g){ if(g===hov) return; hov=g; draw(); if(g&&SURV.includes(g)&&w
 // 지도 아래 한 줄: 평소엔 안내, 구역 위에 올리면 그 자리에서 그 구역 숫자로 바뀜 (데이터는 늘 같은 곳에만)
 const HINT='<svg width="20" height="20" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 13.5v-11M3.5 7 8 2.5 12.5 7"/></svg>지도에서 구역을 눌러 시작하세요';
 /* 구역에 올리면 그 구역 옆에 호버 카드 + 지도 진하기
-   진하기 = 기타 광고물 증감률 구간 (데이터로 계산): +30% 이상 크게 늘어남 / −10%~+30% 변화가 작음 / −10% 이하 줄어듦
+   진하기 = 기타 광고물 늘고 준 개수 구간 (구역마다 같은 10동이라 개수로 비교): +30개 이상 크게 늘어남 / −30~+30개 변화가 작음 / −30개 이하 줄어듦
    '어디서 늘었나'(창문 vs 입간판·배너·현수막)는 카드 설명 문장으로만 */
 const NET={}; SURV.forEach(g=>{const bl=items.filter(o=>o.d===g), s=sum(bl,'s'), w=sum(bl,'w'), t=sum(bl,'t'), e=sum(bl,'e');
   NET[g]={s:s[1]-s[0], w:w[1]-w[0], t:t[1]-t[0], e, r:(e[1]-e[0])/e[0]};});
-function kind(g){const r=NET[g].r; return r>=.3?'u':r<=-.1?'d':'n';}
+const dE=g=>NET[g].e[1]-NET[g].e[0];
+function kind(g){const d=dE(g); return d>=30?'u':d<=-30?'d':'n';}
 const KN={u:'기타 광고물이 크게 늘어난 거리', n:'기타 광고물 변화가 작은 거리', d:'기타 광고물이 줄어든 거리'};
 const KA={u:.92,n:.42,d:.24};   // 지도 칠하기 진하기 (범례와 같은 값)
 const pct=v=>(v>0?'+':v<0?'−':'')+Math.abs(Math.round(v*100))+'%';
@@ -51,7 +52,7 @@ function line(g){const n=NET[g], k=kind(g), A=Math.abs, big=v=>A(v)>=10;
   if(k==='u') return n.w>=n.t?'늘어난 광고물 대부분이 창문 광고예요.':'창문 광고보다 입간판·배너·현수막이 더 늘었어요.';
   if(k==='d') return (n.w<0&&n.t<0)?'창문 광고와 입간판·배너·현수막이 모두 줄었어요.':'기타 광고물이 줄었어요.';
   if(big(n.w)&&big(n.t)&&Math.sign(n.w)!==Math.sign(n.t)) return n.w<0?'전체 수는 거의 같지만, 창문 광고는 줄고 입간판·배너·현수막이 늘었어요.':'전체 수는 거의 같지만, 창문 광고는 늘고 입간판·배너·현수막이 줄었어요.';
-  const r=n.r; return r>=.05?'기타 광고물이 조금 늘었어요.':r<=-.05?'기타 광고물이 조금 줄었어요.':'기타 광고물 수가 거의 같아요.';}
+  const d=n.e[1]-n.e[0]; return d>=10?'기타 광고물이 조금 늘었어요.':d<=-10?'기타 광고물이 조금 줄었어요.':'기타 광고물 수가 거의 같아요.';}
 const sgn=v=>v>0?'+'+v:v<0?'−'+Math.abs(v):'0';
 const nums=g=>{const n=NET[g]; return `<span class="hn"><span>창문 광고 <b>${sgn(n.w)}</b>개</span><span>입간판·배너·현수막 <b>${sgn(n.t)}</b>개</span></span>`;};
 function card(g){ const el=$('#mapinfo'), hc=$('#hcard'); if(el){el.classList.remove('on'); el.innerHTML=HINT;} if(!hc) return;
@@ -61,7 +62,7 @@ function card(g){ const el=$('#mapinfo'), hc=$('#hcard'); if(el){el.classList.re
     return `<div class="hr ${cls}"><span class="hl">${lab}</span><span class="ht"><i style="${v>=0?'left:50%':'right:50%'};width:${Math.max(w,.6).toFixed(2)}%"></i></span><span class="hv">${sg(v)}</span></div>`;};
   hc.innerHTML=`<div class="hh"><b>${g}</b><span>${YEAR[g]} 사업 · ${2026-YEAR[g]}년 전</span></div>
     <span class="tag k-${k}">${KN[k]}</span>
-    <div class="hb"><span class="hk">기타 광고물</span><b>${fmtRate(...n.e)}</b><span class="hc">${BA(n.e[0],n.e[1])}개</span></div>
+    <div class="hb"><span class="hk">기타 광고물<small>10동 합계</small></span><b>${sgn(n.e[1]-n.e[0])}<i>개</i></b><span class="hc">${BA(n.e[0],n.e[1])}개 · ${fmtRate(...n.e)}</span></div>
     <p class="hs">${line(g)}</p>${nums(g)}<span class="hgo">누르면 거리로 걸어 보기 →</span>`;
   // 카드는 지도 밖 빈 자리에 — 지도 왼쪽 구역은 왼쪽, 오른쪽 구역은 오른쪽 (다른 구역 이름을 가리지 않게) + 구역까지 가는 가는 선
   const [x,y]=C[g], W=380, H=hc.offsetHeight||320, lf=x<430, top=Math.max(-40,Math.min(684-H+40,y-H/2));
