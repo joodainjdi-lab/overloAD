@@ -279,7 +279,7 @@ function sweep(){ const t0=performance.now(); const from=0, to=50;   // 왼쪽 �
 
 /* 전체 광고물 점 그래프 — 광고물 1개 = 점 1개 (해바라기 배열: 안쪽부터 입간판·배너·현수막 → 간판 → 창문이용) */
 function dots(o){
-  const R=54, r=2.1, c=4.75, GA=Math.PI*(3-Math.sqrt(5));   // 90동 모두 같은 간격 → 점 무리 크기로 바로 비교 (최대 116개도 들어감)
+  const R=49, r=2, c=4.3, GA=Math.PI*(3-Math.sqrt(5));   // 90동 모두 같은 간격 → 점 무리 크기로 바로 비교 (최대 116개도 들어감)
   const one=(k,lab)=>{const cats=[['t',o.t[k]],['s',o.s[k]],['w',o.w[k]]]; let i=0, html='';
     for(const [cl,n] of cats) for(let m=0;m<n;m++,i++){const rr=c*Math.sqrt(i+.5), th=i*GA;
       html+=`<circle class="${cl}" cx="${(R+rr*Math.cos(th)).toFixed(1)}" cy="${(R+rr*Math.sin(th)).toFixed(1)}" r="${r}" style="--i:${i}"/>`;}

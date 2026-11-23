@@ -246,7 +246,7 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 .panel .sec-dots{display:none}
 .panel[data-f="total"] .sum{display:flex;justify-content:space-between;align-items:center}
 .panel[data-f="total"] .sec-dots{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
-.sec-dots .pair{display:flex;gap:26px}
+.sec-dots .pair{display:flex;gap:20px}
 .sec-dots figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:6px}
 .sec-dots svg{display:block;overflow:visible}
 .sec-dots circle{opacity:0;animation:dotin .35s ease forwards;animation-delay:calc(var(--i)*8ms)}
