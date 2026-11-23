@@ -471,13 +471,16 @@ renderTop5(); if(sel>=0) renderRank(items[sel]);
     sk.style.visibility=at<list.length-1?'':'hidden'; }
   function show(cb){ list=STEPS(); if(!list.length){ cb&&cb(); return; } at=0; after=cb||null; step();
     g.hidden=false; requestAnimationFrame(()=>g.classList.add('on')); nx.focus({preventScroll:true}); }
-  function hide(){ g.classList.remove('on'); setTimeout(()=>{g.hidden=true;},250); try{sessionStorage.setItem('ow-mapguide','1');}catch(_){}
+  let done=false;   // 페이지를 열 때마다 처음 한 번은 꼭 보여 줌
+  function hide(){ g.classList.remove('on'); setTimeout(()=>{g.hidden=true;},250); done=true;
     const f=after; after=null; if(f) setTimeout(f,280); }
   function next(){ if(at<list.length-1){ at++; step(); } else hide(); }
   btn.addEventListener('click',e=>{e.stopPropagation(); show();});
   g.addEventListener('click',e=>{ e.stopPropagation(); if(e.target.closest('#mgSkip')) hide(); else next(); });   // 화면 아무 곳 = 다음
   addEventListener('keydown',e=>{ if(g.hidden) return; if(e.key==='Escape') hide(); else if(e.key==='ArrowRight'||e.key==='Enter'){ e.preventDefault(); next(); } });
-  const seen=()=>{try{return sessionStorage.getItem('ow-mapguide')==='1';}catch(_){return true;}};
+  const seen=()=>done;
   window.__mgAuto=cb=>{ if(seen()) return false; show(cb); return true; };   // 거리로 보기에서 넘어올 때: 설명 먼저 → 닫으면 고른 건물 열기
   if(parent===window && !seen()) setTimeout(()=>{ if(!document.querySelector('#panel.open')) show(); },2600);   // 단독으로 열 때: 90칸이 다 켜진 뒤
 })();
+
+try{ if(parent!==window) parent.postMessage({ov:'ready'},'*'); }catch(e){}   // 보기 전환 페이지에 준비됐다고 알림
