@@ -652,3 +652,6 @@ a{color:inherit;text-decoration:none}
 .mlegend .li i{margin-top:0}
 .mlegend .li span{flex-direction:row;align-items:baseline;gap:8px}
 .mlegend{bottom:-40px}
+/* 아래쪽 정리: '구역을 눌러 시작하세요' 안내는 카드의 '누르면 거리로 걸어 보기'와 겹쳐서 숨기고, 범례만 지도와 여백을 두고 한 줄 */
+.mapinfo{display:none}
+.mlegend{bottom:-92px}
