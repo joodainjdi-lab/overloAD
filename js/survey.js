@@ -55,6 +55,10 @@ function line(g){const n=NET[g], k=kind(g), A=Math.abs, big=v=>A(v)>=10;
   const d=n.e[1]-n.e[0]; return d>=10?'기타 광고물이 조금 늘었어요.':d<=-10?'기타 광고물이 조금 줄었어요.':'기타 광고물 수가 거의 같아요.';}
 const sgn=v=>v>0?'+'+v:v<0?'−'+Math.abs(v):'0';
 const nums=g=>{const n=NET[g]; return `<span class="hn"><span>창문 광고 <b>${sgn(n.w)}</b>개</span><span>입간판·배너·현수막 <b>${sgn(n.t)}</b>개</span></span>`;};
+/* 카드 세로 위치 보정 — 서대문구는 은평구·강서구 사이 빈 자리로 올려서 띄움 (1 = 카드 아래끝이 구역 중심) */
+const UP={'서대문구':1.2};
+const SKIP={'서대문구':['강서구']};
+const OFFX={'서대문구':-72};   // 제목과 겹치지 않게 조금 왼쪽으로   // 이 구역 카드는 강서구 위 빈 자리까지 들어가게
 function card(g){ const el=$('#mapinfo'), hc=$('#hcard'); if(el){el.classList.remove('on'); el.innerHTML=HINT;} if(!hc) return;
   if(!g){ const lg=$('#mlegend'); if(lg) lg.classList.remove('dim'); hc.classList.remove('on'); const ln=$('#hlink'); if(ln) ln.classList.remove('on'); return; }
   const n=NET[g], k=kind(g), sg=v=>v>0?'+'+v:v<0?'−'+Math.abs(v):'0';
@@ -65,11 +69,11 @@ function card(g){ const el=$('#mapinfo'), hc=$('#hcard'); if(el){el.classList.re
     <div class="hb"><span class="hk">기타 광고물<small>10동 합계</small></span><b>${sgn(n.e[1]-n.e[0])}<i>개</i></b><span class="hc">${BA(n.e[0],n.e[1])}개 · ${fmtRate(...n.e)}</span></div>
     <p class="hs">${line(g)}</p>${nums(g)}<span class="hgo">누르면 거리로 걸어 보기 →</span>`;
   // 카드는 지도 밖 빈 자리에 — 지도 왼쪽 구역은 왼쪽, 오른쪽 구역은 오른쪽 (다른 구역 이름을 가리지 않게) + 구역까지 가는 가는 선
-  const [x,y]=C[g], W=380, H=hc.offsetHeight||320, lf=x<430, top=Math.max(-40,Math.min(684-H,y-H/2));   // 아래로는 지도 끝을 넘지 않게 (범례 줄과 겹치지 않음)
+  const [x,y]=C[g], W=380, H=hc.offsetHeight||320, lf=x<430, top=Math.max(-40,Math.min(684-H,y-H*(UP[g]??.5)));   // 아래로는 지도 끝을 넘지 않게 (범례 줄과 겹치지 않음)
   // 카드가 차지하는 높이 범위 안에서 지도 점의 가장 바깥쪽을 찾아, 그 바로 옆(28px)에 붙임 — 지도를 가리지 않으면서 가깝게
-  let ex=lf?1e9:-1e9; MAP.gu.forEach(q=>{for(let k=0;k<q.d.length;k+=2){const py=q.d[k+1]*S; if(py<top-6||py>top+H+6) continue; const px=q.d[k]*S; ex=lf?Math.min(ex,px):Math.max(ex,px);}});
+  let ex=lf?1e9:-1e9; MAP.gu.forEach(q=>{if((SKIP[g]||[]).includes(q.n)) return; for(let k=0;k<q.d.length;k+=2){const py=q.d[k+1]*S; if(py<top-6||py>top+H+6) continue; const px=q.d[k]*S; ex=lf?Math.min(ex,px):Math.max(ex,px);}});
   if(!isFinite(ex)) ex=lf?0:900;
-  hc.style.left=(lf?ex-28-W:ex+28)+'px'; hc.style.top=top+'px'; hc.classList.toggle('lf',lf); hc.classList.add('on'); const lg=$('#mlegend'); if(lg) lg.classList.toggle('dim',!lf);   // 범례는 오른쪽 아래 — 오른쪽 카드가 뜨면 잠시 숨김
+  hc.style.left=((lf?ex-28-W:ex+28)+(OFFX[g]||0))+'px'; hc.style.top=top+'px'; hc.classList.toggle('lf',lf); hc.classList.add('on'); const lg=$('#mlegend'); if(lg) lg.classList.toggle('dim',!lf);   // 범례는 오른쪽 아래 — 오른쪽 카드가 뜨면 잠시 숨김
   const ln=$('#hlink'); if(ln){ const x0=lf?-60:930, x1=lf?x-34:x+34; ln.style.left=Math.min(x0,x1)+'px'; ln.style.width=Math.abs(x1-x0)+'px'; ln.style.top=y+'px'; ln.classList.add('on'); } }
 const box=$('.mapbox'), MAPX=510, MAPY=222, MAPK=1.05;   // 지도 위치·확대 배율 (css .mapbox와 같게)
 const local=e=>{const r=cv.getBoundingClientRect(); return [(e.clientX-r.left)/r.width*DW,(e.clientY-r.top)/r.height*MAP.h*S];};
