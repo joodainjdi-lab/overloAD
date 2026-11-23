@@ -639,3 +639,5 @@ a{color:inherit;text-decoration:none}
 .mlegend .li span{gap:2px}
 .mlegend .li b{font-size:14px;font-weight:600} .mlegend .li b.mu{font-size:14px}
 .mlegend .li small{font-size:12px}
+/* 호버 카드 연결선 제거 — 지도 위를 길게 가로질러 다른 구역 이름을 가림 */
+.hlink{display:none}
