@@ -488,4 +488,5 @@ renderTop5(); if(sel>=0) renderRank(items[sel]);
   if(parent===window && !seen()) setTimeout(()=>{ if(!document.querySelector('#panel.open')) show(); },2600);   // 단독으로 열 때: 90칸이 다 켜진 뒤
 })();
 
-try{ if(parent!==window) parent.postMessage({ov:'ready'},'*'); }catch(e){}   // 보기 전환 페이지에 준비됐다고 알림
+try{ if(parent!==window) parent.postMessage({ov:'ready'},'*'); }catch(e){}
+addEventListener('message',e=>{ if(e.data&&e.data.ov==='ping'&&parent!==window) try{ parent.postMessage({ov:'ready'},'*'); }catch(_){} });   // 보기 전환 페이지에 준비됐다고 알림

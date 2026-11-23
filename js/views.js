@@ -12,7 +12,7 @@ addEventListener('message',e=>{ const m=e.data; if(!m||m.ov!=='state') return;
   for(const k in V) if(V[k].contentWindow===e.source) ST[k]=m; });
 let curV='walk', mapShown=false;
 function firstMap(){ mapShown=true; const w=ST.walk, send=()=>{ try{ V.map.contentWindow.postMessage({ov:'replay',sel:w&&w.user?{d:w.d,b:w.b,focus:w.focus}:null},'*'); }catch(e){} };
-  if(mapReady) send(); else mapPend=send; }   // 한눈에 비교가 아직 준비 전이면 준비 신호를 받은 뒤 보냄
+  if(mapReady) send(); else { mapPend=send; try{ V.map.contentWindow.postMessage({ov:'ping'},'*'); }catch(e){} } }   // 준비 신호를 놓쳤을 수도 있어 한 번 물어봄   // 한눈에 비교가 아직 준비 전이면 준비 신호를 받은 뒤 보냄
 let mapReady=false, mapPend=null;
 addEventListener('message',e=>{ if(e.data&&e.data.ov==='ready'&&e.source===V.map.contentWindow){ mapReady=true; if(mapPend){ const f=mapPend; mapPend=null; f(); } } });
 function link(to){ const from=to==='walk'?'map':'walk', m=ST[from]; if(!m||!m.user) return;
