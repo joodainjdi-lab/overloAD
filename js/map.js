@@ -464,7 +464,7 @@ renderTop5(); if(sel>=0) renderRank(items[sel]);
     Object.assign(ring.style,{left:(r.x-6)+'px',top:(r.y-6)+'px',width:(r.w+12)+'px',height:(r.h+12)+'px'}); box.appendChild(ring);
     const c=document.createElement('div'); c.className='mg-card s-'+side;
     c.innerHTML=`<b><i>${i+1}</i>${t}</b><p>${d}</p>`; box.appendChild(c);
-    const W=360, cx=r.x+r.w/2, cy=r.y+r.h/2;
+    const W=c.offsetWidth, cx=r.x+r.w/2, cy=r.y+r.h/2;
     const pos={b:[cx-W/2, r.y+r.h+18], t:[cx-W/2, r.y-18], r:[r.x+r.w+22, cy], l:[r.x-22-W, cy]}[side];
     c.style.left=Math.max(20,Math.min(1900-W,pos[0]))+'px'; c.style.top=pos[1]+'px'; }
   function step(){ box.innerHTML='';
@@ -473,8 +473,8 @@ renderTop5(); if(sel>=0) renderRank(items[sel]);
     cnt.innerHTML=`<b>${at+1}</b><span>/ ${list.length}</span>`; const last=at===list.length-1; nx.classList.toggle('last',last);
     nx.innerHTML=last?'알겠어요':'<svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 6.5l8.5 8.5-8.5 8.5"/></svg>'; nx.setAttribute('aria-label',last?'알겠어요':'다음');
     sk.style.visibility=at<list.length-1?'':'hidden'; }
-  function show(cb,every){ list=STEPS(); if(!list.length){ cb&&cb(); return; } all=!!every; at=0; after=cb||null; step();
-    g.hidden=false; requestAnimationFrame(()=>g.classList.add('on')); nx.focus({preventScroll:true}); }
+  function show(cb,every){ list=STEPS(); if(!list.length){ cb&&cb(); return; } all=!!every; at=0; after=cb||null; g.hidden=false; step();   // 먼저 보이게 해야 카드 폭을 잴 수 있음
+    requestAnimationFrame(()=>g.classList.add('on')); nx.focus({preventScroll:true}); }
   let done=false;   // 페이지를 열 때마다 처음 한 번은 꼭 보여 줌
   function hide(){ g.classList.remove('on'); setTimeout(()=>{g.hidden=true;},250); done=true;
     const f=after; after=null; if(f) setTimeout(f,280); }

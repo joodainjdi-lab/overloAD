@@ -752,3 +752,4 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 .mg-card{width:360px}
 .mg-card b{font-size:17px}
 .mg-card p{font-size:15.5px;line-height:1.6;white-space:nowrap}
+.mg-card{width:max-content;padding:15px 20px 16px 18px}
