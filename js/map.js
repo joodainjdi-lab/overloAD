@@ -439,3 +439,31 @@ grid.addEventListener('animationend',e=>{ const c=e.target; if(c.classList&&c.cl
 
 /* 요약·순위는 MET가 정의된 뒤 한 번 더 그림 (첫 applyFilter는 그 전에 실행됨) */
 renderTop5(); if(sel>=0) renderRank(items[sel]);
+
+/* 보는 방법 — 실제 화면 위에 번호와 짧은 설명을 띄움 (처음 한 번은 자동) */
+(()=>{const g=$('#mguide'), box=$('#mgMarks'), btn=$('#howBtn'); if(!g||!btn) return;
+  const art=$('#art');
+  const rect=el=>{const a=art.getBoundingClientRect(), k=a.width/1920, r=el.getBoundingClientRect();
+    return {x:(r.left-a.left)/k, y:(r.top-a.top)/k, w:r.width/k, h:r.height/k};};
+  const STEPS=()=>{const cell=items[14]&&items[14].el, row=document.querySelector('#rows div:nth-child(6)');
+    return [
+    [$('#filterBtn'),'보는 기준','무엇을 비교할지 골라요. 전체 광고물 · 간판 · 기타 광고물 · 가게당 광고물','b'],
+    [cell,'칸 = 건물 1동','색이 밝을수록 순위가 높아요. 누르면 개선 전·현재 사진과 숫자가 열려요.','r'],
+    [row,'구 이름','누르면 그 구역 10동을 한꺼번에 비교하고, 9구역 중 어디쯤인지 보여요.','r'],
+    [$('#legend .bar'),'색 띠','한 칸을 누르면 같은 순위 구간의 건물끼리만 모아 봐요.','t'],
+    [$('#t5List'),'TOP 5','올리면 비트맵에서 그 건물 위치가 보이고, 누르면 자세히 열려요.','l']];};
+  function show(){ box.innerHTML=''; STEPS().forEach(([el,t,d,side],i)=>{ if(!el) return; const r=rect(el);
+      const ring=document.createElement('div'); ring.className='mg-ring';
+      Object.assign(ring.style,{left:(r.x-6)+'px',top:(r.y-6)+'px',width:(r.w+12)+'px',height:(r.h+12)+'px'}); box.appendChild(ring);
+      const c=document.createElement('div'); c.className='mg-card s-'+side;
+      c.innerHTML=`<b><i>${i+1}</i>${t}</b><p>${d}</p>`; box.appendChild(c);
+      const W=300, cx=r.x+r.w/2, cy=r.y+r.h/2;
+      const pos={b:[cx-W/2, r.y+r.h+18], t:[cx-W/2, r.y-18], r:[r.x+r.w+22, cy], l:[r.x-22-W, cy]}[side];
+      c.style.left=Math.max(20,Math.min(1900-W,pos[0]))+'px'; c.style.top=pos[1]+'px'; });
+    g.hidden=false; requestAnimationFrame(()=>g.classList.add('on')); }
+  function hide(){ g.classList.remove('on'); setTimeout(()=>{g.hidden=true;},250); try{sessionStorage.setItem('ow-mapguide','1');}catch(_){} }
+  btn.addEventListener('click',e=>{e.stopPropagation(); show();});
+  g.addEventListener('click',hide); addEventListener('keydown',e=>{if(e.key==='Escape'&&!g.hidden) hide();});
+  let seen=false; try{seen=sessionStorage.getItem('ow-mapguide')==='1';}catch(_){}
+  if(!seen) setTimeout(()=>{ if(!document.querySelector('#panel.open')) show(); },2600);   // 90칸이 다 켜진 뒤
+})();

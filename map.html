@@ -9,7 +9,11 @@
 <body>
 <div id="stage"><div id="art">
   <div class="head"><div class="t">간판개선사업 9구역 90동</div></div>
-  <p class="guide">칸 = 건물 1동 · 칸을 누르면 자세히 · 구 이름을 누르면 구역 전체 · 색띠는 묶어 보기</p>
+  <p class="guide"><button class="howbtn" id="howBtn" type="button"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="8" cy="8" r="6.6"/><path d="M8 7.2v4M8 4.9v.2" stroke-linecap="round"/></svg>보는 방법</button><span>칸 = 건물 1동</span></p>
+  <div class="mguide" id="mguide" role="dialog" aria-modal="true" aria-label="한눈에 비교 보는 방법" hidden>
+    <div class="mg-dim"></div><div class="mg-marks" id="mgMarks"></div>
+    <div class="mg-foot"><span>화면 아무 곳이나 누르면 닫혀요</span><button type="button" id="mgOk">알겠어요</button></div>
+  </div>
 
   <div class="filter" id="filter">
     <button class="filter-btn" id="filterBtn" aria-haspopup="true" aria-expanded="false">

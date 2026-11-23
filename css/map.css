@@ -713,3 +713,21 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 .grid.t5h .cell:not(.t5on){opacity:.16;filter:brightness(.45) saturate(.5)}
 .grid.t5h .cell.t5on{opacity:1;filter:brightness(1.12);transform:scale(1.32);z-index:6;
   --gl:color-mix(in srgb,var(--c,#FAFAFA) 78%,#fff);box-shadow:0 0 0 1px var(--gl),0 0 22px 4px color-mix(in srgb,var(--gl) 60%,transparent),0 0 70px 14px color-mix(in srgb,var(--gl) 26%,transparent)}
+/* 보는 방법 버튼 + 안내 오버레이 */
+.guide{gap:14px}
+.howbtn{display:inline-flex;align-items:center;gap:7px;height:32px;padding:0 14px 0 11px;border:1px solid var(--line-2);border-radius:99px;background:none;color:var(--ink);font:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:border-color .2s,background .2s}
+.howbtn svg{color:var(--lime)}
+.howbtn:hover{border-color:var(--lime);background:rgba(195,209,50,.08)}
+.mguide{position:absolute;inset:0;z-index:60;opacity:0;transition:opacity .25s;cursor:pointer}
+.mguide.on{opacity:1}
+.mg-dim{position:absolute;inset:0;background:rgba(10,10,10,.72)}
+.mg-ring{position:absolute;border:1.5px solid var(--lime);border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,0);pointer-events:none}
+.mg-card{position:absolute;width:300px;padding:14px 16px 15px;background:#1b1b1b;border:1px solid #3a3a3a;border-radius:10px;pointer-events:none}
+.mg-card.s-r,.mg-card.s-l{transform:translateY(-50%)} .mg-card.s-t{transform:translateY(-100%)}
+.mg-card b{display:flex;align-items:center;gap:9px;font-size:16px;font-weight:700;color:var(--ink)}
+.mg-card b i{font-style:normal;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--lime);color:#101010;font-size:13px;font-weight:700}
+.mg-card p{margin:8px 0 0;font-size:14px;line-height:1.55;color:var(--ink-2);word-break:keep-all}
+.mg-foot{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);display:flex;align-items:center;gap:18px;font-size:14px;color:var(--ink-3)}
+.mg-foot button{height:40px;padding:0 22px;border:0;border-radius:99px;background:var(--lime);color:#101010;font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.mg-foot{left:auto;right:110px;bottom:40px;transform:none}
+.mg-ring{z-index:1}
