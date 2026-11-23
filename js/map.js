@@ -452,11 +452,11 @@ renderTop5(); if(sel>=0) renderRank(items[sel]);
     return {x:(r.left-a.left)/k, y:(r.top-a.top)/k, w:r.width/k, h:r.height/k};};
   const STEPS=()=>{const cell=items[14]&&items[14].el, row=document.querySelector('#rows div:nth-child(6)'), pOpen=!!document.querySelector('#panel.open');
     return [
-    [$('#filterBtn'),'보는 기준','무엇을 비교할지 골라요. 전체 광고물 · 간판 · 기타 광고물 · 가게당 광고물','b'],
-    [cell,'칸 = 건물 1동','칸 색은 순위를 나타내요. 누르면 개선 전·현재 사진과 숫자가 열려요.','r'],
-    [row,'구 이름','누르면 그 구역 10동을 한꺼번에 비교하고, 9구역 중 어디쯤인지 보여요.','r'],
-    [$('#legend .bar'),'색 띠','칸 색이 몇 위 구간인지 여기서 확인할 수 있어요. 왼쪽 끝이 1위 쪽이에요.','t'],
-    pOpen?null:[$('#t5List'),'TOP 5','올리면 비트맵에서 그 건물 위치가 보이고, 누르면 자세히 열려요.','l']].filter(x=>x&&x[0]);};
+    [$('#filterBtn'),'보는 기준','무엇을 비교할지 골라요. 전체 광고물 · 간판 ·<br>기타 광고물 · 가게당 광고물','b'],
+    [cell,'칸 = 건물 1동','칸 색은 순위를 나타내요.<br>누르면 개선 전·현재 사진과 숫자가 열려요.','r'],
+    [row,'구 이름','누르면 그 구역 10동을 한꺼번에 비교하고,<br>9구역 중 어디쯤인지 보여요.','r'],
+    [$('#legend .bar'),'색 띠','칸 색이 몇 위 구간인지 여기서 확인할 수 있어요.<br>왼쪽 끝이 1위 쪽이에요.','t'],
+    pOpen?null:[$('#t5List'),'TOP 5','올리면 비트맵에서 그 건물 위치가 보이고,<br>누르면 자세히 열려요.','l']].filter(x=>x&&x[0]);};
   let list=[], at=0, after=null;
   let all=false;
   function mark(i){ const [el,t,d,side]=list[i]; const r=rect(el);
@@ -464,7 +464,7 @@ renderTop5(); if(sel>=0) renderRank(items[sel]);
     Object.assign(ring.style,{left:(r.x-6)+'px',top:(r.y-6)+'px',width:(r.w+12)+'px',height:(r.h+12)+'px'}); box.appendChild(ring);
     const c=document.createElement('div'); c.className='mg-card s-'+side;
     c.innerHTML=`<b><i>${i+1}</i>${t}</b><p>${d}</p>`; box.appendChild(c);
-    const W=300, cx=r.x+r.w/2, cy=r.y+r.h/2;
+    const W=360, cx=r.x+r.w/2, cy=r.y+r.h/2;
     const pos={b:[cx-W/2, r.y+r.h+18], t:[cx-W/2, r.y-18], r:[r.x+r.w+22, cy], l:[r.x-22-W, cy]}[side];
     c.style.left=Math.max(20,Math.min(1900-W,pos[0]))+'px'; c.style.top=pos[1]+'px'; }
   function step(){ box.innerHTML='';
