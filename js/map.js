@@ -458,24 +458,28 @@ renderTop5(); if(sel>=0) renderRank(items[sel]);
     [$('#legend .bar'),'색 띠','칸 색이 몇 위 구간인지 여기서 확인할 수 있어요. 왼쪽 끝이 1위 쪽이에요.','t'],
     pOpen?null:[$('#t5List'),'TOP 5','올리면 비트맵에서 그 건물 위치가 보이고, 누르면 자세히 열려요.','l']].filter(x=>x&&x[0]);};
   let list=[], at=0, after=null;
-  function step(){ const [el,t,d,side]=list[at]; const r=rect(el); box.innerHTML='';
+  let all=false;
+  function mark(i){ const [el,t,d,side]=list[i]; const r=rect(el);
     const ring=document.createElement('div'); ring.className='mg-ring';
     Object.assign(ring.style,{left:(r.x-6)+'px',top:(r.y-6)+'px',width:(r.w+12)+'px',height:(r.h+12)+'px'}); box.appendChild(ring);
     const c=document.createElement('div'); c.className='mg-card s-'+side;
-    c.innerHTML=`<b><i>${at+1}</i>${t}</b><p>${d}</p>`; box.appendChild(c);
+    c.innerHTML=`<b><i>${i+1}</i>${t}</b><p>${d}</p>`; box.appendChild(c);
     const W=300, cx=r.x+r.w/2, cy=r.y+r.h/2;
     const pos={b:[cx-W/2, r.y+r.h+18], t:[cx-W/2, r.y-18], r:[r.x+r.w+22, cy], l:[r.x-22-W, cy]}[side];
-    c.style.left=Math.max(20,Math.min(1900-W,pos[0]))+'px'; c.style.top=pos[1]+'px';
+    c.style.left=Math.max(20,Math.min(1900-W,pos[0]))+'px'; c.style.top=pos[1]+'px'; }
+  function step(){ box.innerHTML='';
+    if(all){ list.forEach((_,i)=>mark(i)); cnt.innerHTML=''; nx.classList.add('last'); nx.textContent='알겠어요'; nx.setAttribute('aria-label','알겠어요'); sk.style.visibility='hidden'; return; }
+    mark(at);
     cnt.innerHTML=`<b>${at+1}</b><span>/ ${list.length}</span>`; const last=at===list.length-1; nx.classList.toggle('last',last);
     nx.innerHTML=last?'알겠어요':'<svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 6.5l8.5 8.5-8.5 8.5"/></svg>'; nx.setAttribute('aria-label',last?'알겠어요':'다음');
     sk.style.visibility=at<list.length-1?'':'hidden'; }
-  function show(cb){ list=STEPS(); if(!list.length){ cb&&cb(); return; } at=0; after=cb||null; step();
+  function show(cb,every){ list=STEPS(); if(!list.length){ cb&&cb(); return; } all=!!every; at=0; after=cb||null; step();
     g.hidden=false; requestAnimationFrame(()=>g.classList.add('on')); nx.focus({preventScroll:true}); }
   let done=false;   // 페이지를 열 때마다 처음 한 번은 꼭 보여 줌
   function hide(){ g.classList.remove('on'); setTimeout(()=>{g.hidden=true;},250); done=true;
     const f=after; after=null; if(f) setTimeout(f,280); }
-  function next(){ if(at<list.length-1){ at++; step(); } else hide(); }
-  btn.addEventListener('click',e=>{e.stopPropagation(); show();});
+  function next(){ if(!all&&at<list.length-1){ at++; step(); } else hide(); }
+  btn.addEventListener('click',e=>{e.stopPropagation(); show(null,true);});   // 다시 볼 때는 한 번에 모두 → 알겠어요
   g.addEventListener('click',e=>{ e.stopPropagation(); if(e.target.closest('#mgSkip')) hide(); else next(); });   // 화면 아무 곳 = 다음
   addEventListener('keydown',e=>{ if(g.hidden) return; if(e.key==='Escape') hide(); else if(e.key==='ArrowRight'||e.key==='Enter'){ e.preventDefault(); next(); } });
   const seen=()=>done;
