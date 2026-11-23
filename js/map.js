@@ -238,7 +238,7 @@ addEventListener('message',e=>{ const m=e.data; if(!m||m.ov!=='replay') return;
     window.__selT=setTimeout(()=>{ const go=()=>{ if(!w||!w.d) return;   // 거리로 보기에서 고른 건물: 90칸이 다 켜진 뒤 (처음이면 보는 방법 다음에) 강조
      window.__selT=setTimeout(()=>{ const i=items.findIndex(o=>o.d===w.d&&o.b===(w.b||'B01')); if(i<0) return;
       touched=true; select(i,false);
-      if(w.b&&w.focus){ setFocus(true); }
+      if(w.b){ setFocus(true); }   // 거리로 보기에서 고른 입면도는 팝업까지 열어 줌
       else { const r=[...document.querySelectorAll('#rows div')].find(x=>x.dataset.d===w.d); if(r){r.classList.remove('flash'); void r.offsetWidth; r.classList.add('flash');} }
     },0); };
      if(!(window.__mgAuto&&window.__mgAuto(go))) go();
@@ -361,7 +361,9 @@ document.querySelectorAll('#cols div').forEach((c,i)=>c.dataset.b='B'+String(i+1
 bindGrp($('#rows'),t=>{const r=t.closest('#rows div'); return r&&{t:'d',v:r.dataset.d};},
   g=>{ if(distD===g.v){ setFocus(false); return; } openDist(g.v); });   // 구 이름을 누르면 그 구역 평균을 팝업으로
 // B 번호(열)는 묶어 보기에서 뺌 — 건물 이름일 뿐이라 같은 번호끼리 묶을 의미가 없음
-bindGrp($('#legend'),t=>{const b=t.closest('.bar i'); return b&&cur&&{t:'s',v:+b.dataset.s};});
+{ const lg=$('#legend'), gs=t=>{const b=t.closest('.bar i'); return b&&cur&&{t:'s',v:+b.dataset.s};};   // 색 띠는 올렸을 때만 묶어 보기 (누르기 고정 없음)
+  lg.addEventListener('mouseover',e=>{const g=gs(e.target); if(g) showGrp(g);});
+  lg.addEventListener('mouseleave',()=>showGrp(grpLock)); }
 
 /* 구역 평균: 구 이름을 누르면 그 구역 10동의 평균을 건물 팝업과 같은 틀로 보여 줌 (9구역 평균과 비교) */
 var distD=null;
@@ -464,7 +466,8 @@ renderTop5(); if(sel>=0) renderRank(items[sel]);
     const W=300, cx=r.x+r.w/2, cy=r.y+r.h/2;
     const pos={b:[cx-W/2, r.y+r.h+18], t:[cx-W/2, r.y-18], r:[r.x+r.w+22, cy], l:[r.x-22-W, cy]}[side];
     c.style.left=Math.max(20,Math.min(1900-W,pos[0]))+'px'; c.style.top=pos[1]+'px';
-    cnt.innerHTML=`<b>${at+1}</b> / ${list.length}`; nx.textContent=at<list.length-1?'다음':'알겠어요';
+    cnt.innerHTML=`<b>${at+1}</b><span>/ ${list.length}</span>`; const last=at===list.length-1; nx.classList.toggle('last',last);
+    nx.innerHTML=last?'알겠어요':'<svg width="30" height="30" viewBox="0 0 30 30" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 6.5l8.5 8.5-8.5 8.5"/></svg>'; nx.setAttribute('aria-label',last?'알겠어요':'다음');
     sk.style.visibility=at<list.length-1?'':'hidden'; }
   function show(cb){ list=STEPS(); if(!list.length){ cb&&cb(); return; } at=0; after=cb||null; step();
     g.hidden=false; requestAnimationFrame(()=>g.classList.add('on')); nx.focus({preventScroll:true}); }
