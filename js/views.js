@@ -41,3 +41,6 @@ addEventListener('resize',fit); fit(); show(location.hash.slice(1)||'walk');
     link('walk');show('walk',true);sync();},true);
   box.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>setTimeout(sync,0)));
   addEventListener('hashchange',sync);sync();})();
+
+// 안쪽 화면을 두 손가락으로 확대하는 동안은 위쪽 버튼 줄을 잠시 숨김 (확대한 화면과 어긋나지 않게)
+addEventListener('message',e=>{ if(e.data&&e.data.ov==='zoom') document.getElementById('ui').classList.toggle('zhide',!!e.data.on); });

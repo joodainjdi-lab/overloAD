@@ -90,6 +90,7 @@ window.SND=(()=>{
       up(d)});
     if(btn)btn.addEventListener("click",e=>{e.stopPropagation();on=!on;paint();up("snd:toggle")});
     if(isPage){up("snd:hello");const t=()=>up("snd:title:"+document.title);t();addEventListener("load",t)}
+    if(isPage){let last="";setInterval(()=>{const h=location.pathname.split("/").pop()+location.search+location.hash;if(h!==last){last=h;up("snd:url:"+h)}},700)}   // 바깥 페이지가 주소에 적어 두도록
     return {setEra(){},speed(){},tick(){fx("tick")},rule(){fx("rule")},tap(){fx("tap")},hover(){fx("hover")},place(i){fx("place:"+(i|0))},latch(){fx("latch")},spin(v){fx("spin:"+(+v).toFixed(2))},light(ms){fx("light:"+JSON.stringify(ms||[]))},
       go(url){location.href=url},get on(){return on}};
   }
@@ -247,6 +248,7 @@ window.SND=(()=>{
     if(k==="toggle")toggle();
     else if(k==="hello"){try{e.source.postMessage("snd:state:"+(on?"on":"off"),"*")}catch(_){}}
     else if(k.startsWith("title:"))document.title=k.slice(6);
+    else if(k.startsWith("url:")){if(frame&&e.source===frame.contentWindow)mark(k.slice(4))}
     else if(k==="wake")start();
     else if(k.startsWith("pos:")){if(!btn)return;const [x,y,w]=k.slice(4).split(",").map(Number);   // 안쪽 화면이 정한 소리 버튼 자리·크기
       [["right","auto"],["left",(x-w/2)+"px"],["top",(y-w/2)+"px"]].forEach(([p,v])=>btn.style.setProperty(p,v,"important"));sizeBtn(btn,w)}
@@ -259,14 +261,19 @@ html.ow-shelled body>*:not(iframe[name="${SHELL}"]):not(#snd){visibility:hidden!
 iframe[name="${SHELL}"]{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:2147483000;background:#101010;opacity:0;transition:opacity .35s}
 iframe[name="${SHELL}"].on{opacity:1}`;document.head.appendChild(st);
   const title0=document.title;
-  function go(url){
+  // 지금 보고 있는 겹친 화면을 주소(#p=…)에 적어 둠 → 휴대폰에서 페이지가 다시 열려도 그 화면으로 돌아옴
+  const rel=u=>{try{const x=new URL(u,location.href);return x.pathname.split("/").pop()+x.search+x.hash}catch(_){return u}};
+  const mark=u=>{try{history.replaceState(history.state,"","#p="+encodeURIComponent(rel(u)))}catch(_){}};
+  function go(url,restore){
     if(frame){frame.src=url;return}
     frame=document.createElement("iframe");frame.name=SHELL;frame.allow="autoplay; fullscreen";frame.src=url;
     frame.addEventListener("load",()=>{fitBtn();   // 다른 화면으로 가도 소리 버튼은 같은 자리
       frame.classList.add("on");document.documentElement.classList.add("ow-shelled");try{frame.contentWindow.focus()}catch(_){};tell()});
     document.body.appendChild(frame);
-    try{history.pushState({ow:1},"")}catch(_){}
+    try{history.pushState({ow:1},"","#p="+encodeURIComponent(rel(url)))}catch(_){}
   }
+  if(location.hash.startsWith("#p=")){const u=decodeURIComponent(location.hash.slice(3));
+    if(/^[\w-]+\.html/.test(u)){try{history.replaceState(null,"",location.pathname)}catch(_){}go(u,true)}}
   // 뒤로가기로 처음 페이지까지 돌아오면 겹친 화면을 걷어 냄
   addEventListener("popstate",e=>{if(!frame||(e.state&&e.state.ow))return;
     frame.remove();frame=null;document.documentElement.classList.remove("ow-shelled");document.title=title0;

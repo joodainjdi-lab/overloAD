@@ -45,11 +45,11 @@ function playLead(){
 }
 
 /* 90동 페이지에서 '이전'으로 돌아오면(index.html#outro) 인트로를 건너뛰고 마무리 질문 화면으로 */
-if(location.hash==="#outro"){
+if(location.hash==="#outro"||location.hash.startsWith("#p=")){   // #p= : 휴대폰에서 다시 열렸을 때 보던 화면으로 바로
   const ib=document.getElementById("intro");ib.classList.add("done","gone");
   lead.classList.add("gone");leadDone=true;document.body.classList.remove("intro-on");
   
-  history.replaceState(null,"",location.pathname);
+  if(location.hash==="#outro")history.replaceState(null,"",location.pathname);
   requestAnimationFrame(()=>requestAnimationFrame(()=>scrollTo(0,document.documentElement.scrollHeight)));
 }
 
