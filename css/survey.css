@@ -681,3 +681,6 @@ a{color:inherit;text-decoration:none}
 .hcard .hp dd{margin:0;font-size:16px;font-weight:600;line-height:1.45;color:var(--ink)}
 .hcard .hsrc{margin-top:12px}
 .hcard .hgo{margin-top:16px}
+/* 사업 구간은 한 줄로 — 카드 폭이 글 길이에 맞춰 늘어남 */
+.hcard{width:max-content;min-width:400px;max-width:620px}
+.hcard .hp dd{white-space:nowrap}

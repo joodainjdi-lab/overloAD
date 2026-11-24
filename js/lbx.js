@@ -18,11 +18,11 @@
 #plb .pp:focus{outline:none}
 #plb .x{position:absolute;top:0;right:-64px;cursor:pointer;width:48px;height:48px;border:1px solid #3a3a3a;border-radius:50%;background:rgba(24,24,24,.9);color:#f2f2f2;display:grid;place-items:center;cursor:pointer}
 #plb .x:hover{border-color:#C3D132;color:#C3D132}
-#photo .zh{position:absolute;right:12px;bottom:12px;display:flex;align-items:center;gap:6px;padding:5px 9px;background:rgba(0,0,0,.62);backdrop-filter:blur(4px);color:#f2f2f2;font-size:13px;pointer-events:none;opacity:.85;transition:opacity .2s}
+#photo .zh{position:absolute;right:12px;bottom:12px;display:grid;place-items:center;width:30px;height:30px;border-radius:6px;background:rgba(0,0,0,.62);backdrop-filter:blur(4px);color:#f2f2f2;font-size:13px;pointer-events:none;opacity:.85;transition:opacity .2s}
 #photo:hover .zh{opacity:1}`;
   document.head.appendChild(st);
   // 작은 사진 오른쪽 아래: '크게 보기' 표시
-  const zh=document.createElement('span'); zh.className='zh'; zh.innerHTML='<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M8.5 1.5h4v4M5.5 12.5h-4v-4M12.5 1.5L8 6M1.5 12.5L6 8"/></svg>누르면 크게'; ph.appendChild(zh);
+  const zh=document.createElement('span'); zh.className='zh'; zh.innerHTML='<svg width="13" height="13" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M8.5 1.5h4v4M5.5 12.5h-4v-4M12.5 1.5L8 6M1.5 12.5L6 8"/></svg>'; zh.setAttribute('aria-hidden','true'); ph.appendChild(zh);
 
   const box=document.createElement('div'); box.id='plb'; box.hidden=true; box.setAttribute('role','dialog'); box.setAttribute('aria-label','개선 전·현재 사진 크게 보기');
   box.innerHTML=`<div class="pp" role="slider" tabindex="0" aria-label="개선 전·현재 비교" aria-valuemin="0" aria-valuemax="100"><div class="fr"><img class="a" alt=""><img class="b" alt=""></div>

@@ -45,7 +45,7 @@ const pct=v=>(v>0?'+':v<0?'−':'')+Math.abs(Math.round(v*100))+'%';
 function rng(k){const r=SURV.filter(g=>kind(g)===k).map(g=>NET[g].r).sort((a,b)=>a-b); return r.length>1?`${pct(r[0])} ~ ${pct(r[r.length-1])}`:pct(r[0]);}
 /* 지도 범례 — 진하기가 뜻하는 것 (구역·범위는 데이터에서 계산) */
 (()=>{const el=$('#mlegend'); if(!el) return; const who=k=>SURV.filter(g=>kind(g)===k).sort((a,b)=>NET[b].r-NET[a].r).map(g=>g.replace('구','')).join('·');
-  el.innerHTML=['u','n','d'].filter(k=>SURV.some(g=>kind(g)===k)).map(k=>`<div class="li"><i style="background:rgba(195,209,50,${KA[k]})"></i><span><b>${KN[k].replace('기타 광고물이 ','').replace('기타 광고물 ','')}</b><small>${who(k)}</small></span></div>`).join('')+
+  el.innerHTML=['u','n','d'].filter(k=>SURV.some(g=>kind(g)===k)).map(k=>`<div class="li"><i style="background:rgba(195,209,50,${KA[k]})"></i><span><b>${KN[k].replace('기타 광고물이 ','').replace('기타 광고물 ','')}</b></span></div>`).join('')+
    `<div class="li"><i style="background:rgba(250,250,250,.11)"></i><span><b class="mu">조사하지 않은 구</b></span></div>`;})();
 /* 카드 설명 = '무엇이' (창문 vs 입간판·배너·현수막, 개수로) — 10개 미만 변화는 '크게 바뀌지 않음'으로 봄 */
 function line(g){const n=NET[g], k=kind(g), A=Math.abs, big=v=>A(v)>=10;
@@ -75,7 +75,7 @@ function card(g){ const el=$('#mapinfo'), hc=$('#hcard'); if(el){el.classList.re
     <span class="tag k-${k}">${KN[k]}</span>
     <dl class="hp"><div><dt>사업 구간</dt><dd>${PLAN[g][0]}</dd></div><div><dt>목표</dt><dd>${PLAN[g][1]}</dd></div></dl><span class="hgo">${PT==="touch"?"한 번 더 누르면":"누르면"} 거리로 걸어 보기 →</span>`;
   // 카드는 지도 밖 빈 자리에 — 지도 왼쪽 구역은 왼쪽, 오른쪽 구역은 오른쪽 (다른 구역 이름을 가리지 않게) + 구역까지 가는 가는 선
-  const [x,y]=C[g], W=400, H=hc.offsetHeight||320, lf=x<430, top=Math.max(20,Math.min(684-H,y-H/2));   // 위로는 제목과 떨어지게, 아래로는 지도 끝까지   // 아래로는 지도 끝을 넘지 않게 (범례 줄과 겹치지 않음)
+  const [x,y]=C[g], W=hc.offsetWidth||400, H=hc.offsetHeight||320, lf=x<430, top=Math.max(20,Math.min(684-H,y-H/2));   // 위로는 제목과 떨어지게, 아래로는 지도 끝까지   // 아래로는 지도 끝을 넘지 않게 (범례 줄과 겹치지 않음)
   // 카드 높이 범위 안에서 '조사 구역' 점의 가장 바깥쪽 바로 옆(28px)에 붙임 — 조사하지 않은 구(회색) 위에는 떠도 됨
   let ex=lf?1e9:-1e9; MAP.gu.forEach(q=>{if(!SURV.includes(q.n)) return; for(let k=0;k<q.d.length;k+=2){const py=q.d[k+1]*S; if(py<top-6||py>top+H+6) continue; const px=q.d[k]*S; ex=lf?Math.min(ex,px):Math.max(ex,px);}});
   if(!isFinite(ex)) ex=lf?0:900;
