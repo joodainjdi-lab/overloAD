@@ -474,3 +474,10 @@ html.snap-on #purpose{scroll-snap-align:start}
 #snd::before{content:"";position:absolute;inset:-12px;border-radius:50%}
 @media (pointer:coarse){#snd .tip{display:none}#snd:not(.used)::after{inset:-4px}}
 @media (max-width:760px){#snd{right:16px;top:18px;width:34px;height:34px}#snd svg{width:15px;height:15px}}
+/* 휴대폰 세로: 소리·맨 위로·건너뛰기 버튼을 오른쪽 한 줄에 같은 크기로 */
+@media (max-width:760px){
+  #snd{right:16px;top:16px;width:40px;height:40px}
+  #toTop,#skipHist{right:16px;bottom:calc(16px + env(safe-area-inset-bottom));width:40px;height:40px}
+  #toTop svg{width:16px;height:16px}#skipHist svg{width:18px;height:18px}
+}
+@media (pointer:coarse){#toTop::before,#skipHist::before{content:"";position:absolute;inset:-8px;border-radius:50%}}

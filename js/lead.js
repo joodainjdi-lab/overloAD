@@ -80,7 +80,7 @@ function showHint(){
 /* 맨 위로 버튼: 소리 버튼과 같은 세로줄·같은 크기 (1920×1080 기준 오른쪽 끝, 아래 여백 = 위 여백) */
 (()=>{const b=document.getElementById("toTop");if(!b)return;
   function fit(){ if(VW()<=760){["left","right","bottom","width","height"].forEach(p=>b.style.removeProperty(p));return}
-    const s=Math.min(VW()/1920,VH()/1080),ox=VW()/2-960*s,oy=VH()/2-540*s,w=Math.round(Math.max(30,52*s));
+    const s=Math.min(VW()/1920,VH()/1080),ox=VW()/2-960*s,oy=VH()/2-540*s,w=Math.round(Math.max(20,52*s));
     b.style.setProperty("right","auto","important");b.style.setProperty("left",(ox+1862*s-w/2)+"px","important");
     b.style.setProperty("bottom",(VH()-(oy+(1080-73)*s)-w/2)+"px","important");
     ["width","height"].forEach(p=>b.style.setProperty(p,w+"px","important"));
@@ -98,8 +98,8 @@ function showHint(){
     f.classList.add("on");
     setTimeout(()=>{R.classList.add("nosnap");scrollTo(0,bottom());
       setTimeout(()=>{R.classList.remove("nosnap");f.classList.remove("on")},150)},450)});
-  function fit(){if(VW()<=760){["left","bottom","width","height"].forEach(p=>b.style.removeProperty(p));return}
-    const s=Math.min(VW()/1920,VH()/1080),ox=VW()/2-960*s,oy=VH()/2-540*s,w=Math.round(Math.max(30,52*s));
+  function fit(){if(VW()<=760){["left","right","bottom","width","height"].forEach(p=>b.style.removeProperty(p));document.documentElement.style.setProperty("--lift","52px");return}
+    const s=Math.min(VW()/1920,VH()/1080),ox=VW()/2-960*s,oy=VH()/2-540*s,w=Math.round(Math.max(20,52*s));
     b.style.right="auto";b.style.left=(ox+1862*s-w/2)+"px";b.style.bottom=(VH()-(oy+(1080-73)*s)-w/2)+"px";b.style.width=b.style.height=w+"px";
     document.documentElement.style.setProperty("--lift",(w+Math.round(14*s))+"px");
     const ic=b.querySelector("svg"),z=Math.round(w*.42);ic.setAttribute("width",z);ic.setAttribute("height",z)}

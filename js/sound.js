@@ -56,7 +56,7 @@ window.SND=(()=>{
 #snd::after{display:none!important}
 #snd .w1,#snd .w2{display:none}#snd.on .w1,#snd.on .w2{display:inline}#snd.on .x{display:none}
 #snd::before{content:"";position:absolute;inset:-12px;border-radius:50%}
-@media (max-width:760px){#snd{right:16px!important;top:18px!important;width:34px!important;height:34px!important}#snd svg{width:15px;height:15px}}`;   /* 휴대폰 세로: 조금 작게, 누르는 범위는 넓게 */document.head.appendChild(st);
+@media (max-width:760px){#snd{right:16px!important;top:16px!important;width:40px!important;height:40px!important}#snd svg{width:17px;height:17px}}`;   /* 휴대폰 세로: 조금 작게, 누르는 범위는 넓게 */document.head.appendChild(st);
     fitBtn(); addEventListener("resize",fitBtn);
   }
   function paint(){if(!btn)return;btn.classList.toggle("on",on);btn.setAttribute("aria-pressed",on);btn.setAttribute("aria-label",on?"소리 끄기":"소리 켜기")}
