@@ -179,7 +179,19 @@ function snapSettled(){
     if(heldAt!==null&&Math.abs(cur-heldAt)<1&&!loop.rang){loop.rang=1;holdUntil=performance.now()+HOLD;window.__latchT=performance.now();window.SND&&SND.latch&&SND.latch()}   // 선에 닿는 순간 '드르륵… 탁'
     if(cur!==target)raf=requestAnimationFrame(loop);
   }
-  addEventListener("scroll",()=>{if(ours){ours=false;return}if(!raf){cur=target=scrollY}},{passive:true});   // 스크롤바·키보드로 움직이면 따라감
+  // 스크롤을 멈추면 가장 가까운 사진이 선 자리(선이 사진 위 1/3)에 오도록 살짝 맞춰 줌 — 사진 사이에 어중간하게 멈추지 않게
+  let idleT=0;
+  function settle(){
+    if(lbOpen||document.body.classList.contains("intro-on")||document.body.classList.contains("start-on"))return;
+    if(performance.now()<holdUntil){idleT=setTimeout(settle,200);return}
+    const [a,b]=range(),y=scrollY;if(y<a-1||y>b+1)return;
+    const t=$("#scene").offsetTop+LEAD,u=(y-t)/(CFG.step*K),pp=clamp(u2p(u),0,N-1),p=Math.round(pp);
+    if(Math.abs(pp-p)<.002)return;   // 이미 사진이 선 자리에 있음 (머무는 구간 포함)
+    const ny=t+p2u(p)*CFG.step*K;if(Math.abs(ny-y)<1)return;
+    cur=y;target=ny;heldAt=null;if(!raf)raf=requestAnimationFrame(loop);
+  }
+  const later=()=>{clearTimeout(idleT);idleT=setTimeout(settle,240)};
+  addEventListener("scroll",()=>{if(ours){ours=false;return}if(!raf){cur=target=scrollY;if(!matchMedia("(pointer:coarse)").matches)later()}},{passive:true});   // 스크롤바·키보드로 움직이면 따라감
   addEventListener("wheel",e=>{
     if(e.ctrlKey||lbOpen||document.body.classList.contains("intro-on")||document.body.classList.contains("start-on"))return;
     const [a,b]=range(),dy=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?VH():1);
@@ -194,7 +206,7 @@ function snapSettled(){
       const st=stopsY(),hit=dy>0?st.find(s=>s>target+.5&&s<=next):[...st].reverse().find(s=>s<target-.5&&s>=next);
       if(hit!==undefined){next=hit;holdUntil=Infinity;heldAt=hit;loop.rang=0}   // 닿은 순간부터 0.5초 머무름
     }
-    target=next;if(!raf)raf=requestAnimationFrame(loop);
+    target=next;if(!raf)raf=requestAnimationFrame(loop);later();
   },{passive:false});
 })();
 function dwellStops(){if(!dwellStops.c)dwellStops.c=[...new Set(LAW.map(r=>Math.round(yearPos(r[0]))))].filter(p=>p>0&&p<N-1).sort((a,b)=>a-b);return dwellStops.c}
