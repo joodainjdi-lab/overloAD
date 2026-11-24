@@ -478,12 +478,14 @@ renderTop5(); if(sel>=0) renderRank(items[sel]);
   let done=false;   // 페이지를 열 때마다 처음 한 번은 꼭 보여 줌
   function hide(){ g.classList.remove('on'); setTimeout(()=>{g.hidden=true;},250); done=true;
     const f=after; after=null; if(f) setTimeout(f,280); }
-  const turn=()=>{ try{ window.SND&&SND.tick&&SND.tick(); }catch(_){} };   // 단계가 넘어갈 때 '톡톡' (사진이 넘어갈 때와 같은 소리)
+  let tapped=false;   // 버튼을 누르면 모든 버튼 공통 '톡'이 이미 울림 → 화면·키보드로 넘길 때만 '톡'을 직접 울림
+  addEventListener('pointerdown',e=>{ tapped=!!(e.target.closest&&e.target.closest('#mgOk,#mgPrev,#mgSkip')); },true);
+  const turn=()=>{ try{ if(!tapped&&window.SND&&SND.tap) SND.tap(); window.SND&&SND.tick&&SND.tick(); }catch(_){} tapped=false; };   // 조사 방법 화살표와 같은 '톡' + 넘어가는 '휙'
   function next(){ if(!all&&at<list.length-1){ at++; step(); turn(); } else hide(); }
   function prev(){ if(!all&&at>0){ at--; step(); turn(); } }
   btn.addEventListener('click',e=>{e.stopPropagation(); show(null,true);});   // 다시 볼 때는 한 번에 모두 → 알겠어요
   g.addEventListener('click',e=>{ e.stopPropagation(); if(e.target.closest('#mgSkip')) hide(); else if(e.target.closest('#mgPrev')) prev(); else next(); });   // 화면 아무 곳 = 다음
-  addEventListener('keydown',e=>{ if(g.hidden) return; if(e.key==='Escape') hide(); else if(e.key==='ArrowRight'||e.key==='Enter'){ e.preventDefault(); next(); } else if(e.key==='ArrowLeft'){ e.preventDefault(); prev(); } });
+  addEventListener('keydown',e=>{ if(g.hidden) return; tapped=false; if(e.key==='Escape') hide(); else if(e.key==='ArrowRight'||e.key==='Enter'){ e.preventDefault(); next(); } else if(e.key==='ArrowLeft'){ e.preventDefault(); prev(); } });
   const seen=()=>done;
   window.__mgAuto=cb=>{ if(seen()) return false; show(cb); return true; };   // 거리로 보기에서 넘어올 때: 설명 먼저 → 닫으면 고른 건물 열기
   if(parent===window && !seen()) setTimeout(()=>{ if(!document.querySelector('#panel.open')) show(); },2600);   // 단독으로 열 때: 90칸이 다 켜진 뒤
