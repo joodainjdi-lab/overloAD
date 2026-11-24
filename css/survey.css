@@ -672,3 +672,11 @@ a{color:inherit;text-decoration:none}
 .hcard .hp dd.z{font-size:16px;font-weight:600;color:var(--ink);line-height:1.45}
 .hcard .hsrc{margin:12px 0 0;font-size:12px;line-height:1.5;color:var(--ink-3);word-break:keep-all}
 .hcard .hgo{margin-top:14px}
+/* 구역 카드: 핵심만 두 줄 (라벨 | 내용) */
+.hcard{width:400px}
+.hcard .hp{display:flex;flex-direction:column;gap:10px}
+.hcard .hp>div{display:grid;grid-template-columns:72px 1fr;align-items:baseline;column-gap:12px}
+.hcard .hp dt:nth-of-type(n){margin:0;font-size:13px}
+.hcard .hp>div:nth-child(2) dt{color:var(--plum-hi)}
+.hcard .hp dd{margin:0;font-size:16px;font-weight:600;line-height:1.45;color:var(--ink)}
+.hcard .hsrc{margin-top:12px}

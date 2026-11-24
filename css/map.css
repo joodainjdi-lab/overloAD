@@ -770,3 +770,4 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 .mg-foot .mg-ok.last{height:52px;min-width:136px;padding:0 28px;font-size:17px}
 .mg-cnt b{font-size:30px} .mg-cnt{font-size:20px}
 .mg-foot{gap:24px}
+.mg-foot .mg-ok.last{font-size:20px;min-width:150px}

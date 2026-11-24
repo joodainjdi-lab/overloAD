@@ -1,5 +1,8 @@
 /* 화면 크기: 손가락으로 확대(핀치 줌)해도 바뀌지 않는 값으로 잼
    - 휴대폰에서 확대하면 innerWidth가 바뀌어 화면을 다시 맞추면서 처음으로 튕기던 문제를 막음 */
+/* 새로고침(⌘⇧R 포함)하면 처음 시작 화면부터 — 주소에 남은 #p=…(보던 화면)는 지움 */
+(()=>{try{ const nav=performance.getEntriesByType('navigation')[0];
+  if(window.top===window && location.hash.startsWith('#p=') && nav && nav.type==='reload') history.replaceState(null,'',location.pathname+location.search); }catch(_){} })();
 (()=>{const D=document.documentElement;
   window.VW=()=>D.clientWidth||innerWidth; window.VH=()=>D.clientHeight||innerHeight;
   const vv=window.visualViewport, zoomed=()=>!!vv&&vv.scale>1.01;
