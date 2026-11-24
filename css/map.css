@@ -773,3 +773,11 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 .mg-foot .mg-ok.last{font-size:20px;min-width:150px}
 /* 라임으로 채워진 버튼: 올리거나 누르면 버튼 높이의 약 14% 두께로 옅은 라임 테두리 (모든 화면 통일) */
 .mg-foot .mg-ok:hover,.mg-foot .mg-ok:active{outline:none;box-shadow:0 0 0 7px rgba(195,209,50,.22);filter:none}
+/* 순위 막대: 보고 있는 건물은 또렷하게, 나머지는 옅게 · 막대를 올리면 이름, 누르면 그 건물로 */
+.rank rect{opacity:.22;transition:opacity .15s}
+.rank rect.me{opacity:1}
+.rank rect.hov{opacity:.85}
+.rank rect.hit{opacity:0;fill:transparent;cursor:pointer;pointer-events:all}
+.rank .ht{fill:#fafafa;font-size:14px;font-weight:600;font-family:inherit;pointer-events:none}
+.rank .mt{transition:opacity .15s}
+.rank svg.hovering .mk{opacity:.35}

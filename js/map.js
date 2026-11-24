@@ -201,10 +201,23 @@ function renderRank(o){ const box=$('#rank'); if(!box) return; if(!cur||!o||!o.r
       <g transform="translate(0,22)">${bars}
         ${K.rate?`<line x1="0" x2="${Wd}" y1="${y0.toFixed(1)}" y2="${y0.toFixed(1)}" class="z"/>`:''}
         <line x1="0" x2="${Wd}" y1="${ry}" y2="${ry}" class="ref"/>
-        <line x1="${mxL.toFixed(1)}" x2="${mxL.toFixed(1)}" y1="-6" y2="${H}" class="mk"/></g>
+        <line x1="${mxL.toFixed(1)}" x2="${mxL.toFixed(1)}" y1="-6" y2="${H}" class="mk"/>
+        ${ord.map((i,m)=>`<rect class="hit" x="${(m*bw).toFixed(2)}" y="-6" width="${bw.toFixed(2)}" height="${H+6}" data-i="${i}" data-m="${m}"/>`).join('')}</g>
       <text x="${mxL.toFixed(1)}" y="10" text-anchor="${al}" class="mt">${tag}</text>
+      <text y="10" class="ht"></text>
     </svg>
     <div class="rk-ax"><span>1위 ${fx(vals[0])}</span><span class="rf"><i></i>90동 전체 ${K.rate?fmtRate(P[0],P[1]):f1(ref)+'개'}</span><span>90위 ${fx(vals[89])}</span></div>`;
+  // 막대를 올리면 그 건물 이름·값과 비트맵 위치, 누르면 그 건물로 이동
+  const sv=box.querySelector('svg'), bars2=[...sv.querySelectorAll('g>rect:not(.hit)')], ht=sv.querySelector('.ht'), mt=sv.querySelector('.mt');
+  const off=()=>{ bars2.forEach(r=>r.classList.remove('hov')); ht.textContent=''; mt.style.opacity=''; sv.classList.remove('hovering');
+    grid.classList.remove('t5h'); document.querySelectorAll('.cell.t5on').forEach(c=>c.classList.remove('t5on')); document.querySelectorAll('#rows div').forEach(r=>r.classList.remove('g-lab')); };
+  sv.querySelectorAll('.hit').forEach(h=>{ const i=+h.dataset.i, m=+h.dataset.m, it=items[i];
+    h.addEventListener('mouseenter',()=>{ off(); if(m===me) return; bars2[m].classList.add('hov'); sv.classList.add('hovering');
+      const x=m*bw+bw/2; ht.setAttribute('x',x.toFixed(1)); ht.setAttribute('text-anchor',x<70?'start':x>Wd-70?'end':'middle');
+      ht.textContent=`${m+1}위 ${it.d} ${it.b} · ${isFinite(vals[m])?fx(vals[m]):'개선 전 0개'}`; mt.style.opacity='0';
+      grid.classList.add('t5h'); it.el.classList.add('t5on'); document.querySelectorAll('#rows div').forEach(r=>r.classList.toggle('g-lab',r.dataset.d===it.d)); });
+    h.addEventListener('mouseleave',off);
+    h.addEventListener('click',e=>{ e.stopPropagation(); if(m===me) return; off(); select(i,true); try{window.SND&&SND.tap&&SND.tap()}catch(_){} }); });
 }
 /* tooltip */
 const tip=$('#tip');
