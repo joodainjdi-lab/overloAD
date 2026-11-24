@@ -73,8 +73,7 @@ function card(g){ const el=$('#mapinfo'), hc=$('#hcard'); if(el){el.classList.re
     return `<div class="hr ${cls}"><span class="hl">${lab}</span><span class="ht"><i style="${v>=0?'left:50%':'right:50%'};width:${Math.max(w,.6).toFixed(2)}%"></i></span><span class="hv">${sg(v)}</span></div>`;};
   hc.innerHTML=`<div class="hh"><b>${g}</b><span>${YEAR[g]} 사업 · ${2026-YEAR[g]}년 전</span></div>
     <span class="tag k-${k}">${KN[k]}</span>
-    <dl class="hp"><div><dt>사업 구간</dt><dd>${PLAN[g][0]}</dd></div><div><dt>목표</dt><dd>${PLAN[g][1]}</dd></div></dl>
-    <p class="hsrc">출처 · ${PLAN[g][2]}</p><span class="hgo">${PT==="touch"?"한 번 더 누르면":"누르면"} 거리로 걸어 보기 →</span>`;
+    <dl class="hp"><div><dt>사업 구간</dt><dd>${PLAN[g][0]}</dd></div><div><dt>목표</dt><dd>${PLAN[g][1]}</dd></div></dl><span class="hgo">${PT==="touch"?"한 번 더 누르면":"누르면"} 거리로 걸어 보기 →</span>`;
   // 카드는 지도 밖 빈 자리에 — 지도 왼쪽 구역은 왼쪽, 오른쪽 구역은 오른쪽 (다른 구역 이름을 가리지 않게) + 구역까지 가는 가는 선
   const [x,y]=C[g], W=400, H=hc.offsetHeight||320, lf=x<430, top=Math.max(20,Math.min(684-H,y-H/2));   // 위로는 제목과 떨어지게, 아래로는 지도 끝까지   // 아래로는 지도 끝을 넘지 않게 (범례 줄과 겹치지 않음)
   // 카드 높이 범위 안에서 '조사 구역' 점의 가장 바깥쪽 바로 옆(28px)에 붙임 — 조사하지 않은 구(회색) 위에는 떠도 됨
