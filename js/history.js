@@ -533,7 +533,7 @@ function frame(){
     const wMax=COL.w*(W<760?.86:.8);if(w>wMax){w=wMax;h=w/ar}
     // 혼란 구간: 각도·위치가 흔들림
     const jit=0;   // 흔들림 없음 — 가운데 정렬
-    const ox=pt.nx*p.jo*70*K*jit, oy=pt.ny*p.jo*70*K*jit;
+    const ox=pt.nx*p.jo*70*K*jit, oy=pt.ny*p.jo*70*K*jit+(W<760?0:h/6*m);   // 메인 간판은 선이 사진 위 1/3쯤에 걸리도록 조금 내림 (선은 그대로)
     const ry=CFG.stand.y*r+p.jy*26*jit + (k===0?0:0);
     const rz=p.jr*12*jit;
     const isMain=p.i===i0;
@@ -559,8 +559,8 @@ function frame(){
     const ov=smooth(.3,1,ak)*lerp(CFG.dimNear,CFG.dimFar,smooth(1,4,ak));
     p.el.style.setProperty("--ov",ov.toFixed(3));
     p.z=Math.round(200-ak*20)+(hv>.05?50:0);p.el.style.zIndex=p.z;p.box={x:pt.x-w/2+ox,y:pt.y-h/2+oy,w,h};
-    if(isMain){mainBox={x:pt.x-w/2,y:pt.y-h/2,w,h};const ch2=capEl.offsetHeight||30;
-      const cx=Math.max(COL.l,pt.x-w/2),cy=clamp(pt.y+h/2+18*K,24*K,H-ch2-24*K)+viewTop;   // viewTop: 화면 끝에서 간판과 함께 올라감   // 사진 제목: 메인 간판 바로 아래
+    if(isMain){mainBox={x:pt.x-w/2,y:pt.y-h/2+oy,w,h};const ch2=capEl.offsetHeight||30;
+      const cx=Math.max(COL.l,pt.x-w/2),cy=clamp(pt.y+oy+h/2+18*K,24*K,H-ch2-24*K)+viewTop;   // viewTop: 화면 끝에서 간판과 함께 올라감   // 사진 제목: 메인 간판 바로 아래
       capEl.style.transform=`translate3d(${cx.toFixed(0)}px,${cy.toFixed(0)}px,0)`}
   }
   if(W>=760)drawRule(pos,s0);

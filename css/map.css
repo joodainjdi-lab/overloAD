@@ -757,3 +757,16 @@ button{font:inherit;color:inherit;letter-spacing:inherit;background:none;border:
 .mg-foot .mg-prev:hover{background:rgba(195,209,50,.1)}
 .mg-foot .mg-prev:disabled{border-color:#3a3a3a;color:#4a4a4a;cursor:default;background:none}
 .mg-foot .mg-prev[hidden]{display:none}
+/* TOP 5 박스 높이 낮춤 (84 → 70): 안쪽 여백·글자·박스 사이 간격도 함께 */
+#art>.top5 .t5,#art>.top5 .t5:nth-child(n+2){height:70px}
+#art>.top5 .t5-list{gap:7px}
+#art>.top5 .t5 .blk{gap:12px;padding:0 16px 0 12px}
+#art>.top5 .t5 .ev,#art>.top5 .t5:nth-child(n+2) .ev{width:48px;height:48px;padding-bottom:2px}
+#art>.top5 .t5 .tx,#art>.top5 .t5:nth-child(n+2) .tx{gap:2px}
+#art>.top5 .t5 .tx b{font-size:14px} #art>.top5 .t5 .tx span{font-size:16px} #art>.top5 .t5 .v{font-size:17px}
+/* 보는 방법 아래 화살표 버튼 조금 작게 */
+.mg-foot .mg-ok,.mg-foot .mg-prev{width:52px;height:52px}
+.mg-foot .mg-ok svg,.mg-foot .mg-prev svg{width:24px;height:24px}
+.mg-foot .mg-ok.last{height:52px;min-width:136px;padding:0 28px;font-size:17px}
+.mg-cnt b{font-size:30px} .mg-cnt{font-size:20px}
+.mg-foot{gap:24px}
