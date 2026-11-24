@@ -3,7 +3,7 @@
 (()=>{
   const box=document.getElementById("intro"),scr=[...box.querySelectorAll(".scr")],nx=box.querySelector(".nx"),dots=[...box.querySelectorAll(".dots i")];
   let i=-1,busy=false;
-  const place=()=>{const e=scr[0].lastElementChild /* 화살표 위치는 첫 화면 기준으로 고정(변형 영향 없는 레이아웃 값) */,t=e.offsetTop+e.offsetHeight+Math.max(40,innerHeight*.06);
+  const place=()=>{const e=scr[0].lastElementChild /* 화살표 위치는 첫 화면 기준으로 고정(변형 영향 없는 레이아웃 값) */,t=e.offsetTop+e.offsetHeight+Math.max(40,VH()*.06);
     nx.style.top=t+"px"};
   function show(n){
     if(i>=0)scr[i].classList.replace("on","out");

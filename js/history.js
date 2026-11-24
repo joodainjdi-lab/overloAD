@@ -182,7 +182,7 @@ function snapSettled(){
   addEventListener("scroll",()=>{if(ours){ours=false;return}if(!raf){cur=target=scrollY}},{passive:true});   // 스크롤바·키보드로 움직이면 따라감
   addEventListener("wheel",e=>{
     if(e.ctrlKey||lbOpen||document.body.classList.contains("intro-on")||document.body.classList.contains("start-on"))return;
-    const [a,b]=range(),dy=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?innerHeight:1);
+    const [a,b]=range(),dy=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?VH():1);
     if(cur===null||!raf)cur=target=scrollY;
     if(!dy)return;
     if((dy>0&&target>=b-.5)||(dy<0&&target<=a+.5)||target<a-1||target>b+1){return}   // 구간 밖은 브라우저에 맡김
@@ -279,7 +279,7 @@ function circle3(a,b,c){
   return {x,y,r:Math.hypot(a[0]-x,a[1]-y)};
 }
 function layout(){
-  W=innerWidth;H=innerHeight;K=clamp(W/1920,.5,1.15);
+  W=VW();H=VH();K=clamp(W/1920,.5,1.15);
   document.documentElement.style.setProperty("--k",K);
   const mob=W<760;
   // 3단 구성: 연표(왼쪽) | 간판(가운데 세로 띠) | 간판개선사업·법(오른쪽)
@@ -305,7 +305,7 @@ function buildDecs(){
 let curD=-1;
 function placeDecs(c){
   // 지나온 연도는 위에 그대로 쌓이고, 현재 연도가 크게 펼쳐지며, 프로그레스 바는 현재 연도 문구까지 채워진다
-  if(innerWidth<760){ // 모바일: 현재 연도와 문구만 위쪽에
+  if(VW()<760){ // 모바일: 현재 연도와 문구만 위쪽에
     decEls.forEach((e,j)=>{e.classList.toggle("cur",j===c);e.style.color="var(--lime)";e.style.transform=`translateY(${40*K}px)`;e.style.opacity=j===c?1:0});
     $("#key").style.top=(160*K)+"px";return;
   }
@@ -326,7 +326,7 @@ const decCv=document.createElement("canvas").getContext("2d");
 function decW(t){decCv.font='italic 400 150px "BlackChancery", "Pretendard", serif';return decCv.measureText(t).width}
 document.fonts&&document.fonts.ready.then(()=>{try{if(curD>=0)placeDecs(curD)}catch(e){}});
 /* 오른쪽 목록은 모두 선 아래로: 재질·표현 → 그 아래 법·제도 */
-function placeKey(){ if(innerWidth<760)return; const k=$("#key"),top=H*LN+30*K;
+function placeKey(){ if(VW()<760)return; const k=$("#key"),top=H*LN+30*K;
   k.style.setProperty("bottom","auto","important"); k.style.setProperty("top",top.toFixed(1)+"px","important");
   $("#rule").style.setProperty("top",(top+k.offsetHeight+40*K).toFixed(1)+"px","important"); }
 let curEv="";

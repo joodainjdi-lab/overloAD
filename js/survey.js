@@ -63,7 +63,7 @@ function card(g){ const el=$('#mapinfo'), hc=$('#hcard'); if(el){el.classList.re
   hc.innerHTML=`<div class="hh"><b>${g}</b><span>${YEAR[g]} 사업 · ${2026-YEAR[g]}년 전</span></div>
     <span class="tag k-${k}">${KN[k]}</span>
     <div class="hb"><span class="hk">기타 광고물<small>10동 합계</small></span><b>${sgn(n.e[1]-n.e[0])}<i>개</i></b><span class="hc">${BA(n.e[0],n.e[1])}개 · ${fmtRate(...n.e)}</span></div>
-    <p class="hs">${line(g)}</p>${nums(g)}<span class="hgo">누르면 거리로 걸어 보기 →</span>`;
+    <p class="hs">${line(g)}</p>${nums(g)}<span class="hgo">${PT==="touch"?"한 번 더 누르면":"누르면"} 거리로 걸어 보기 →</span>`;
   // 카드는 지도 밖 빈 자리에 — 지도 왼쪽 구역은 왼쪽, 오른쪽 구역은 오른쪽 (다른 구역 이름을 가리지 않게) + 구역까지 가는 가는 선
   const [x,y]=C[g], W=380, H=hc.offsetHeight||320, lf=x<430, top=Math.max(20,Math.min(684-H,y-H/2));   // 위로는 제목과 떨어지게, 아래로는 지도 끝까지   // 아래로는 지도 끝을 넘지 않게 (범례 줄과 겹치지 않음)
   // 카드 높이 범위 안에서 '조사 구역' 점의 가장 바깥쪽 바로 옆(28px)에 붙임 — 조사하지 않은 구(회색) 위에는 떠도 됨
@@ -71,19 +71,27 @@ function card(g){ const el=$('#mapinfo'), hc=$('#hcard'); if(el){el.classList.re
   if(!isFinite(ex)) ex=lf?0:900;
   hc.style.left=(lf?ex-28-W:ex+28)+'px'; hc.style.top=top+'px'; hc.classList.toggle('lf',lf); hc.classList.add('on'); const lg=$('#mlegend'); if(lg) lg.classList.toggle('dim',!lf);   // 범례는 오른쪽 아래 — 오른쪽 카드가 뜨면 잠시 숨김
   const ln=$('#hlink'); if(ln){ const x0=lf?-60:930, x1=lf?x-34:x+34; ln.style.left=Math.min(x0,x1)+'px'; ln.style.width=Math.abs(x1-x0)+'px'; ln.style.top=y+'px'; ln.classList.add('on'); } }
+let PT='mouse';
 const box=$('.mapbox'), MAPX=510, MAPY=222, MAPK=1.05;   // 지도 위치·확대 배율 (css .mapbox와 같게)
 const local=e=>{const r=cv.getBoundingClientRect(); return [(e.clientX-r.left)/r.width*DW,(e.clientY-r.top)/r.height*MAP.h*S];};
 box.addEventListener('pointermove',e=>{ if(e.target.closest('.card')) return; const b=e.target.closest('.lb.on'); const g=b?b.dataset.g:guAt(...local(e)); setHov(SURV.includes(g)?g:null); });   // 조사하지 않은 구는 반응 없음
-box.addEventListener('pointerleave',()=>setHov(null));
-box.addEventListener('click',e=>{ const b=e.target.closest('.lb.on'); const g=b?b.dataset.g:hov; if(g&&SURV.includes(g)) go(`views.html?d=${encodeURIComponent(g)}#walk`); });
-document.querySelectorAll('.lb.on').forEach(b=>{b.addEventListener('focus',()=>setHov(b.dataset.g)); b.addEventListener('blur',()=>setHov(null));});
+box.addEventListener('pointerleave',e=>{ if(e.pointerType!=='touch') setHov(null); });   // 손가락을 떼도 카드는 남김
+box.addEventListener('pointerdown',e=>{ PT=e.pointerType; },true);
+addEventListener('keydown',()=>{ PT='mouse'; });
+box.addEventListener('click',e=>{ const b=e.target.closest('.lb.on'); let g=b?b.dataset.g:hov;
+  if(PT==='touch'){   // 휴대폰: 처음 누르면 카드만, 같은 구를 한 번 더 누르면 들어감
+    const t=b?b.dataset.g:(e.target.closest('.hcard')?hov:guAt(...local(e)));
+    if(!SURV.includes(t)){ setHov(null); return; }
+    if(t!==hov){ setHov(t); return; } g=t; }
+  if(g&&SURV.includes(g)) go(`views.html?d=${encodeURIComponent(g)}#walk`); });
+document.querySelectorAll('.lb.on').forEach(b=>{b.addEventListener('focus',()=>{ if(PT!=='touch') setHov(b.dataset.g); }); b.addEventListener('blur',()=>{ if(PT!=='touch') setHov(null); });});   // 휴대폰은 누르기로만
 
 /* 페이지 이동 (검게 페이드) */
 function go(url){ document.getElementById('fadeOut').classList.add('on'); setTimeout(()=>window.SND&&SND.go?SND.go(url):location.href=url,450); }
 document.querySelectorAll('.go a').forEach(a=>a.addEventListener('click',e=>{e.preventDefault(); go(a.getAttribute('href'));}));
 addEventListener('pageshow',()=>document.getElementById('fadeOut').classList.remove('on'));
 
-function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080); $('#art').style.transform=`translate(-50%,-50%) scale(${s})`;}
+function fit(){const s=Math.min(VW()/1920,VH()/1080); $('#art').style.transform=`translate(-50%,-50%) scale(${s})`;}
 addEventListener('resize',fit); fit(); draw();
 
 /* ───── 1단계: 조사 방법 원근형 캐러셀 (4장, 끝에서 처음으로 이어짐) ─────

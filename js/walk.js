@@ -358,7 +358,7 @@ $('#art').addEventListener('click',e=>{
     if(moved&&Math.abs(ov)>160){ const dir=ov>0?1:-1; if(cur+dir>=0&&cur+dir<STREETS.length) go(cur+dir,dir); } });
   wk.addEventListener('click',e=>{ if(moved){ e.stopPropagation(); e.preventDefault(); moved=false; } },true);   // 끌기 끝에는 건물 클릭 무시
 }
-function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080); $('#art').style.transform=`translate(-50%,-50%) scale(${s})`;}
+function fit(){const s=Math.min(VW()/1920,VH()/1080); $('#art').style.transform=`translate(-50%,-50%) scale(${s})`;}
 addEventListener('resize',fit); fit();
 // 지도 페이지에서 고른 구역으로 시작 (walk.html?d=관악구)
 { const q=new URLSearchParams(location.search).get('d'); const i=Math.max(0,ROUTE.indexOf(q)); cur=-1; go(i,1); }

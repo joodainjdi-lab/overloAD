@@ -476,3 +476,4 @@ body:has(#drawer.open) #art>#close{opacity:1;pointer-events:auto}
 #drawer .sub-row .name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
 #drawer .sub-row .pc{flex:none}
 #drawer .subs{margin-top:16px}
+.walk{touch-action:pan-y pinch-zoom}
