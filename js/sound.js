@@ -30,7 +30,7 @@ window.SND=(()=>{
   function sizeBtn(b,w){["width","height"].forEach(p=>b.style.setProperty(p,w+"px","important"));const ic=b.querySelector("svg");if(ic){const z=Math.round(w*.42);ic.setAttribute("width",z);ic.setAttribute("height",z)}}
   function fitBtn(){const b=document.getElementById("snd");if(!b)return;
     if(VW()<=760){["left","top","right","width","height"].forEach(p=>b.style.removeProperty(p));return}
-    const s=Math.min(VW()/1920,VH()/1080),ox=VW()/2-960*s,oy=VH()/2-540*s,w=Math.round(Math.max(30,52*s));
+    const s=Math.min(VW()/1920,VH()/1080),ox=VW()/2-960*s,oy=VH()/2-540*s,w=Math.round(Math.max(20,52*s));   // 화면과 같은 비율로 (휴대폰에서 혼자 커 보이지 않게) — 누르는 범위는 CSS로 넓힘
     b.style.setProperty("right","auto","important");b.style.setProperty("left",(ox+1862*s-w/2)+"px","important");b.style.setProperty("top",(oy+73*s-w/2)+"px","important");sizeBtn(b,w)}
   let on=true;
   try{on=localStorage.getItem("overload-sound")!=="off"}catch(_){}
@@ -55,7 +55,8 @@ window.SND=(()=>{
 #snd:hover{background:#4a4a4a}#snd.on{background:#C3D132;color:#101010}
 #snd::after{display:none!important}
 #snd .w1,#snd .w2{display:none}#snd.on .w1,#snd.on .w2{display:inline}#snd.on .x{display:none}
-@media (max-width:760px){#snd{right:16px!important;top:16px!important}}`;document.head.appendChild(st);
+#snd::before{content:"";position:absolute;inset:-12px;border-radius:50%}
+@media (max-width:760px){#snd{right:16px!important;top:18px!important;width:34px!important;height:34px!important}#snd svg{width:15px;height:15px}}`;   /* 휴대폰 세로: 조금 작게, 누르는 범위는 넓게 */document.head.appendChild(st);
     fitBtn(); addEventListener("resize",fitBtn);
   }
   function paint(){if(!btn)return;btn.classList.toggle("on",on);btn.setAttribute("aria-pressed",on);btn.setAttribute("aria-label",on?"소리 끄기":"소리 켜기")}

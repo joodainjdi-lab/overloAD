@@ -470,3 +470,7 @@ html.snap-on #purpose{scroll-snap-align:start}
   #keyTxt li.now{font-size:13px} #keyTxt li.now b{font-size:20px}
   #keyTxt ul{gap:6px}
 }
+/* 소리 버튼: 휴대폰에서는 보이는 크기는 화면 비율대로, 손가락으로 누르는 범위만 넓게 */
+#snd::before{content:"";position:absolute;inset:-12px;border-radius:50%}
+@media (pointer:coarse){#snd .tip{display:none}#snd:not(.used)::after{inset:-4px}}
+@media (max-width:760px){#snd{right:16px;top:18px;width:34px;height:34px}#snd svg{width:15px;height:15px}}

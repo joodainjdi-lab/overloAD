@@ -27,7 +27,7 @@ addEventListener('resize',fit); fit(); show(location.hash.slice(1)||'walk');
 
 /* 소리 버튼: 맨 위 한 줄(뒤로·제목 … 보는 기준·보기 전환)과 같은 높이·크기로 오른쪽 끝에 — 버튼은 맨 바깥 페이지에 있어서 위치를 알려 줌 */
 (()=>{ function place(){
-    const s=Math.min(VW()/1920,VH()/1080), ox=VW()/2-960*s, oy=VH()/2-540*s, w=Math.round(Math.max(30,52*s));
+    const s=Math.min(VW()/1920,VH()/1080), ox=VW()/2-960*s, oy=VH()/2-540*s, w=Math.round(Math.max(20,52*s));   // 휴대폰에서도 위 한 줄과 같은 비율
     const cx=ox+1862*s, cy=oy+73*s, b=document.getElementById('snd');
     if(b){ b.style.setProperty('right','auto','important'); b.style.setProperty('left',(cx-w/2)+'px','important'); b.style.setProperty('top',(cy-w/2)+'px','important');
       b.style.setProperty('width',w+'px','important'); b.style.setProperty('height',w+'px','important'); }
