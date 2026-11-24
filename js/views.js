@@ -22,12 +22,12 @@ box.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{ if(b.
   else link(b.dataset.v);   // 그다음부터는 불 켜짐 없이 고른 건물을 그대로 이어서
   show(b.dataset.v,true); }));
 addEventListener('hashchange',()=>show(location.hash.slice(1)));
-function fit(){const s=Math.min(VW()/1920,VH()/1080); document.getElementById('ui').style.transform=`translate(-50%,-50%) scale(${s})`;}
+function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080); document.getElementById('ui').style.transform=`translate(-50%,-50%) scale(${s})`;}
 addEventListener('resize',fit); fit(); show(location.hash.slice(1)||'walk');
 
 /* 소리 버튼: 맨 위 한 줄(뒤로·제목 … 보는 기준·보기 전환)과 같은 높이·크기로 오른쪽 끝에 — 버튼은 맨 바깥 페이지에 있어서 위치를 알려 줌 */
 (()=>{ function place(){
-    const s=Math.min(VW()/1920,VH()/1080), ox=VW()/2-960*s, oy=VH()/2-540*s, w=Math.round(Math.max(20,52*s));   // 휴대폰에서도 위 한 줄과 같은 비율
+    const s=Math.min(innerWidth/1920,innerHeight/1080), ox=innerWidth/2-960*s, oy=innerHeight/2-540*s, w=Math.round(Math.max(30,52*s));
     const cx=ox+1862*s, cy=oy+73*s, b=document.getElementById('snd');
     if(b){ b.style.setProperty('right','auto','important'); b.style.setProperty('left',(cx-w/2)+'px','important'); b.style.setProperty('top',(cy-w/2)+'px','important');
       b.style.setProperty('width',w+'px','important'); b.style.setProperty('height',w+'px','important'); }
@@ -41,6 +41,3 @@ addEventListener('resize',fit); fit(); show(location.hash.slice(1)||'walk');
     link('walk');show('walk',true);sync();},true);
   box.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>setTimeout(sync,0)));
   addEventListener('hashchange',sync);sync();})();
-
-// 안쪽 화면을 두 손가락으로 확대하는 동안은 위쪽 버튼 줄을 잠시 숨김 (확대한 화면과 어긋나지 않게)
-addEventListener('message',e=>{ if(e.data&&e.data.ov==='zoom') document.getElementById('ui').classList.toggle('zhide',!!e.data.on); });

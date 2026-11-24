@@ -62,7 +62,7 @@ if(location.hash==="#outro"||location.hash.startsWith("#p=")){   // #p= : 휴대
 
 /* 처음으로 버튼: 역사를 조금 내려간 뒤 나타나고, 누르면 1910년대로 */
 (()=>{const b=document.getElementById("toTop");
-  const chk=()=>b.classList.toggle("on",scrollY>VH()*1.2&&!document.body.classList.contains("intro-on"));
+  const chk=()=>b.classList.toggle("on",scrollY>innerHeight*1.2&&!document.body.classList.contains("intro-on"));
   addEventListener("scroll",chk,{passive:true});
   b.addEventListener("click",()=>scrollTo({top:0,behavior:"smooth"}));})();
 
@@ -79,28 +79,28 @@ function showHint(){
 }
 /* 맨 위로 버튼: 소리 버튼과 같은 세로줄·같은 크기 (1920×1080 기준 오른쪽 끝, 아래 여백 = 위 여백) */
 (()=>{const b=document.getElementById("toTop");if(!b)return;
-  function fit(){ if(VW()<=760){["left","right","bottom","width","height"].forEach(p=>b.style.removeProperty(p));return}
-    const s=Math.min(VW()/1920,VH()/1080),ox=VW()/2-960*s,oy=VH()/2-540*s,w=Math.round(Math.max(20,52*s));
+  function fit(){ if(innerWidth<=760){["left","right","bottom","width","height"].forEach(p=>b.style.removeProperty(p));return}
+    const s=Math.min(innerWidth/1920,innerHeight/1080),ox=innerWidth/2-960*s,oy=innerHeight/2-540*s,w=Math.round(Math.max(30,52*s));
     b.style.setProperty("right","auto","important");b.style.setProperty("left",(ox+1862*s-w/2)+"px","important");
-    b.style.setProperty("bottom",(VH()-(oy+(1080-73)*s)-w/2)+"px","important");
+    b.style.setProperty("bottom",(innerHeight-(oy+(1080-73)*s)-w/2)+"px","important");
     ["width","height"].forEach(p=>b.style.setProperty(p,w+"px","important"));
     const ic=b.querySelector("svg");if(ic){const z=Math.round(w*.42);ic.setAttribute("width",z);ic.setAttribute("height",z)}}
   addEventListener("resize",fit);fit();})();
 
 /* 역사 건너뛰기: 역사를 내리기 시작하면 오른쪽 아래에 나타나고, 누르면 맨 아래('어떻게 조사했는지 보기')로 바로 이동 */
 (()=>{const b=document.getElementById("skipHist"),tt=document.getElementById("toTop");if(!b)return;
-  const bottom=()=>document.documentElement.scrollHeight-VH();
+  const bottom=()=>document.documentElement.scrollHeight-innerHeight;
   const chk=()=>{const busy=document.body.classList.contains("intro-on")||document.body.classList.contains("start-on");
-    const on=!busy&&scrollY>40&&scrollY<bottom()-VH()*1.2;
+    const on=!busy&&scrollY>40&&scrollY<bottom()-innerHeight*1.2;
     b.classList.toggle("on",on);if(tt)tt.classList.toggle("lift",on)};   // 건너뛰기가 보이는 동안 '맨 위로'는 한 칸 위로
   addEventListener("scroll",chk,{passive:true});addEventListener("resize",chk);setInterval(chk,500);
   b.addEventListener("click",()=>{const f=document.getElementById("fadeOut"),R=document.documentElement;
     f.classList.add("on");
     setTimeout(()=>{R.classList.add("nosnap");scrollTo(0,bottom());
       setTimeout(()=>{R.classList.remove("nosnap");f.classList.remove("on")},150)},450)});
-  function fit(){if(VW()<=760){["left","right","bottom","width","height"].forEach(p=>b.style.removeProperty(p));document.documentElement.style.setProperty("--lift","52px");return}
-    const s=Math.min(VW()/1920,VH()/1080),ox=VW()/2-960*s,oy=VH()/2-540*s,w=Math.round(Math.max(20,52*s));
-    b.style.right="auto";b.style.left=(ox+1862*s-w/2)+"px";b.style.bottom=(VH()-(oy+(1080-73)*s)-w/2)+"px";b.style.width=b.style.height=w+"px";
+  function fit(){if(innerWidth<=760){["left","right","bottom","width","height"].forEach(p=>b.style.removeProperty(p));return}
+    const s=Math.min(innerWidth/1920,innerHeight/1080),ox=innerWidth/2-960*s,oy=innerHeight/2-540*s,w=Math.round(Math.max(30,52*s));
+    b.style.right="auto";b.style.left=(ox+1862*s-w/2)+"px";b.style.bottom=(innerHeight-(oy+(1080-73)*s)-w/2)+"px";b.style.width=b.style.height=w+"px";
     document.documentElement.style.setProperty("--lift",(w+Math.round(14*s))+"px");
     const ic=b.querySelector("svg"),z=Math.round(w*.42);ic.setAttribute("width",z);ic.setAttribute("height",z)}
   addEventListener("resize",fit);fit();chk();})();

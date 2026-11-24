@@ -663,3 +663,12 @@ a{color:inherit;text-decoration:none}
 .mapintro{top:122px}
 .mapbox{top:244px}
 .mlegend{bottom:-74px}
+/* 구역 카드: 사업 구간 · 당시 추진 배경과 목표 (색 띠 = 지도 색과 같은 그룹 표시) */
+.hcard{width:420px;padding:22px 24px 20px}
+.hcard .hp{margin:16px 0 0;padding-top:16px;border-top:1px solid #2e2e2e}
+.hcard .hp dt{font-size:13px;font-weight:600;color:var(--lime);letter-spacing:.01em}
+.hcard .hp dt:nth-of-type(2){color:var(--plum-hi);margin-top:14px}
+.hcard .hp dd{margin:6px 0 0;font-size:15px;line-height:1.6;color:var(--ink-2);word-break:keep-all}
+.hcard .hp dd.z{font-size:16px;font-weight:600;color:var(--ink);line-height:1.45}
+.hcard .hsrc{margin:12px 0 0;font-size:12px;line-height:1.5;color:var(--ink-3);word-break:keep-all}
+.hcard .hgo{margin-top:14px}

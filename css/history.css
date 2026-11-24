@@ -457,27 +457,3 @@ html.snap-on #purpose{scroll-snap-align:start}
 /* 버튼은 본문 텍스트와 함께, 살짝 뒤따라 올라오며 등장 */
 #outro .go{transform:translate(-50%,16px);transition:opacity .8s ease .15s,transform .9s cubic-bezier(.2,.7,.2,1) .15s,background .25s,box-shadow .3s}
 #outro.s2 .go{transform:translate(-50%,0)}
-/* 휴대폰 세로: 연대·목록을 왼쪽 위에 차례로, 그 뒤로 사진이 지나가도 글자가 묻히지 않게 어두운 띠 */
-@media (max-width:760px){
-  #key{left:calc(101px*var(--k))!important;right:auto!important;width:calc(100vw - 202px*var(--k))!important}
-  #side::before{content:"";position:absolute;left:0;right:0;top:0;height:var(--band,0px);background:linear-gradient(#101010 0,#101010 calc(100% - 40px),rgba(16,16,16,0) 100%);z-index:-1}
-  #side{z-index:22}
-}
-@media (max-width:760px){
-  #keyTxt .lh{font-size:12px;margin-bottom:8px}
-  #keyTxt li{font-size:11px;grid-template-columns:52px 1fr;column-gap:8px}
-  #keyTxt li b{font-size:16px}
-  #keyTxt li.now{font-size:13px} #keyTxt li.now b{font-size:20px}
-  #keyTxt ul{gap:6px}
-}
-/* 소리 버튼: 휴대폰에서는 보이는 크기는 화면 비율대로, 손가락으로 누르는 범위만 넓게 */
-#snd::before{content:"";position:absolute;inset:-12px;border-radius:50%}
-@media (pointer:coarse){#snd .tip{display:none}#snd:not(.used)::after{inset:-4px}}
-@media (max-width:760px){#snd{right:16px;top:18px;width:34px;height:34px}#snd svg{width:15px;height:15px}}
-/* 휴대폰 세로: 소리·맨 위로·건너뛰기 버튼을 오른쪽 한 줄에 같은 크기로 */
-@media (max-width:760px){
-  #snd{right:16px;top:16px;width:40px;height:40px}
-  #toTop,#skipHist{right:16px;bottom:calc(16px + env(safe-area-inset-bottom));width:40px;height:40px}
-  #toTop svg{width:16px;height:16px}#skipHist svg{width:18px;height:18px}
-}
-@media (pointer:coarse){#toTop::before,#skipHist::before{content:"";position:absolute;inset:-8px;border-radius:50%}}

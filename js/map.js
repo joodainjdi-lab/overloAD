@@ -325,7 +325,7 @@ function render(o){
 }
 
 /* scale artboard */
-function fit(){const s=Math.min(VW()/1920,VH()/1080); $('#art').style.transform=`translate(-50%,-50%) scale(${s})`;}
+function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080); $('#art').style.transform=`translate(-50%,-50%) scale(${s})`;}
 addEventListener('resize',fit); fit();
 
 applyFilter(DEF);

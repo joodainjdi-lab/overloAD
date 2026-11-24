@@ -194,7 +194,7 @@ function snapSettled(){
   addEventListener("scroll",()=>{if(ours){ours=false;return}if(!raf){cur=target=scrollY;if(!matchMedia("(pointer:coarse)").matches)later()}},{passive:true});   // 스크롤바·키보드로 움직이면 따라감
   addEventListener("wheel",e=>{
     if(e.ctrlKey||lbOpen||document.body.classList.contains("intro-on")||document.body.classList.contains("start-on"))return;
-    const [a,b]=range(),dy=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?VH():1);
+    const [a,b]=range(),dy=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?innerHeight:1);
     if(cur===null||!raf)cur=target=scrollY;
     if(!dy)return;
     if((dy>0&&target>=b-.5)||(dy<0&&target<=a+.5)||target<a-1||target>b+1){return}   // 구간 밖은 브라우저에 맡김
@@ -291,8 +291,7 @@ function circle3(a,b,c){
   return {x,y,r:Math.hypot(a[0]-x,a[1]-y)};
 }
 function layout(){
-  W=VW();H=VH();K=clamp(W/1920,.5,1.15);
-  if(W>=760&&H/1080<K*.8)K=Math.max(.3,H/1080);   // 가로로 든 휴대폰처럼 키가 낮은 화면: 높이에 맞춰 줄여서 겹치지 않게
+  W=innerWidth;H=innerHeight;K=clamp(W/1920,.5,1.15);
   document.documentElement.style.setProperty("--k",K);
   const mob=W<760;
   // 3단 구성: 연표(왼쪽) | 간판(가운데 세로 띠) | 간판개선사업·법(오른쪽)
@@ -318,10 +317,9 @@ function buildDecs(){
 let curD=-1;
 function placeDecs(c){
   // 지나온 연도는 위에 그대로 쌓이고, 현재 연도가 크게 펼쳐지며, 프로그레스 바는 현재 연도 문구까지 채워진다
-  if(VW()<760){ // 모바일: 현재 연도와 문구만 위쪽에
+  if(innerWidth<760){ // 모바일: 현재 연도와 문구만 위쪽에
     decEls.forEach((e,j)=>{e.classList.toggle("cur",j===c);e.style.color="var(--lime)";e.style.transform=`translateY(${40*K}px)`;e.style.opacity=j===c?1:0});
-    const kb=$("#key"); kb.style.setProperty("top",(40*K+150*K*1.05+14)+"px","important");   // 연대 글자 바로 아래로 (겹치지 않게)
-    return;
+    $("#key").style.top=(160*K)+"px";return;
   }
   // 현재 연대는 가운데 선 높이에 크게, 선은 연대 글자 오른쪽에서 시작 — 재질·표현(선 위)과 법·제도(선 아래)는 오른쪽에 함께
   const gap=46,mid=H/K*LN,pos=[],CUR=150;
@@ -340,7 +338,7 @@ const decCv=document.createElement("canvas").getContext("2d");
 function decW(t){decCv.font='italic 400 150px "BlackChancery", "Pretendard", serif';return decCv.measureText(t).width}
 document.fonts&&document.fonts.ready.then(()=>{try{if(curD>=0)placeDecs(curD)}catch(e){}});
 /* 오른쪽 목록은 모두 선 아래로: 재질·표현 → 그 아래 법·제도 */
-function placeKey(){ if(VW()<760)return; const k=$("#key"),top=H*LN+30*K;
+function placeKey(){ if(innerWidth<760)return; const k=$("#key"),top=H*LN+30*K;
   k.style.setProperty("bottom","auto","important"); k.style.setProperty("top",top.toFixed(1)+"px","important");
   $("#rule").style.setProperty("top",(top+k.offsetHeight+40*K).toFixed(1)+"px","important"); }
 let curEv="";
@@ -639,6 +637,3 @@ addEventListener("keydown",e=>{if(!lbOpen)return;if(e.key==="Escape")closeLB();i
 
 layout();req();
 addEventListener("load",req);
-
-/* 휴대폰 세로: 목록 길이가 바뀌면 어두운 띠 높이도 같이 */
-(()=>{const kb=document.getElementById("key");if(!kb||!window.ResizeObserver)return;const set=()=>{if(VW()<760)document.documentElement.style.setProperty("--band",(kb.getBoundingClientRect().bottom+36)+"px")};new ResizeObserver(set).observe(kb);addEventListener("resize",set);setTimeout(set,300)})();
