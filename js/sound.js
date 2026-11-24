@@ -27,7 +27,7 @@ window.SND=(()=>{
   const isPage=owner||window.name===SHELL;       // 소리 버튼을 보여 주는 페이지 (walk·map 같은 안쪽 화면은 제외)
   const up=m=>{try{parent.postMessage(m,"*")}catch(_){}};
   /* 소리 버튼 자리: 모든 페이지에서 같은 곳 — 1920×1080 화면 기준 맨 위 한 줄(뒤로·제목과 같은 높이) 오른쪽 끝, 크기도 화면 비율대로 */
-  function sizeBtn(b,w){["width","height"].forEach(p=>b.style.setProperty(p,w+"px","important"));const ic=b.querySelector("svg");if(ic){const z=Math.round(w*.42);ic.setAttribute("width",z);ic.setAttribute("height",z)}}
+  function sizeBtn(b,w){["width","height"].forEach(p=>b.style.setProperty(p,w+"px","important"));b.style.setProperty("--sw",w+"px");const ic=b.querySelector("svg");if(ic){const z=Math.round(w*.42);ic.setAttribute("width",z);ic.setAttribute("height",z)}}
   function fitBtn(){const b=document.getElementById("snd");if(!b)return;
     if(innerWidth<=760){["left","top","right","width","height"].forEach(p=>b.style.removeProperty(p));return}
     const s=Math.min(innerWidth/1920,innerHeight/1080),ox=innerWidth/2-960*s,oy=innerHeight/2-540*s,w=Math.round(Math.max(30,52*s));
@@ -52,7 +52,7 @@ window.SND=(()=>{
   z-index:2147483001!important;width:${SND_S}px!important;height:${SND_S}px!important;margin:0!important;border-radius:50%;border:0;background:#3a3a3a;color:#d0d0d0;
   display:grid;place-items:center;cursor:pointer;pointer-events:auto!important;visibility:visible!important;opacity:1!important;transition:background .25s,color .25s}
 #snd{transition:background .25s,color .25s,top .35s cubic-bezier(.2,.8,.2,1)!important}
-#snd:hover{background:#4a4a4a}#snd.on{background:#C3D132;color:#101010}
+#snd:hover{background:#4a4a4a}#snd.on{background:#C3D132;color:#101010}#snd.on:hover,#snd.on:focus-visible{outline:none;box-shadow:0 0 0 calc(var(--sw,52px)*.14) rgba(195,209,50,.22)}
 #snd::after{display:none!important}
 #snd .w1,#snd .w2{display:none}#snd.on .w1,#snd.on .w2{display:inline}#snd.on .x{display:none}
 @media (max-width:760px){#snd{right:16px!important;top:16px!important}}`;document.head.appendChild(st);
