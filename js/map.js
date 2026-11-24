@@ -272,9 +272,11 @@ function setP(v,anim){P=Math.max(0,Math.min(100,v)); photo.style.setProperty('--
 photo.addEventListener('wheel',e=>{e.preventDefault(); setP(P-(e.deltaY||e.deltaX)*0.12);},{passive:false});
 let drag=false;
 const posP=e=>{const r=photo.getBoundingClientRect(); setP((e.clientX-r.left)/r.width*100);};
-photo.addEventListener('pointerdown',e=>{drag=true;photo.setPointerCapture(e.pointerId);posP(e);});
-photo.addEventListener('pointermove',e=>{if(drag)posP(e);});
-photo.addEventListener('pointerup',()=>drag=false);
+let px0=0,pmoved=false;   // 끌면 비교, 끌지 않고 누르면 크게 보기
+photo.addEventListener('pointerdown',e=>{drag=true;pmoved=false;px0=e.clientX;photo.setPointerCapture(e.pointerId);});
+photo.addEventListener('pointermove',e=>{if(!drag)return; if(!pmoved&&Math.abs(e.clientX-px0)>4)pmoved=true; if(pmoved)posP(e);});
+photo.addEventListener('pointerup',()=>{ if(drag&&!pmoved&&window.PLB) PLB.open(P,v=>setP(v)); drag=false; });
+photo.addEventListener('keydown',e=>{ if(e.key==='Enter'&&window.PLB){ e.preventDefault(); PLB.open(P,v=>setP(v)); } });
 photo.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'){setP(P-5);e.preventDefault();} if(e.key==='ArrowRight'){setP(P+5);e.preventDefault();}});
 function sweep(){ const t0=performance.now(); const from=0, to=50;   // 왼쪽 끝 → 가운데로 이동
   const step=t=>{const k=Math.min(1,(t-t0)/700), e=1-Math.pow(1-k,3); setP(from+(to-from)*e); if(k<1)requestAnimationFrame(step);};

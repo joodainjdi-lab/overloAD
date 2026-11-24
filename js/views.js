@@ -41,3 +41,6 @@ addEventListener('resize',fit); fit(); show(location.hash.slice(1)||'walk');
     link('walk');show('walk',true);sync();},true);
   box.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>setTimeout(sync,0)));
   addEventListener('hashchange',sync);sync();})();
+
+// 사진 크게 보기가 열린 동안은 위쪽 버튼 줄을 숨김
+addEventListener('message',e=>{ if(e.data&&e.data.ov==='lb') document.getElementById('ui').classList.toggle('lbhide',!!e.data.on); });
